@@ -1,0 +1,34 @@
+import {
+  listarPropuestasPorProyectoRepository,
+  crearPropuestaRepository
+} from '../repositories/propuesta.repository.js';
+
+export const listarPropuestasService = async (id_proyecto) => {
+  return await listarPropuestasPorProyectoRepository(id_proyecto);
+};
+
+export const crearPropuestaService = async (id_freelancer, datos) => {
+  const { id_proyecto, mensaje, monto_propuesto } = datos;
+
+  if (!id_proyecto || !mensaje || !monto_propuesto) {
+    const error = new Error('id_proyecto, mensaje y monto_propuesto son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (Number(monto_propuesto) <= 0) {
+    const error = new Error('El monto propuesto debe ser mayor a 0');
+    error.status = 400;
+    throw error;
+  }
+
+  // Las reglas de "proyecto abierto", "no auto-postulación" y "sin propuesta activa duplicada"
+  // ya las validan los triggers trg_no_propuesta_proyecto_cerrado,
+  // trg_validar_propuesta_propio_proyecto y trg_validar_propuesta_activa.
+  return await crearPropuestaRepository({
+    id_proyecto,
+    id_freelancer,
+    mensaje,
+    monto_propuesto
+  });
+};
