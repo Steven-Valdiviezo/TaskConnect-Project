@@ -18,7 +18,7 @@ Para ejecutar este proyecto en tu entorno local, asegúrate de tener instalado:
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/TuUsuario/tu-repo.git
+git clone https://github.com/Steven-Valdiviezo/TaskConnect-Project.git
 cd tu-repo
 ```
 
