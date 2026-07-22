@@ -1,51 +1,41 @@
-<div class="d-flex flex-column min-vh-100">
-  <nav class="navbar px-3" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
-    <span class="navbar-brand mb-0" style="color:#9FE1CB;"><i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect</span>
-    <span class="ms-auto badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">Freelancer</span>
-  </nav>
-
-  <main class="p-4" style="max-width:760px;margin:0 auto;width:100%;">
-    <a routerLink="/freelancer/dashboard" class="text-secondary small d-inline-flex align-items-center gap-1 mb-3">
-      <i class="fa-solid fa-arrow-left"></i> Volver
+<div>
+    <a routerLink="/freelancer/buscar-trabajos" class="small d-inline-flex align-items-center gap-1 mb-3 text-decoration-none" style="color:#6e8fa8;">
+        <i class="fa-solid fa-arrow-left"></i> Volver a búsqueda
     </a>
-
-    <div class="card mb-4 animate__animated animate__fadeIn">
-      <div class="card-body">
+    <div class="rounded-3 p-4 mb-4 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <h1 class="h5 fw-medium mb-0">App móvil de seguimiento de hábitos</h1>
-          <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
+            <h1 class="h5 fw-medium mb-0" style="color:#cde0f0;">App móvil de seguimiento de hábitos</h1>
+            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
         </div>
-        <p class="text-secondary small mb-2">Desarrollo móvil · Presupuesto: $500–800 · Cliente: Empresa XYZ</p>
-        <p class="small">Se necesita una aplicación iOS/Android desarrollada con Flutter y backend en Firebase, para registrar hábitos diarios y mostrar estadísticas semanales de progreso.</p>
-        <span class="badge bg-light text-secondary me-1">Flutter</span>
-        <span class="badge bg-light text-secondary me-1">Firebase</span>
-        <span class="badge bg-light text-secondary">Dart</span>
-      </div>
+        <p class="small mb-3" style="color:#6e8fa8;">Desarrollo móvil · Presupuesto: $500–800 · Cliente: Empresa XYZ</p>
+        <p class="small mb-3" style="color:#8dafc8;">Se necesita una aplicación iOS/Android desarrollada con Flutter y backend en Firebase, para registrar hábitos diarios y mostrar estadísticas semanales de progreso.</p>
+        <span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Flutter</span>
+        <span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Firebase</span>
+        <span class="badge" style="background-color:#1c2d3c;color:#6e8fa8;">Dart</span>
     </div>
 
-    <h2 class="h6 fw-medium mb-2">Enviar propuesta</h2>
-    <form class="animate__animated animate__fadeIn">
-      <div class="mb-3">
-        <label class="form-label small">Tu mensaje al cliente *</label>
-        <textarea class="form-control" rows="4" placeholder="Describe tu experiencia, enfoque y por qué eres el candidato ideal..."></textarea>
-      </div>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label small">Monto propuesto (USD) *</label>
-          <div class="input-group">
-            <span class="input-group-text">$</span>
-            <input type="number" class="form-control" placeholder="0.00">
-          </div>
+    <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Enviar propuesta</h2>
+    <form class="animate__animated animate__fadeIn" style="max-width:680px;">
+        <div class="mb-3">
+            <label class="form-label small" style="color:#6e8fa8;">Tu mensaje al cliente *</label>
+            <textarea class="form-control" rows="4" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Describe tu experiencia y por qué eres el candidato ideal..."></textarea>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label small">Tiempo estimado de entrega *</label>
-          <input type="text" class="form-control" placeholder="Ej. 10 días">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label small" style="color:#6e8fa8;">Monto propuesto (USD) *</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="background-color:#1c2d3c;border-color:#1c2d3c;color:#6e8fa8;">$</span>
+                    <input type="number" class="form-control" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="0.00">
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label small" style="color:#6e8fa8;">Tiempo estimado *</label>
+                <input type="text" class="form-control" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Ej. 10 días">
+            </div>
         </div>
-      </div>
-      <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-outline-secondary">Cancelar</button>
-        <button type="submit" class="btn" style="background-color:#185FA5;color:#E6F1FB;">Enviar propuesta</button>
-      </div>
+        <div class="d-flex justify-content-end gap-2">
+            <a routerLink="/freelancer/buscar-trabajos" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn" style="background-color:#185FA5;color:#E6F1FB;">Enviar propuesta</button>
+        </div>
     </form>
-  </main>
 </div>

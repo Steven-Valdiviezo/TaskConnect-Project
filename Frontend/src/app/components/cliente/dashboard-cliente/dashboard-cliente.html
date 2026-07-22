@@ -1,101 +1,55 @@
-<div class="d-flex flex-column min-vh-100">
-  <nav class="navbar px-3" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
-    <span class="navbar-brand mb-0" style="color:#9FE1CB;"><i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect</span>
-    <div class="ms-auto d-flex align-items-center gap-3">
-      <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">Cliente</span>
-      <i class="fa-solid fa-bell text-white"></i>
-      <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#E1F5EE;color:#085041;">JC</div>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h5 fw-medium mb-0" style="color:#cce8d8;">Dashboard</h1>
+        <a routerLink="/cliente/publicar-proyecto" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo proyecto
+        </a>
     </div>
-  </nav>
 
-  <div class="d-flex flex-grow-1">
-    <aside class="p-3" style="width:200px;background-color:#F1EFE8;border-right:1px solid #dee2e6;">
-      <a routerLink="/cliente/dashboard" class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none fw-medium" style="color:#085041;background-color:#fff;">
-        <i class="fa-solid fa-table-columns"></i> Dashboard
-      </a>
-      <a routerLink="/cliente/publicar-proyecto" class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-folder"></i> Mis proyectos
-      </a>
-      <a class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-users"></i> Propuestas
-      </a>
-      <a class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-file-contract"></i> Contratos
-      </a>
-      <a routerLink="/mensajes" class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-message"></i> Mensajes
-      </a>
-      <a routerLink="/pagos" class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-credit-card"></i> Pagos
-      </a>
-      <a routerLink="/calificaciones" class="d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none text-secondary">
-        <i class="fa-solid fa-star"></i> Calificaciones
-      </a>
-      <a class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none text-secondary">
-        <i class="fa-solid fa-user"></i> Mi perfil
-      </a>
-    </aside>
-
-    <main class="flex-grow-1 p-4" style="background-color:#fff;">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h5 fw-medium mb-0">Dashboard</h1>
-        <button class="btn btn-sm" style="background-color:#0F6E56;color:#E1F5EE;">
-          <i class="fa-solid fa-plus me-1"></i>Nuevo proyecto
-        </button>
-      </div>
-
-      <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4">
         <div class="col-md-4">
-          <div class="p-3 rounded-3" style="background-color:#F1EFE8;">
-            <small class="text-secondary">Proyectos activos</small>
-            <div class="fs-4 fw-medium">4</div>
-            <small class="text-secondary">2 en progreso</small>
-          </div>
+            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+                <small style="color:#6e9e85;">Proyectos activos</small>
+                <div class="fs-4 fw-medium" style="color:#cce8d8;">4</div>
+                <small style="color:#6e9e85;">2 en progreso</small>
+            </div>
         </div>
         <div class="col-md-4">
-          <div class="p-3 rounded-3" style="background-color:#F1EFE8;">
-            <small class="text-secondary">Propuestas recibidas</small>
-            <div class="fs-4 fw-medium">12</div>
-            <small class="text-secondary">3 sin revisar</small>
-          </div>
+            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+                <small style="color:#6e9e85;">Propuestas recibidas</small>
+                <div class="fs-4 fw-medium" style="color:#cce8d8;">12</div>
+                <small style="color:#6e9e85;">3 sin revisar</small>
+            </div>
         </div>
         <div class="col-md-4">
-          <div class="p-3 rounded-3" style="background-color:#F1EFE8;">
-            <small class="text-secondary">Total pagado</small>
-            <div class="fs-4 fw-medium">$840</div>
-            <small class="text-secondary">este mes</small>
-          </div>
+            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+                <small style="color:#6e9e85;">Total pagado</small>
+                <div class="fs-4 fw-medium" style="color:#cce8d8;">$840</div>
+                <small style="color:#6e9e85;">este mes</small>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <h2 class="h6 fw-medium mb-2">Proyectos recientes</h2>
-      <div class="card mb-2 animate__animated animate__fadeIn">
-        <div class="card-body py-2 d-flex justify-content-between align-items-center">
-          <div>
-            <p class="fw-medium small mb-0">Diseño de landing page e-commerce</p>
-            <small class="text-secondary">Diseño web · 5 propuestas</small>
-          </div>
-          <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
+    <h2 class="h6 fw-medium mb-3" style="color:#cce8d8;">Proyectos recientes</h2>
+    <div class="rounded-3 p-3 mb-2 d-flex justify-content-between align-items-center animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <div>
+            <p class="fw-medium small mb-0" style="color:#cce8d8;">Diseño de landing page e-commerce</p>
+            <small style="color:#6e9e85;">Diseño web · 5 propuestas</small>
         </div>
-      </div>
-      <div class="card mb-2 animate__animated animate__fadeIn">
-        <div class="card-body py-2 d-flex justify-content-between align-items-center">
-          <div>
-            <p class="fw-medium small mb-0">API REST para app de inventario</p>
-            <small class="text-secondary">Desarrollo backend · 2 propuestas</small>
-          </div>
-          <span class="badge rounded-pill" style="background-color:#FAEEDA;color:#633806;">en progreso</span>
+        <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
+    </div>
+    <div class="rounded-3 p-3 mb-2 d-flex justify-content-between align-items-center animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <div>
+            <p class="fw-medium small mb-0" style="color:#cce8d8;">API REST para app de inventario</p>
+            <small style="color:#6e9e85;">Desarrollo backend · 2 propuestas</small>
         </div>
-      </div>
-      <div class="card animate__animated animate__fadeIn">
-        <div class="card-body py-2 d-flex justify-content-between align-items-center">
-          <div>
-            <p class="fw-medium small mb-0">Logo para startup de tecnología</p>
-            <small class="text-secondary">Diseño gráfico · 7 propuestas</small>
-          </div>
-          <span class="badge rounded-pill bg-light text-secondary">finalizado</span>
+        <span class="badge rounded-pill" style="background-color:#FAEEDA;color:#633806;">en progreso</span>
+    </div>
+    <div class="rounded-3 p-3 d-flex justify-content-between align-items-center animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <div>
+            <p class="fw-medium small mb-0" style="color:#cce8d8;">Logo para startup de tecnología</p>
+            <small style="color:#6e9e85;">Diseño gráfico · 7 propuestas</small>
         </div>
-      </div>
-    </main>
-  </div>
+        <span class="badge rounded-pill" style="background-color:#2a3a30;color:#6e9e85;">finalizado</span>
+    </div>
 </div>

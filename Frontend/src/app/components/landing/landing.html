@@ -1,79 +1,38 @@
 <app-navbar></app-navbar>
 
-<header class="text-white py-5" style="background-color:#085041;">
-  <div class="container py-4">
-    <div class="row align-items-center">
-      <div class="col-lg-7 animate__animated animate__fadeInLeft">
-        <p class="text-uppercase small fw-bold mb-2" style="color:#5DCAA5;letter-spacing:.1em;">Plataforma de trabajo freelance</p>
-        <h1 class="display-5 fw-medium mb-3">Conecta talento con <span style="color:#5DCAA5;">oportunidades reales</span></h1>
-        <p class="mb-4" style="color:#9FE1CB;max-width:480px;">Publica proyectos, encuentra profesionales verificados y gestiona contratos desde un solo lugar.</p>
-        <div class="d-flex gap-2">
-          <a routerLink="/registro" class="btn" style="background-color:#5DCAA5;color:#04342C;">Publicar un proyecto</a>
-          <a routerLink="/registro" class="btn btn-outline-light">Explorar freelancers</a>
+<header class="text-white py-5" style="background:linear-gradient(160deg,#04342C 0%,#085041 70%,#0F6E56 100%);min-height:92vh;display:flex;align-items:center;">
+    <div class="container py-4 w-100">
+        <div class="row align-items-center">
+            <div class="col-lg-7 animate__animated animate__fadeInLeft">
+                <p class="text-uppercase small fw-bold mb-2" style="color:#5DCAA5;letter-spacing:.1em;">Plataforma de trabajo freelance</p>
+                <h1 class="display-5 fw-medium mb-3">Conecta talento con <span style="color:#5DCAA5;">oportunidades reales</span></h1>
+                <p class="mb-4" style="color:#9FE1CB;max-width:480px;">Publica proyectos, encuentra profesionales verificados y gestiona contratos desde un solo lugar.</p>
+                <div class="d-flex gap-2">
+                    <a routerLink="/registro" class="btn" style="background-color:#5DCAA5;color:#04342C;">Publicar un proyecto</a>
+                    <a routerLink="/registro" class="btn btn-outline-light">Explorar freelancers</a>
+                </div>
+                <div class="d-flex gap-4 mt-4">
+                    <div>
+                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">+1,200</div><small style="color:#9FE1CB;">Freelancers activos</small></div>
+                    <div>
+                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">+850</div><small style="color:#9FE1CB;">Proyectos publicados</small></div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-flex flex-column gap-3 mt-4 mt-lg-0 animate__animated animate__fadeInRight">
+                <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
+                    <div class="fs-3 fw-medium">+1,200</div>
+                    <small style="color:#5DCAA5;">Freelancers activos</small>
+                </div>
+                <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
+                    <div class="fs-3 fw-medium">+850</div>
+                    <small style="color:#5DCAA5;">Proyectos publicados</small>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-lg-5 d-flex flex-column gap-3 mt-4 mt-lg-0 animate__animated animate__fadeInRight">
-        <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
-          <div class="fs-3 fw-medium">+1,200</div>
-          <small style="color:#5DCAA5;">Freelancers activos</small>
+        <div class="text-center mt-5">
+            <a routerLink="/como-funciona" style="color:#5DCAA5;" class="text-decoration-none small">
+        Ver cómo funciona <i class="fa-solid fa-arrow-down ms-1"></i>
+      </a>
         </div>
-        <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
-          <div class="fs-3 fw-medium">+850</div>
-          <small style="color:#5DCAA5;">Proyectos publicados</small>
-        </div>
-      </div>
     </div>
-  </div>
 </header>
-
-<section class="py-5" id="como-funciona">
-  <div class="container">
-    <p class="small fw-bold text-uppercase mb-1" style="color:#0F6E56;">Cómo funciona</p>
-    <h2 class="h3 fw-medium mb-4">En 3 pasos simples</h2>
-    <div class="row g-4">
-      <div class="col-md-4 animate__animated animate__fadeInUp">
-        <div class="rounded-circle d-flex align-items-center justify-content-center fw-medium mb-2" style="width:40px;height:40px;background-color:#0F6E56;color:#E1F5EE;">1</div>
-        <h3 class="h6 fw-medium">Crea tu cuenta</h3>
-        <p class="text-secondary small">Regístrate como cliente o freelancer y completa tu perfil.</p>
-      </div>
-      <div class="col-md-4 animate__animated animate__fadeInUp" style="animation-delay:.1s">
-        <div class="rounded-circle d-flex align-items-center justify-content-center fw-medium mb-2" style="width:40px;height:40px;background-color:#0F6E56;color:#E1F5EE;">2</div>
-        <h3 class="h6 fw-medium">Publica o aplica</h3>
-        <p class="text-secondary small">Los clientes publican proyectos, los freelancers envían propuestas.</p>
-      </div>
-      <div class="col-md-4 animate__animated animate__fadeInUp" style="animation-delay:.2s">
-        <div class="rounded-circle d-flex align-items-center justify-content-center fw-medium mb-2" style="width:40px;height:40px;background-color:#0F6E56;color:#E1F5EE;">3</div>
-        <h3 class="h6 fw-medium">Trabaja y cobra</h3>
-        <p class="text-secondary small">Se genera el contrato y el pago se procesa al finalizar.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="py-5" style="background-color:#F4FAF8;" id="categorias">
-  <div class="container">
-    <p class="small fw-bold text-uppercase mb-1" style="color:#0F6E56;">Roles</p>
-    <h2 class="h3 fw-medium mb-4">¿Qué puedes hacer aquí?</h2>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="p-4 rounded-3 h-100" style="background-color:#E1F5EE;border:1px solid #9FE1CB;">
-          <h3 class="h6 fw-medium" style="color:#085041;"><i class="fa-solid fa-building me-2"></i>Soy cliente</h3>
-          <p class="small mb-0" style="color:#0F6E56;">Publica proyectos, revisa propuestas y gestiona contratos.</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="p-4 rounded-3 h-100" style="background-color:#E6F1FB;border:1px solid #B5D4F4;">
-          <h3 class="h6 fw-medium" style="color:#0C447C;"><i class="fa-solid fa-user me-2"></i>Soy freelancer</h3>
-          <p class="small mb-0" style="color:#185FA5;">Explora proyectos, envía propuestas y gestiona tus contratos.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="text-white py-4" style="background-color:#04342C;" id="acerca">
-  <div class="container d-flex flex-wrap justify-content-between align-items-center">
-    <span style="color:#5DCAA5;"><i class="fa-solid fa-briefcase me-2"></i>TaskConnect</span>
-    <small style="color:#1D9E75;">© 2026 TaskConnect</small>
-  </div>
-</footer>
