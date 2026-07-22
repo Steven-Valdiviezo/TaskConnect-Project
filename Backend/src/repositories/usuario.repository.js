@@ -1,0 +1,74 @@
+import { pool } from '../database/connection.js';
+
+export const buscarUsuarioPorCorreoRepository = async(correo) => {
+    const resultado = await pool.query(
+        'SELECT * FROM usuario WHERE correo = $1', [correo]
+    );
+    return resultado.rows[0];
+};
+
+export const buscarUsuarioPorIdRepository = async(id) => {
+    const resultado = await pool.query(
+        'SELECT id_usuario, nombre, correo, telefono, rol, estado, fecha_registro FROM usuario WHERE id_usuario = $1', [id]
+    );
+    return resultado.rows[0];
+};
+
+// Registro transaccional: usuario + (cliente | freelancer)
+export const registrarUsuarioRepository = async({ nombre, correo, contrasenaHash, telefono, rol, perfil }) => {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const usuarioResultado = await client.query(
+            `INSERT INTO usuario (nombre, correo, contrasena, telefono, rol)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id_usuario, nombre, correo, telefono, rol, estado, fecha_registro`, [nombre, correo, contrasenaHash, telefono, rol]
+        );
+
+        const usuario = usuarioResultado.rows[0];
+        let perfilCreado = null;
+
+        if (rol === 'cliente') {
+            const empresa = (perfil && perfil.empresa) ? perfil.empresa : null;
+            const direccion = (perfil && perfil.direccion) ? perfil.direccion : null;
+
+            const clienteResultado = await client.query(
+                `INSERT INTO cliente (id_usuario, empresa, direccion)
+         VALUES ($1, $2, $3)
+         RETURNING id_cliente, empresa, direccion`, [usuario.id_usuario, empresa, direccion]
+            );
+            perfilCreado = clienteResultado.rows[0];
+        }
+
+        if (rol === 'freelancer') {
+            const freelancerResultado = await client.query(
+                `INSERT INTO freelancer (id_usuario, id_profesion, descripcion, experiencia)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id_freelancer, id_profesion, descripcion, experiencia`, [usuario.id_usuario, perfil.id_profesion, perfil.descripcion, perfil.experiencia]
+            );
+            perfilCreado = freelancerResultado.rows[0];
+        }
+
+        await client.query('COMMIT');
+        return { usuario, perfil: perfilCreado };
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+};
+
+export const obtenerIdsPerfilRepository = async(id_usuario, rol) => {
+    if (rol === 'cliente') {
+        const r = await pool.query('SELECT id_cliente FROM cliente WHERE id_usuario = $1', [id_usuario]);
+        return r.rows[0]; // { id_cliente }
+    }
+    if (rol === 'freelancer') {
+        const r = await pool.query('SELECT id_freelancer FROM freelancer WHERE id_usuario = $1', [id_usuario]);
+        return r.rows[0]; // { id_freelancer }
+    }
+    return null;
+};

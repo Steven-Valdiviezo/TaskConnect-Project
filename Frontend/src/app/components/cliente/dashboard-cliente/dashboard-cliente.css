@@ -1,0 +1,4 @@
+/* Resalta el item activo del sidebar al pasar el mouse */
+aside a:hover {
+  background-color: #FFFFFF;
+}

@@ -1,0 +1,4 @@
+/* Pequeño detalle: resaltar el link activo del menú público */
+.nav-link:hover {
+  color: #5DCAA5 !important;
+}
