@@ -1,5 +1,4 @@
-# Nombre del Proyecto Freelance
-
+# TaskConnect
 Este repositorio contiene el código fuente de una aplicación Full-Stack, estructurada como un monorepo. Se divide en dos módulos principales: un cliente web desarrollado con Angular y una API construida con Node.js y Express.
 
 ## Estructura del Repositorio
