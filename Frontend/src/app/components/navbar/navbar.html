@@ -1,38 +1,38 @@
 <nav class="navbar navbar-expand-lg" style="background-color:#04342C;" data-bs-theme="dark">
-  <div class="container">
-    <a class="navbar-brand fw-bold" style="color:#9FE1CB;" routerLink="/">
-      <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <div class="container">
+        <a class="navbar-brand fw-bold" style="color:#9FE1CB;" routerLink="/">
+            <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto me-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" [routerLink]="['/']" routerLinkActive="fw-bold" style="color:#9FE1CB" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fa-solid fa-house me-1"></i>Inicio
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#como-funciona">
-            <i class="fa-solid fa-route me-1"></i>Cómo funciona
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#categorias">
-            <i class="fa-solid fa-list me-1"></i>Categorías
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#acerca">
-            <i class="fa-solid fa-circle-info me-1"></i>Acerca de
-          </a>
-        </li>
-      </ul>
-      <div class="d-flex gap-2">
-        <a routerLink="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
-        <a routerLink="/registro" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Registrarse</a>
-      </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto me-3">
+                <li class="nav-item">
+                    <a class="nav-link text-white" routerLink="/" routerLinkActive="fw-bold" [routerLinkActiveOptions]="{exact:true}">
+                        <i class="fa-solid fa-house me-1"></i>Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" routerLink="/como-funciona" routerLinkActive="fw-bold">
+                        <i class="fa-solid fa-route me-1"></i>Cómo funciona
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" routerLink="/categorias" routerLinkActive="fw-bold">
+                        <i class="fa-solid fa-list me-1"></i>Categorías
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" routerLink="/acerca" routerLinkActive="fw-bold">
+                        <i class="fa-solid fa-circle-info me-1"></i>Acerca de
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex gap-2">
+                <a routerLink="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+                <a routerLink="/registro" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Registrarse</a>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>

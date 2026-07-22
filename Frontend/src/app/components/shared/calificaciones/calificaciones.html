@@ -1,47 +1,35 @@
-<div class="d-flex flex-column min-vh-100">
-  <nav class="navbar px-3" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
-    <span class="navbar-brand mb-0" style="color:#9FE1CB;"><i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect</span>
-  </nav>
-
-  <main class="p-4">
-    <h1 class="h5 fw-medium mb-3">Calificaciones</h1>
-
-    <div class="card mb-3 animate__animated animate__fadeIn">
-      <div class="card-body d-flex justify-content-between align-items-start">
-        <div class="d-flex gap-2">
-          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#FAEEDA;color:#633806;">CM</div>
-          <div>
-            <p class="fw-medium small mb-0">Carlos Mora</p>
-            <small class="text-secondary">Logo startup · abr 2026</small>
-            <p class="small text-secondary mt-1 mb-0">"Excelente trabajo, entregó antes del plazo y con buena comunicación."</p>
-          </div>
-        </div>
-        <div style="color:#EF9F27;">
-          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="card mb-4" style="border-style:dashed;">
-      <div class="card-body">
-        <p class="fw-medium small mb-1">María Andrade — Diseño landing page</p>
-        <small class="text-secondary d-block mb-2">Contrato activo · pendiente de calificación</small>
-
-        <h2 class="h6 fw-medium mb-2">Calificar al finalizar</h2>
-        <form class="animate__animated animate__fadeIn">
-          <div class="mb-2">
-            <label class="form-label small">Puntuación</label>
-            <div class="fs-5" style="color:#EF9F27;">
-              <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+<div>
+    <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Calificaciones</h1>
+    <div class="rounded-3 p-3 mb-3 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">CM</div>
+                <div>
+                    <p class="fw-medium small mb-0" style="color:#cce8d8;">Carlos Mora</p>
+                    <small style="color:#6e9e85;">Logo startup · abr 2026</small>
+                    <p class="small mt-1 mb-0" style="color:#6e9e85;">"Excelente trabajo, entregó antes del plazo."</p>
+                </div>
             </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label small">Comentario</label>
-            <textarea class="form-control" rows="3" placeholder="Comparte tu experiencia con este freelancer..."></textarea>
-          </div>
-          <button type="submit" class="btn btn-sm" style="background-color:#0F6E56;color:#E1F5EE;">Enviar calificación</button>
-        </form>
-      </div>
+            <div style="color:#EF9F27;white-space:nowrap;">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+        </div>
     </div>
-  </main>
+    <div class="rounded-3 p-3" style="background-color:#142b21;border:1px dashed #1c3c2d;">
+        <p class="fw-medium small mb-1" style="color:#cce8d8;">María Andrade — Diseño landing page</p>
+        <small style="color:#6e9e85;">Contrato activo · pendiente de calificación</small>
+        <form class="mt-3 animate__animated animate__fadeIn">
+            <div class="mb-2">
+                <label class="form-label small" style="color:#6e9e85;">Puntuación</label>
+                <div class="fs-5" style="color:#6e9e85;">
+                    <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small" style="color:#6e9e85;">Comentario</label>
+                <textarea class="form-control" rows="3" style="background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Comparte tu experiencia..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Enviar calificación</button>
+        </form>
+    </div>
 </div>

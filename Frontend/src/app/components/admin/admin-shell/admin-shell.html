@@ -1,0 +1,58 @@
+<div class="d-flex flex-column min-vh-100" style="background-color:#12102a;">
+    <nav class="navbar px-3 flex-shrink-0" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
+        <span class="navbar-brand mb-0" style="color:#9FE1CB;">
+            <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
+        </span>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="badge rounded-pill" style="background-color:#EEEDFE;color:#534AB7;">Administrador</span>
+            <i class="fa-solid fa-bell text-white" style="cursor:pointer;"></i>
+            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#EEEDFE;color:#534AB7;">AD</div>
+            <a routerLink="/login" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</a>
+        </div>
+    </nav>
+
+    <div class="d-flex flex-grow-1">
+        <aside class="p-3 flex-shrink-0" style="width:210px;background-color:#0e0c20;border-right:1px solid #2a2550;">
+            <a routerLink="/admin/dashboard" routerLinkActive="side-active-a" [routerLinkActiveOptions]="{exact:true}" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
+                <i class="fa-solid fa-chart-bar"></i> Estadísticas
+            </a>
+            <a routerLink="/admin/usuarios" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
+                <i class="fa-solid fa-users"></i> Usuarios
+            </a>
+            <a routerLink="/admin/proyectos" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
+                <i class="fa-solid fa-folder"></i> Proyectos
+            </a>
+            <hr style="border-color:#2a2550;margin:.5rem 0;">
+            <a routerLink="/admin/categorias" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
+                <i class="fa-solid fa-list"></i> Categorías
+            </a>
+            <a routerLink="/admin/profesiones" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+                <i class="fa-solid fa-toolbox"></i> Profesiones
+            </a>
+        </aside>
+
+        <main class="flex-grow-1 p-4" style="background-color:#12102a;color:#d8d5f5;overflow-y:auto;">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>
+
+<style>
+    .side-link-a {
+        color: #8e89c4;
+        font-size: .875rem;
+        transition: .15s;
+    }
+    
+    .side-link-a:hover {
+        color: #d8d5f5;
+        background-color: #1e1a35 !important;
+    }
+    
+    .side-active-a {
+        color: #9b96e0 !important;
+        background-color: #1e1a35 !important;
+        font-weight: 600;
+        border-left: 3px solid #9b96e0;
+    }
+</style>

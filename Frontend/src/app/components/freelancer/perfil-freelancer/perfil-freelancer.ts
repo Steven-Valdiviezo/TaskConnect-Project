@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-perfil-freelancer',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './perfil-freelancer.html',
   styleUrl: './perfil-freelancer.css',
 })
