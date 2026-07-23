@@ -58,4 +58,9 @@ La aplicación web estará disponible por defecto en `http://localhost:4200/`.
 Para mantener un historial limpio y un código funcional:
 1. **No hagas commits directos a `main`**. La rama principal es solo para código estable.
 2. **Crea una rama** para tu nueva funcionalidad o corrección: `git checkout -b feature/nombre-de-la-tarea`
-3. Sube tus cambios a tu rama y abre un **Pull Request** para revisión antes de integrar el código.
+3. Trabajar y guardar, haces tus cambios en el código, guardas y haces commit: `git add .`, `git commit -m "feat: ..."`
+4. Subir la rama a GitHub: `git push origin feature/nombre-de-la-tarea`
+5. Sube tus cambios a tu rama y abre un **Pull Request** para revisión antes de integrar el código.
+   Una vez aceptado, vuelves a tu terminal, cambias a main y actualizas:
+   `git checkout main`
+   `git pull origin main`
