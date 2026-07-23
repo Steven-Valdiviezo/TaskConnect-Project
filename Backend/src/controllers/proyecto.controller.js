@@ -2,7 +2,8 @@ import {
   listarProyectosService,
   obtenerProyectoService,
   crearProyectoService,
-  actualizarProyectoService
+  actualizarProyectoService,
+  cancelarProyectoService
 } from '../services/proyecto.service.js';
 
 export const listarProyectos = async (req, res, next) => {
@@ -39,6 +40,16 @@ export const editarProyecto = async (req, res, next) => {
   try {
     const proyecto = await actualizarProyectoService(Number(req.params.id), req.usuario.id_cliente, req.body);
     res.json({ mensaje: 'Proyecto actualizado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const cancelarProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await cancelarProyectoService(Number(req.params.id), req.usuario.id_cliente);
+    res.json({ mensaje: 'Proyecto cancelado correctamente', proyecto });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);

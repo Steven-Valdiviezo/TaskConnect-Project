@@ -1,6 +1,7 @@
 import {
   listarPropuestasPorProyectoRepository,
-  crearPropuestaRepository
+  crearPropuestaRepository,
+  eliminarPropuestaRepository
 } from '../repositories/propuesta.repository.js';
 
 export const listarPropuestasService = async (id_proyecto) => {
@@ -31,4 +32,16 @@ export const crearPropuestaService = async (id_freelancer, datos) => {
     mensaje,
     monto_propuesto
   });
+};
+
+export const retirarPropuestaService = async (id_freelancer, id_propuesta) => {
+  const propuesta = await eliminarPropuestaRepository(id_propuesta, id_freelancer);
+
+  if (!propuesta) {
+    const error = new Error('Propuesta no encontrada, no te pertenece, o ya no se puede retirar (estado aceptada)');
+    error.status = 404;
+    throw error;
+  }
+
+  return propuesta;
 };

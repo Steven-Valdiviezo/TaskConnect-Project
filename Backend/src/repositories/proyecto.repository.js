@@ -70,3 +70,47 @@ export const obtenerDueñoProyectoRepository = async (id_proyecto) => {
   );
   return resultado.rows[0];
 };
+
+// El orden de los 3 UPDATE importa: primero proyecto, después contrato.
+// Si se lo hace  al revés, el trigger trg_contrato_reabrir_proyecto
+// intentaría reabrir el proyecto a 'abierto' antes de
+// que termines de cancelarlo, y quedaría en un estado inconsistente.
+export const cancelarProyectoRepository = async (id_proyecto) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const proyectoResultado = await client.query(
+      `UPDATE proyecto SET estado = 'cancelado'
+       WHERE id_proyecto = $1 AND estado IN ('abierto', 'ejecucion')
+       RETURNING *`,
+      [id_proyecto]
+    );
+
+    if (proyectoResultado.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+
+    await client.query(
+      `UPDATE contrato SET estado = 'cancelado'
+       WHERE id_proyecto = $1 AND estado = 'activo'`,
+      [id_proyecto]
+    );
+
+    await client.query(
+      `UPDATE propuesta SET estado = 'rechazada'
+       WHERE id_proyecto = $1 AND estado = 'pendiente'`,
+      [id_proyecto]
+    );
+
+    await client.query('COMMIT');
+    return proyectoResultado.rows[0];
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};

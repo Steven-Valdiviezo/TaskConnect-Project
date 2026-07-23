@@ -27,3 +27,13 @@ export const obtenerPropuestaPorIdRepository = async (id) => {
   const resultado = await pool.query('SELECT * FROM propuesta WHERE id_propuesta = $1', [id]);
   return resultado.rows[0];
 };
+
+export const eliminarPropuestaRepository = async (id_propuesta, id_freelancer) => {
+  const resultado = await pool.query(
+    `DELETE FROM propuesta
+     WHERE id_propuesta = $1 AND id_freelancer = $2
+     RETURNING *`,
+    [id_propuesta, id_freelancer]
+  );
+  return resultado.rows[0];
+};
