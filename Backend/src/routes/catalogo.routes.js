@@ -1,20 +1,29 @@
 import { Router } from 'express';
 import {
-  listarCategorias, crearCategoria,
-  listarProfesiones, crearProfesion,
-  listarMetodosPago, crearMetodoPago
+  listarCategorias, crearCategoria, actualizarCategoria, eliminarCategoria,
+  listarProfesiones, crearProfesion, actualizarProfesion, eliminarProfesion,
+  listarMetodosPago, crearMetodoPago, actualizarMetodoPago, eliminarMetodoPago
 } from '../controllers/catalogo.controller.js';
 import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
+// ---- Categoría ----
 router.get('/categorias', listarCategorias);
 router.post('/categorias', autenticar, permitirRoles('administrador'), crearCategoria);
+router.put('/categorias/:id', autenticar, permitirRoles('administrador'), actualizarCategoria);
+router.delete('/categorias/:id', autenticar, permitirRoles('administrador'), eliminarCategoria);
 
+// ---- Profesión ----
 router.get('/profesiones', listarProfesiones);
 router.post('/profesiones', autenticar, permitirRoles('administrador'), crearProfesion);
+router.put('/profesiones/:id', autenticar, permitirRoles('administrador'), actualizarProfesion);
+router.delete('/profesiones/:id', autenticar, permitirRoles('administrador'), eliminarProfesion);
 
+// ---- Método de pago ----
 router.get('/metodos-pago', listarMetodosPago);
 router.post('/metodos-pago', autenticar, permitirRoles('administrador'), crearMetodoPago);
+router.put('/metodos-pago/:id', autenticar, permitirRoles('administrador'), actualizarMetodoPago);
+router.delete('/metodos-pago/:id', autenticar, permitirRoles('administrador'), eliminarMetodoPago);
 
 export default router;

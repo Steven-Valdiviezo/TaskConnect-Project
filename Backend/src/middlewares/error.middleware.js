@@ -18,5 +18,10 @@ export const manejarErrores = (error, req, res, next) => {
         return res.status(400).json({ mensaje: 'Datos inválidos según las reglas de la base de datos' });
     }
 
+    // Violación de FOREIGN KEY constraint
+    if (error.code === '23503') {
+        return res.status(409).json({ mensaje: 'No se puede eliminar: el registro está referenciado por otros datos' });
+    }
+    
     return res.status(500).json({ mensaje: 'Error interno del servidor', error: error.message });
 };

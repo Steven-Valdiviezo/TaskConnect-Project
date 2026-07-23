@@ -3,7 +3,8 @@ import {
   obtenerProyectoPorIdRepository,
   crearProyectoRepository,
   actualizarProyectoRepository,
-  obtenerDueñoProyectoRepository
+  obtenerDueñoProyectoRepository,
+  cancelarProyectoRepository
 } from '../repositories/proyecto.repository.js';
 
 export const listarProyectosService = async (filtros) => {
@@ -55,4 +56,31 @@ export const actualizarProyectoService = async (id_proyecto, id_cliente, datos) 
 
   // El trigger trg_validar_modificacion_proyecto ya impide editar si no está "abierto"
   return await actualizarProyectoRepository(id_proyecto, datos);
+};
+
+//agregado el cancelar
+export const cancelarProyectoService = async (id_proyecto, id_cliente) => {
+  const dueño = await obtenerDueñoProyectoRepository(id_proyecto);
+
+  if (!dueño) {
+    const error = new Error('Proyecto no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (dueño.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del proyecto puede cancelarlo');
+    error.status = 403;
+    throw error;
+  }
+
+  const proyecto = await cancelarProyectoRepository(id_proyecto);
+
+  if (!proyecto) {
+    const error = new Error('El proyecto ya está finalizado o cancelado, no se puede cancelar');
+    error.status = 400;
+    throw error;
+  }
+
+  return proyecto;
 };
