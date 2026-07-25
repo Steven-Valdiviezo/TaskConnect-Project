@@ -72,3 +72,39 @@ export const obtenerIdsPerfilRepository = async(id_usuario, rol) => {
     }
     return null;
 };
+
+export const obtenerDatosClienteRepository = async (id_usuario) => {
+    const r = await pool.query(
+        'SELECT id_cliente, empresa, direccion FROM cliente WHERE id_usuario = $1',
+        [id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const obtenerDatosFreelancerRepository = async (id_usuario) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, f.descripcion, f.experiencia, p.id_profesion, p.nombre AS profesion
+         FROM freelancer f JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_usuario = $1`,
+        [id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const actualizarPerfilUsuarioRepository = async (id_usuario, { nombre, telefono }) => {
+    const r = await pool.query(
+        `UPDATE usuario SET nombre = $1, telefono = $2 WHERE id_usuario = $3
+         RETURNING id_usuario, nombre, correo, telefono, rol, estado, fecha_registro`,
+        [nombre, telefono, id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const actualizarClienteRepository = async (id_usuario, { empresa, direccion }) => {
+    const r = await pool.query(
+        `UPDATE cliente SET empresa = $1, direccion = $2 WHERE id_usuario = $3
+         RETURNING id_cliente, empresa, direccion`,
+        [empresa, direccion, id_usuario]
+    );
+    return r.rows[0];
+};

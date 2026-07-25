@@ -1,7 +1,9 @@
 import {
   registrarUsuarioService,
   loginUsuarioService,
-  obtenerPerfilService
+  obtenerPerfilService,
+  confirmarLogin2FAService,
+  actualizarPerfilService
 } from '../services/usuario.service.js';
 
 export const registrarUsuario = async (req, res, next) => {
@@ -35,9 +37,30 @@ export const loginUsuario = async (req, res, next) => {
 
 export const perfilActual = async (req, res, next) => {
   try {
-    const usuario = await obtenerPerfilService(req.usuario.id_usuario);
-    res.json({ mensaje: 'Perfil del usuario autenticado', usuario });
+    const resultado = await obtenerPerfilService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Perfil del usuario autenticado', ...resultado });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const confirmarLogin2FA = async (req, res, next) => {
+  try {
+    const { preAuthToken, firebaseIdToken } = req.body;
+    const resultado = await confirmarLogin2FAService({ preAuthToken, firebaseIdToken });
+    res.json({ mensaje: 'Inicio de sesión exitoso', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const actualizarPerfil = async (req, res, next) => {
+  try {
+    const resultado = await actualizarPerfilService(req.usuario, req.body);
+    res.json({ mensaje: 'Perfil actualizado correctamente', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);
   }
 };

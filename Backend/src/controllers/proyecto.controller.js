@@ -3,7 +3,8 @@ import {
   obtenerProyectoService,
   crearProyectoService,
   actualizarProyectoService,
-  cancelarProyectoService
+  cancelarProyectoService,
+  listarMisProyectosService
 } from '../services/proyecto.service.js';
 
 export const listarProyectos = async (req, res, next) => {
@@ -54,4 +55,11 @@ export const cancelarProyecto = async (req, res, next) => {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);
   }
+};
+
+export const listarMisProyectos = async (req, res, next) => {
+  try {
+    const proyectos = await listarMisProyectosService(req.usuario.id_cliente);
+    res.json({ mensaje: 'Mis proyectos', total: proyectos.length, proyectos });
+  } catch (error) { next(error); }
 };
