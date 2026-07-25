@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { verificarConexion } from './database/connection.js';
 import { manejarErrores } from './middlewares/error.middleware.js';
 
@@ -21,6 +22,7 @@ dotenv.config();
 
 const app = express();
 
+app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
 app.use(express.json());
 
 app.get('/', (req, res) => {

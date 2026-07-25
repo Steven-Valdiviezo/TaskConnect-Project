@@ -2,10 +2,15 @@ import {
     buscarUsuarioPorCorreoRepository,
     buscarUsuarioPorIdRepository,
     registrarUsuarioRepository,
-    obtenerIdsPerfilRepository
+    obtenerIdsPerfilRepository,
+    obtenerDatosClienteRepository,
+    obtenerDatosFreelancerRepository,
+    actualizarPerfilUsuarioRepository,
+    actualizarClienteRepository
 } from '../repositories/usuario.repository.js';
 import { hashPassword, compararPassword } from '../utils/password.util.js';
-import { generarToken } from '../utils/jwt.util.js';
+import { generarToken, generarPreAuthToken, verificarPreAuthToken } from '../utils/jwt.util.js';
+import { verificarIdTokenFirebase } from '../utils/firebaseAdmin.util.js';
 
 export const registrarUsuarioService = async(datos) => {
     const { nombre, correo, contrasena, telefono, rol, perfil } = datos;
@@ -49,7 +54,8 @@ export const registrarUsuarioService = async(datos) => {
     return { usuario, perfil: perfilCreado };
 };
 
-export const loginUsuarioService = async({ correo, contrasena }) => {
+// Paso 1: solo credenciales
+export const loginUsuarioService = async ({ correo, contrasena }) => {
     const usuario = await buscarUsuarioPorCorreoRepository(correo);
 
     if (!usuario) {
@@ -71,23 +77,85 @@ export const loginUsuarioService = async({ correo, contrasena }) => {
         throw error;
     }
 
-    const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
-
-    const payload = {
+    const preAuthToken = generarPreAuthToken({
         id_usuario: usuario.id_usuario,
-        nombre: usuario.nombre,
-        rol: usuario.rol,
-        ...(idsPerfil ?? {})
-    };
+        correo: usuario.correo
+    });
 
-    const token = generarToken(payload);
-
-    return {
-        token,
-        usuario: payload
-    };
+    return { requiere2fa: true, preAuthToken, correo: usuario.correo };
 };
 
-export const obtenerPerfilService = async(id_usuario) => {
-    return await buscarUsuarioPorIdRepository(id_usuario);
+// Paso 2: Confirma el segundo factor y recién ahí emite el JWT real
+export const confirmarLogin2FAService = async ({ preAuthToken, firebaseIdToken }) => {
+    if (!preAuthToken || !firebaseIdToken) {
+        const error = new Error('preAuthToken y firebaseIdToken son obligatorios');
+        error.status = 400;
+        throw error;
+    }
+
+    const payloadPre = verificarPreAuthToken(preAuthToken);
+
+    let payloadFirebase;
+    try {
+        payloadFirebase = await verificarIdTokenFirebase(firebaseIdToken);
+    } catch {
+        const error = new Error('No se pudo verificar el segundo factor (correo)');
+        error.status = 401;
+        throw error;
+    }
+
+    if (payloadFirebase.email?.toLowerCase() !== payloadPre.correo.toLowerCase()) {
+        const error = new Error('El correo verificado no coincide con el de la sesión');
+        error.status = 401;
+        throw error;
+    }
+
+    const usuario = await buscarUsuarioPorIdRepository(payloadPre.id_usuario);
+    if (!usuario || usuario.estado !== 'activo') {
+        const error = new Error('Usuario no válido');
+        error.status = 401;
+        throw error;
+    }
+
+    const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
+    const payload = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, rol: usuario.rol, ...(idsPerfil ?? {}) };
+    const token = generarToken(payload);
+
+    return { token, usuario: payload };
+};
+
+// Actualizado para que muestre por rol y no solo el usuario
+export const obtenerPerfilService = async (id_usuario) => {
+    const usuario = await buscarUsuarioPorIdRepository(id_usuario);
+    if (!usuario) return null;
+
+    let perfil = null;
+    if (usuario.rol === 'cliente') perfil = await obtenerDatosClienteRepository(id_usuario);
+    if (usuario.rol === 'freelancer') perfil = await obtenerDatosFreelancerRepository(id_usuario);
+
+    return { usuario, perfil };
+};
+
+// Servicio para actualizar el perfil del usuario
+export const actualizarPerfilService = async (usuarioActual, datos) => {
+    const { nombre, telefono, empresa, direccion } = datos;
+
+    if (!nombre || !nombre.trim()) {
+        const error = new Error('El nombre es obligatorio');
+        error.status = 400;
+        throw error;
+    }
+
+    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, {
+        nombre, telefono: telefono ?? null
+    });
+
+    let perfil = null;
+    if (usuarioActual.rol === 'cliente') {
+        perfil = await actualizarClienteRepository(usuarioActual.id_usuario, {
+            empresa: empresa ?? null, direccion: direccion ?? null
+        });
+    }
+
+    return { usuario, perfil };
 };

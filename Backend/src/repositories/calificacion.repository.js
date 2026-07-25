@@ -41,3 +41,9 @@ export const obtenerReputacionFreelancerRepository = async (id_freelancer) => {
   const resultado = await pool.query('SELECT fn_calcular_reputacion($1) AS reputacion', [id_freelancer]);
   return resultado.rows[0].reputacion;
 };
+
+// Actualizado para mostrar "quién" calificó a cada usuario
+export const listarCalificacionesEmitidasPorUsuarioRepository = async (id_calificador) => {
+  const resultado = await pool.query('SELECT * FROM calificacion WHERE id_calificador = $1', [id_calificador]);
+  return resultado.rows;
+};

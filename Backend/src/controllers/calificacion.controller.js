@@ -1,7 +1,8 @@
 import {
   registrarCalificacionService,
   listarCalificacionesRecibidasService,
-  obtenerReputacionService
+  obtenerReputacionService,
+  listarCalificacionesEmitidasService
 } from '../services/calificacion.service.js';
 
 export const registrarCalificacion = async (req, res, next) => {
@@ -30,4 +31,11 @@ export const obtenerReputacion = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const listarCalificacionesEmitidas = async (req, res, next) => {
+  try {
+    const calificaciones = await listarCalificacionesEmitidasService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Calificaciones emitidas', total: calificaciones.length, calificaciones });
+  } catch (error) { next(error); }
 };

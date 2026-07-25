@@ -2,7 +2,8 @@ import {
   obtenerContratoParaCalificarRepository,
   crearCalificacionRepository,
   listarCalificacionesDeUsuarioRepository,
-  obtenerReputacionFreelancerRepository
+  obtenerReputacionFreelancerRepository,
+  listarCalificacionesEmitidasPorUsuarioRepository
 } from '../repositories/calificacion.repository.js';
 
 export const registrarCalificacionService = async (usuarioActual, datos) => {
@@ -57,4 +58,8 @@ export const listarCalificacionesRecibidasService = async (id_usuario) => {
 
 export const obtenerReputacionService = async (id_freelancer) => {
   return await obtenerReputacionFreelancerRepository(id_freelancer);
+};
+
+export const listarCalificacionesEmitidasService = async (id_usuario) => {
+  return await listarCalificacionesEmitidasPorUsuarioRepository(id_usuario);
 };

@@ -4,7 +4,8 @@ import {
   crearProyectoRepository,
   actualizarProyectoRepository,
   obtenerDueñoProyectoRepository,
-  cancelarProyectoRepository
+  cancelarProyectoRepository,
+  listarProyectosPorClienteRepository
 } from '../repositories/proyecto.repository.js';
 
 export const listarProyectosService = async (filtros) => {
@@ -83,4 +84,8 @@ export const cancelarProyectoService = async (id_proyecto, id_cliente) => {
   }
 
   return proyecto;
+};
+
+export const listarMisProyectosService = async (id_cliente) => {
+  return await listarProyectosPorClienteRepository(id_cliente);
 };

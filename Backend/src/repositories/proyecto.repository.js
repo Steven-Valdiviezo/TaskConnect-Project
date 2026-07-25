@@ -114,3 +114,16 @@ export const cancelarProyectoRepository = async (id_proyecto) => {
     client.release();
   }
 };
+
+export const listarProyectosPorClienteRepository = async (id_cliente) => {
+  const resultado = await pool.query(
+    `SELECT p.*, c.nombre_categoria,
+            (SELECT COUNT(*)::INT FROM propuesta pr WHERE pr.id_proyecto = p.id_proyecto) AS total_propuestas
+     FROM proyecto p
+     JOIN categoria c ON c.id_categoria = p.id_categoria
+     WHERE p.id_cliente = $1
+     ORDER BY p.fecha_publicacion DESC`,
+    [id_cliente]
+  );
+  return resultado.rows;
+};
