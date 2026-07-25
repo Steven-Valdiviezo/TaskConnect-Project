@@ -7,44 +7,99 @@
         <p class="text-secondary small">Únete a TaskConnect en segundos</p>
       </div>
 
-      <p class="small fw-medium mb-2">¿Cómo vas a usar la plataforma?</p>
-      <div class="row g-2 mb-3">
-        <div class="col-6">
-          <input type="radio" class="btn-check" name="rol" id="rolCliente" checked>
-          <label class="btn btn-outline-secondary w-100 text-start p-3" for="rolCliente" style="border-color:#5DCAA5;">
-            <i class="fa-solid fa-building d-block mb-1" style="color:#0F6E56;"></i>
-            <span class="small fw-medium">Soy cliente</span>
-          </label>
+      <form [formGroup]="form" (ngSubmit)="enviar()">
+        <p class="small fw-medium mb-2">¿Cómo vas a usar la plataforma?</p>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <input type="radio" class="btn-check" formControlName="rol" value="cliente" id="rolCliente">
+            <label class="btn btn-outline-secondary w-100 text-start p-3" for="rolCliente" style="border-color:#5DCAA5;">
+              <i class="fa-solid fa-building d-block mb-1" style="color:#0F6E56;"></i>
+              <span class="small fw-medium">Soy cliente</span>
+            </label>
+          </div>
+          <div class="col-6">
+            <input type="radio" class="btn-check" formControlName="rol" value="freelancer" id="rolFreelancer">
+            <label class="btn btn-outline-secondary w-100 text-start p-3" for="rolFreelancer">
+              <i class="fa-solid fa-user d-block mb-1" style="color:#185FA5;"></i>
+              <span class="small fw-medium">Soy freelancer</span>
+            </label>
+          </div>
         </div>
-        <div class="col-6">
-          <input type="radio" class="btn-check" name="rol" id="rolFreelancer">
-          <label class="btn btn-outline-secondary w-100 text-start p-3" for="rolFreelancer">
-            <i class="fa-solid fa-user d-block mb-1" style="color:#185FA5;"></i>
-            <span class="small fw-medium">Soy freelancer</span>
-          </label>
-        </div>
-      </div>
 
-      <form>
         <div class="mb-3">
           <label class="form-label small">Nombre completo</label>
-          <input type="text" class="form-control" placeholder="Tu nombre completo">
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Tu nombre completo">
+          @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+            <small class="text-danger">Este campo es obligatorio.</small>
+          }
         </div>
+
         <div class="mb-3">
           <label class="form-label small">Correo electrónico</label>
-          <input type="email" class="form-control" placeholder="usuario@correo.com">
+          <input type="email" class="form-control" formControlName="correo" placeholder="usuario@correo.com">
+          @if (form.controls.correo.touched && form.controls.correo.invalid) {
+            <small class="text-danger">Ingresa un correo válido.</small>
+          }
         </div>
+        
+        <div class="mb-3">
+          <label class="form-label small">Teléfono</label>
+          <input type="text" class="form-control" formControlName="telefono" placeholder="+593 9...">
+        </div>
+
+        @if (esFreelancer) {
+          <div class="mb-3">
+            <label class="form-label small">Profesión</label>
+            <select class="form-select" formControlName="id_profesion">
+              <option [ngValue]="null" disabled>Seleccionar...</option>
+              @for (p of profesiones(); track p.id_profesion) {
+                <option [ngValue]="p.id_profesion">{{ p.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Descripción profesional</label>
+            <textarea class="form-control" rows="2" formControlName="descripcion" placeholder="Cuéntanos sobre tu experiencia..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Años de experiencia</label>
+            <input type="number" min="0" max="60" class="form-control" formControlName="experiencia">
+          </div>
+        } @else {
+          <div class="mb-3">
+            <label class="form-label small">Empresa (opcional)</label>
+            <input type="text" class="form-control" formControlName="empresa" placeholder="Nombre de tu empresa">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Dirección (opcional)</label>
+            <input type="text" class="form-control" formControlName="direccion" placeholder="Ciudad, dirección">
+          </div>
+        }
+
         <div class="row">
           <div class="col-6 mb-3">
             <label class="form-label small">Contraseña</label>
-            <input type="password" class="form-control" placeholder="••••••••">
+            <input type="password" class="form-control" formControlName="contrasena" placeholder="Mínimo 8 caracteres">
+            @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
+              <small class="text-danger">Mínimo 8 caracteres.</small>
+            }
           </div>
           <div class="col-6 mb-3">
             <label class="form-label small">Confirmar</label>
-            <input type="password" class="form-control" placeholder="••••••••">
+            <input type="password" class="form-control" formControlName="confirmar" placeholder="••••••••">
+            @if (form.controls.confirmar.touched && form.controls.confirmar.invalid) {
+              <small class="text-danger">Confirma tu contraseña.</small>
+            }
           </div>
         </div>
-        <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;">Crear cuenta</button>
+
+        @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
+        @if (exito()) { <div class="alert alert-success small py-2">Cuenta creada. Redirigiendo al login...</div> }
+
+        <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;" [disabled]="cargando()">
+          @if (cargando()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+          Crear cuenta
+        </button>
       </form>
       <hr>
       <p class="text-center small mb-0">¿Ya tienes cuenta? <a routerLink="/login" style="color:#0F6E56;">Inicia sesión</a></p>

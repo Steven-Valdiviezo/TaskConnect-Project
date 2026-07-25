@@ -1,15 +1,14 @@
-import admin from 'firebase-admin';
 import { createRequire } from 'module';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require('../../serviceAccountKey.json');
 
-if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
+if (!getApps().length) {
+    initializeApp({ credential: cert(serviceAccount) });
 }
 
 export const verificarIdTokenFirebase = async (idToken) => {
-    return await admin.auth().verifyIdToken(idToken);
+    return await getAuth().verifyIdToken(idToken);
 };

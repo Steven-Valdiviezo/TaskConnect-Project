@@ -1,12 +1,22 @@
-// Modelo de referencia (sin conexión a BD aún) basado en la tabla "proyecto"
-export type EstadoProyecto = 'abierto' | 'en_progreso' | 'finalizado';
+// Actualizacion del modelo de proyecto 
+export type EstadoProyecto = 'abierto' | 'ejecucion' | 'finalizado' | 'cancelado';
 
 export interface Proyecto {
-  idProyecto: number;
+  id_proyecto: number;
+  id_cliente: number;
+  id_categoria: number;
+  nombre_categoria?: string;
   titulo: string;
   descripcion: string;
-  categoria: string;
   presupuesto: number;
   estado: EstadoProyecto;
-  fechaPublicacion: string;
+  fecha_publicacion: string;
+  total_propuestas?: number;
+}
+
+export interface NuevoProyecto {
+  titulo: string;
+  descripcion: string;
+  presupuesto: number;
+  id_categoria: number;
 }

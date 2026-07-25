@@ -1,0 +1,29 @@
+<!-- verificar-correo.html -->
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background-color:#F4FAF8;">
+  <div class="card border-0 shadow-sm animate__animated animate__fadeIn" style="max-width:420px;width:100%;">
+    <div class="card-body p-4 text-center">
+      @switch (estado()) {
+        @case ('validando') {
+          <div class="spinner-border mb-3" style="color:#0F6E56;"></div>
+          <p class="small text-secondary">Verificando tu identidad...</p>
+        }
+        @case ('pidiendo-correo') {
+        <p class="small text-secondary mb-3">Confirma el correo con el que iniciaste sesión:</p>
+        <form [formGroup]="form" (ngSubmit)="confirmarConCorreoManual()">
+            <input type="email" class="form-control mb-3" formControlName="correoManual" placeholder="usuario@correo.com">
+            <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;">Confirmar</button>
+        </form>
+        }
+        @case ('error') {
+          <i class="fa-solid fa-circle-exclamation fa-2x mb-3 text-danger"></i>
+          <p class="small text-secondary">{{ error() }}</p>
+          <a routerLink="/login" class="btn btn-outline-secondary btn-sm mt-2">Volver al login</a>
+        }
+        @case ('listo') {
+          <i class="fa-solid fa-circle-check fa-2x mb-3" style="color:#0F6E56;"></i>
+          <p class="small text-secondary">¡Listo! Redirigiendo...</p>
+        }
+      }
+    </div>
+  </div>
+</div>
