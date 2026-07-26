@@ -159,3 +159,38 @@ export const actualizarPerfilService = async (usuarioActual, datos) => {
 
     return { usuario, perfil };
 };
+
+// SOLO PARA DESARROLLO/TESTING — evita el paso de Firebase 2FA
+export const loginPruebaService = async ({ correo, contrasena }) => {
+    if (process.env.PERMITIR_LOGIN_PRUEBA !== 'true') {
+        const error = new Error('Ruta no disponible');
+        error.status = 404;
+        throw error;
+    }
+
+    const usuario = await buscarUsuarioPorCorreoRepository(correo);
+    if (!usuario) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    if (usuario.estado !== 'activo') {
+        const error = new Error('El usuario está inactivo');
+        error.status = 403;
+        throw error;
+    }
+
+    const coincide = await compararPassword(contrasena, usuario.contrasena);
+    if (!coincide) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
+    const payload = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, rol: usuario.rol, ...(idsPerfil ?? {}) };
+    const token = generarToken(payload);
+
+    return { token, usuario: payload };
+};

@@ -1,14 +1,43 @@
 <div class="d-flex flex-column min-vh-100" style="background-color:#0d1a14;">
     <!-- Topnav -->
     <nav class="navbar px-3 flex-shrink-0" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
-        <span class="navbar-brand mb-0" style="color:#9FE1CB;">
-      <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
-    </span>
+        <a routerLink="/" class="navbar-brand mb-0 text-decoration-none" style="color:#9FE1CB;cursor:pointer;">
+            <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
+        </a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">Cliente</span>
-            <i class="fa-solid fa-bell text-white" style="cursor:pointer;"></i>
-            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#E1F5EE;color:#085041;">JC</div>
-            <a routerLink="/login" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</a>
+
+            <div class="position-relative">
+                <i class="fa-solid fa-bell text-white position-relative" style="cursor:pointer;"
+                   (click)="mostrarNotificaciones.set(!mostrarNotificaciones())">
+                    @if (notificaciones().length) {
+                        <span class="position-absolute rounded-circle" style="top:-4px;right:-6px;width:8px;height:8px;background-color:#EF9F27;"></span>
+                    }
+                </i>
+
+                @if (mostrarNotificaciones()) {
+                    <div class="position-absolute rounded-3 shadow-lg animate__animated animate__fadeIn animate__faster"
+                         style="top:32px;right:0;width:300px;background-color:#142b21;border:1px solid #1c3c2d;z-index:1050;max-height:360px;overflow-y:auto;">
+                        <p class="small fw-medium px-3 pt-3 mb-2" style="color:#cce8d8;">Notificaciones</p>
+
+                        @if (!notificaciones().length) {
+                            <p class="small px-3 pb-3 mb-0" style="color:#6e9e85;">No tienes notificaciones nuevas.</p>
+                        }
+
+                        @for (n of notificaciones(); track n.texto) {
+                            <div class="d-flex align-items-start gap-2 px-3 py-2" style="cursor:pointer;border-top:1px solid #1c3c2d;" (click)="irA(n.ruta)">
+                                <i class="fa-solid mt-1" [class]="n.icono" [style.color]="n.color"></i>
+                                <p class="small mb-0" style="color:#cce8d8;">{{ n.texto }}</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#E1F5EE;color:#085041;">
+                {{ iniciales() }}
+            </div>
+            <button type="button" (click)="salir()" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</button>
         </div>
     </nav>
 
@@ -54,21 +83,7 @@
 </div>
 
 <style>
-    .side-link {
-        color: #6e9e85;
-        font-size: .875rem;
-        transition: .15s;
-    }
-    
-    .side-link:hover {
-        color: #cce8d8;
-        background-color: #0f2619 !important;
-    }
-    
-    .side-active {
-        color: #5DCAA5 !important;
-        background-color: #0f2619 !important;
-        font-weight: 600;
-        border-left: 3px solid #5DCAA5;
-    }
+    .side-link { color: #6e9e85; font-size: .875rem; transition: .15s; }
+    .side-link:hover { color: #cce8d8; background-color: #0f2619 !important; }
+    .side-active { color: #5DCAA5 !important; background-color: #0f2619 !important; font-weight: 600; border-left: 3px solid #5DCAA5; }
 </style>

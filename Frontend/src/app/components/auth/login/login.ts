@@ -26,16 +26,12 @@ export class Login implements OnInit {
   error = signal<string | null>(null);
   correoEnviado = signal(false);
   mostrarFormulario = signal(false);
+  loginPruebaCargando = signal(false);
 
   cuentasGuardadas = this.auth.cuentasGuardadas;
+  loginPruebaDisponible = this.auth.loginPruebaDisponible;
 
   ngOnInit(): void {
-    // Ya NO redirigimos automáticamente aquí.
-    // Si el usuario llega a /login, siempre debe poder ver
-    // el selector de cuentas guardadas (o el formulario si no tiene ninguna).
-    // El único lugar donde se navega hacia el dashboard es cuando
-    // el usuario elige explícitamente una cuenta (usarCuenta) o
-    // termina el flujo de login/2FA.
   }
 
   usarCuenta(idUsuario: number): void {
@@ -78,6 +74,29 @@ export class Login implements OnInit {
       error: (err: any) => {
         this.cargando.set(false);
         this.error.set(err?.error?.mensaje ?? 'Correo o contraseña incorrectos');
+      }
+    });
+  }
+
+  /** ⚠️ SOLO DESARROLLO: entra directo con correo/contrasena, sin Firebase 2FA */
+  entrarConUsuarioPrueba(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.error.set(null);
+    this.loginPruebaCargando.set(true);
+    const { correo, contrasena } = this.form.getRawValue();
+
+    this.auth.loginPrueba(correo!, contrasena!).subscribe({
+      next: () => {
+        this.loginPruebaCargando.set(false);
+        this.router.navigateByUrl(this.auth.rutaHomeSegunRol());
+      },
+      error: (err: any) => {
+        this.loginPruebaCargando.set(false);
+        this.error.set(err?.error?.mensaje ?? 'No se pudo iniciar la sesión de prueba');
       }
     });
   }

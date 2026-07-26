@@ -1,74 +1,64 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Mis pagos</h1>
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
-                <small style="color:#6e9e85;">Total gastado</small>
-                <div class="fs-4 fw-medium" style="color:#cce8d8;">$1,240</div>
-                <small style="color:#6e9e85;">en la plataforma</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
-                <small style="color:#6e9e85;">Este mes</small>
-                <div class="fs-4 fw-medium" style="color:#cce8d8;">$840</div>
-                <small style="color:#6e9e85;">3 pagos</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
-                <small style="color:#6e9e85;">Pendientes</small>
-                <div class="fs-4 fw-medium" style="color:#cce8d8;">$320</div>
-                <small style="color:#6e9e85;">1 contrato activo</small>
-            </div>
-        </div>
-    </div>
+  <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Mis pagos</h1>
 
-    <h2 class="h6 fw-medium mb-3" style="color:#cce8d8;">Historial de pagos</h2>
-    <div class="table-responsive">
-        <!-- SE MODIFICA ESTA LÍNEA: Se añade la variable transparente y se elimina el color oscuro #0d1420 -->
-        <table class="table align-middle" style="--bs-table-bg: transparent; --bs-table-color: #cce8d8;">
-            <thead>
-                <tr style="border-color:#1c3c2d;">
-                    <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Proyecto / Freelancer</th>
-                    <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Método</th>
-                    <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Fecha</th>
-                    <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Monto</th>
-                    <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Estado</th>
-                </tr>
-            </thead>
-            <tbody class="small">
-                <tr style="border-color:#1c3c2d;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cce8d8;">API REST inventario</p>
-                        <small style="color:#6e9e85;">Luis Pérez</small>
-                    </td>
-                    <td style="color:#6e9e85;">Tarjeta</td>
-                    <td style="color:#6e9e85;">20 may 2026</td>
-                    <td style="color:#cce8d8;">$600</td>
-                    <td><span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span></td>
-                </tr>
-                <tr style="border-color:#1c3c2d;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cce8d8;">Logo startup</p>
-                        <small style="color:#6e9e85;">Carlos Mora</small>
-                    </td>
-                    <td style="color:#6e9e85;">PayPal</td>
-                    <td style="color:#6e9e85;">10 abr 2026</td>
-                    <td style="color:#cce8d8;">$150</td>
-                    <td><span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span></td>
-                </tr>
-                <tr style="border-color:#1c3c2d;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cce8d8;">Diseño landing page</p>
-                        <small style="color:#6e9e85;">María Andrade</small>
-                    </td>
-                    <td style="color:#6e9e85;">Transferencia</td>
-                    <td style="color:#6e9e85;">Pendiente</td>
-                    <td style="color:#cce8d8;">$320</td>
-                    <td><span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">pendiente</span></td>
-                </tr>
-            </tbody>
-        </table>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <small style="color:#6e9e85;">Total gastado</small>
+        <div class="fs-4 fw-medium" style="color:#cce8d8;">${{ totalGastado() }}</div>
+        <small style="color:#6e9e85;">en la plataforma</small>
+      </div>
     </div>
+    <div class="col-md-4">
+      <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <small style="color:#6e9e85;">Este mes</small>
+        <div class="fs-4 fw-medium" style="color:#cce8d8;">${{ totalEsteMes() }}</div>
+        <small style="color:#6e9e85;">{{ pagosEsteMesCantidad() }} pagos</small>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 rounded-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <small style="color:#6e9e85;">Pendientes</small>
+        <div class="fs-4 fw-medium" style="color:#cce8d8;">${{ totalPendiente() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h6 fw-medium mb-3" style="color:#cce8d8;">Historial de pagos</h2>
+  <div class="table-responsive">
+    <table class="table align-middle" style="--bs-table-bg: transparent; --bs-table-color: #cce8d8;">
+      <thead>
+        <tr style="border-color:#1c3c2d;">
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Proyecto / Freelancer</th>
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Método</th>
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Fecha</th>
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Monto</th>
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Estado</th>
+        </tr>
+      </thead>
+      <tbody class="small">
+        @if (!cargando() && !registrados().length) {
+          <tr><td colspan="5" style="color:#6e9e85;">Aún no tienes pagos registrados.</td></tr>
+        }
+        @for (f of registrados(); track f.pago!.id_pago) {
+          <tr style="border-color:#1c3c2d;">
+            <td>
+              <p class="fw-medium mb-0" style="color:#cce8d8;">{{ f.contrato.titulo_proyecto }}</p>
+              <small style="color:#6e9e85;">{{ f.contrato.nombre_contraparte }}</small>
+            </td>
+            <td style="color:#6e9e85;">{{ nombreMetodo(f.pago!.id_metodo_pago) }}</td>
+            <td style="color:#6e9e85;">{{ f.pago!.fecha_pago ? (f.pago!.fecha_pago | date:'dd MMM yyyy') : 'Pendiente' }}</td>
+            <td style="color:#cce8d8;">${{ f.pago!.monto }}</td>
+            <td>
+              @if (f.pago!.estado === 'pagado') {
+                <span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span>
+              } @else {
+                <span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">pendiente</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

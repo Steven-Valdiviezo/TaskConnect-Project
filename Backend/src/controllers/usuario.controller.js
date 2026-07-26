@@ -3,7 +3,8 @@ import {
   loginUsuarioService,
   obtenerPerfilService,
   confirmarLogin2FAService,
-  actualizarPerfilService
+  actualizarPerfilService,
+  loginPruebaService
 } from '../services/usuario.service.js';
 
 export const registrarUsuario = async (req, res, next) => {
@@ -59,6 +60,21 @@ export const actualizarPerfil = async (req, res, next) => {
   try {
     const resultado = await actualizarPerfilService(req.usuario, req.body);
     res.json({ mensaje: 'Perfil actualizado correctamente', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// login prueba sin 2FA, para pruebas de desarrollo
+export const loginPrueba = async (req, res, next) => {
+  try {
+    const { correo, contrasena } = req.body;
+    if (!correo || !contrasena) {
+      return res.status(400).json({ mensaje: 'correo y contrasena son obligatorios' });
+    }
+    const resultado = await loginPruebaService({ correo, contrasena });
+    res.json({ mensaje: 'Inicio de sesión de prueba exitoso (sin 2FA)', ...resultado });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);

@@ -30,6 +30,9 @@ export class AuthService {
   // Cuentas ya verificadas por 2FA cuyo token todavía no expira
   readonly cuentasGuardadas = computed(() => this._cuentas().filter(c => this.tokenValido(c.token)));
 
+  // Solo true cuando el build NO es de producción; controla si el botón de login de prueba se muestra
+  readonly loginPruebaDisponible = !environment.production;
+
   constructor(private http: HttpClient) {
     this.limpiarCuentasExpiradas();
   }
@@ -81,6 +84,12 @@ export class AuthService {
 
   confirmarLogin2FA(preAuthToken: string, firebaseIdToken: string): Observable<LoginConfirmadoRespuesta> {
     return this.http.post<LoginConfirmadoRespuesta>(`${this.baseUrl}/login/verificar-2fa`, { preAuthToken, firebaseIdToken })
+      .pipe(tap(respuesta => this.guardarSesion(respuesta.token, respuesta.usuario)));
+  }
+
+  /** SOLO DESARROLLO: inicio de sesión directo, sin pasar por Firebase 2FA */
+  loginPrueba(correo: string, contrasena: string): Observable<LoginConfirmadoRespuesta> {
+    return this.http.post<LoginConfirmadoRespuesta>(`${this.baseUrl}/login-prueba`, { correo, contrasena })
       .pipe(tap(respuesta => this.guardarSesion(respuesta.token, respuesta.usuario)));
   }
 

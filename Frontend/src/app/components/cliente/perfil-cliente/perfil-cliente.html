@@ -1,85 +1,73 @@
 <div class="animate__animated animate__fadeIn">
-    <h1 class="h5 fw-semibold mb-4" style="color:#cce8d8;">
-        Mi perfil - Cliente
-    </h1>
-    <div class="rounded-4 p-4" style="background-color:#16241d;border:1px solid #1c3c2d;">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width:60px;height:60px;background-color:#18a957;color:white;">
-                    {{usuario.iniciales}}
-                </div>
-                <div>
-                    <h5 class="mb-1">{{usuario.nombre}}</h5>
+  <h1 class="h5 fw-semibold mb-4" style="color:#cce8d8;">Mi perfil - Cliente</h1>
 
-                    <small style="color:#8eb8a1;">
-                        {{usuario.descripcion}}
-                    </small>
-
-                    <div>
-                        <small style="color:#6e9e85;">
-                            {{usuario.empresaInfo}}
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-secondary btn-sm">
-                <i class="fa-solid fa-pen me-2"></i>
-                Editar
-            </button>
+  <div class="rounded-4 p-4" style="background-color:#16241d;border:1px solid #1c3c2d;">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width:60px;height:60px;background-color:#18a957;color:white;">
+          {{ iniciales() }}
         </div>
-        <hr style="border-color:#1c3c2d;">
-        <div class="row g-4">
-            <!-- Información personal -->
-            <div class="col-lg-6">
-
-                <h6 class="mb-3">Información personal</h6>
-
-                <div class="mb-3">
-                    <label class="form-label small">Nombre completo</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.nombreCompleto">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small">Correo electrónico</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.correo">
-                </div>
-
-                <div>
-                    <label class="form-label small">Teléfono</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.telefono">
-                </div>
-
-            </div>
-            <!-- Empresa -->
-            <div class="col-lg-6">
-
-                <h6 class="mb-3">Información de empresa</h6>
-
-                <div class="mb-3">
-                    <label class="form-label small">Empresa</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.empresa">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small">Dirección</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.direccion">
-                </div>
-
-                <div>
-                    <label class="form-label small">Contraseña</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.password">
-                </div>
-            </div>
+        <div>
+          <h5 class="mb-1">{{ usuario()?.nombre }}</h5>
+          <small style="color:#8eb8a1;">Cliente</small>
         </div>
+      </div>
+      @if (!editando()) {
+        <button class="btn btn-secondary btn-sm" (click)="activarEdicion()">
+          <i class="fa-solid fa-pen me-2"></i>Editar
+        </button>
+      }
+    </div>
+    <hr style="border-color:#1c3c2d;">
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <h6 class="mb-3">Información personal</h6>
+          <div class="mb-3">
+            <label class="form-label small">Nombre completo</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="nombre" [readonly]="!editando()">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Correo electrónico</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="correo" readonly>
+          </div>
+          <div>
+            <label class="form-label small">Teléfono</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="telefono" [readonly]="!editando()">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <h6 class="mb-3">Información de empresa</h6>
+          <div class="mb-3">
+            <label class="form-label small">Empresa</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="empresa" [readonly]="!editando()">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Dirección</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="direccion" [readonly]="!editando()">
+          </div>
+          <div>
+            <label class="form-label small">Contraseña</label>
+            <input class="form-control bg-dark text-light border-secondary" value="********" readonly>
+            <small style="color:#6e9e85;">El cambio de contraseña estará disponible próximamente.</small>
+          </div>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger small py-2 mt-3 mb-0">{{ error() }}</div>
+      }
+
+      @if (editando()) {
         <hr style="border-color:#1c3c2d;">
         <div class="text-end">
-            <button class="btn btn-secondary me-2" routerLink="/cliente/dashboard">
-                Cancelar
-            </button>
-            <button class="btn" style="background-color:#5DCAA5;color:#04342C;font-weight:600;">
-                Guardar cambios
-            </button>
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelarEdicion()">Cancelar</button>
+          <button type="submit" class="btn" style="background-color:#5DCAA5;color:#04342C;font-weight:600;" [disabled]="guardando()">
+            Guardar cambios
+          </button>
         </div>
-    </div>
+      }
+    </form>
+  </div>
 </div>
