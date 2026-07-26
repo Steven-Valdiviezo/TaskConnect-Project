@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
-// Importa componentes de la pagina principal y login
+// importa componetnes del apartado de la pagina principal y del apartado de autenticación/login
 import { Landing } from './components/landing/landing';
 import { ComoFunciona } from './components/landing/como-funciona/como-funciona';
 import { Categorias } from './components/landing/categorias/categorias';
 import { Acerca } from './components/landing/acerca/acerca';
 import { Login } from './components/auth/login/login';
 import { Registro } from './components/auth/registro/registro';
-// Importa componentes del cliente
+import { VerificarCorreo } from './components/auth/verificar-correo/verificar-correo';
+// importa componentes del apartado cliente
 import { ClienteShell } from './components/cliente/cliente-shell/cliente-shell';
 import { DashboardCliente } from './components/cliente/dashboard-cliente/dashboard-cliente';
 import { PublicarProyecto } from './components/cliente/publicar-proyecto/publicar-proyecto';
@@ -17,7 +18,7 @@ import { MensajesCliente } from './components/cliente/mensajes-cliente/mensajes-
 import { PagosCliente } from './components/cliente/pagos-cliente/pagos-cliente';
 import { Calificaciones } from './components/shared/calificaciones/calificaciones';
 import { PerfilCliente } from './components/cliente/perfil-cliente/perfil-cliente';
-// Importa componentes del freelancer
+// importa componentes del apartado freelancer
 import { FreelancerShell } from './components/freelancer/freelancer-shell/freelancer-shell';
 import { DashboardFreelancer } from './components/freelancer/dashboard-freelancer/dashboard-freelancer';
 import { BuscarTrabajo } from './components/freelancer/buscar-trabajo/buscar-trabajo';
@@ -27,14 +28,15 @@ import { DetalleProyecto } from './components/freelancer/detalle-proyecto/detall
 import { MensajesFreelancer } from './components/freelancer/mensajes-freelancer/mensajes-freelancer';
 import { PagosFreelancer } from './components/freelancer/pagos-freelancer/pagos-freelancer';
 import { PerfilFreelancer } from './components/freelancer/perfil-freelancer/perfil-freelancer';
-
-// Importa componentes del admin
+// importa componentes del apartado Admin
 import { AdminShell } from './components/admin/admin-shell/admin-shell';
 import { DashboardAdmin } from './components/admin/dashboard-admin/dashboard-admin';
 import { UsuariosAdmin } from './components/admin/usuarios-admin/usuarios-admin';
 import { ProyectosAdmin } from './components/admin/proyectos-admin/proyectos-admin';
 import { CategoriasAdmin } from './components/admin/categorias-admin/categorias-admin';
 import { ProfesionesAdmin } from './components/admin/profesiones-admin/profesiones-admin';
+// importa guardias para proteger rutas
+import { rolGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: Landing },
@@ -42,9 +44,10 @@ export const routes: Routes = [
   { path: 'categorias', component: Categorias },
   { path: 'acerca', component: Acerca },
   { path: 'login', component: Login },
+  { path: 'login/verificar-correo', component: VerificarCorreo },
   { path: 'registro', component: Registro },
   {
-    path: 'cliente', component: ClienteShell, children: [
+    path: 'cliente', component: ClienteShell, canActivate: [rolGuard(['cliente'])], children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardCliente },
       { path: 'mis-proyectos', component: MisProyectos },
@@ -58,7 +61,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'freelancer', component: FreelancerShell, children: [
+    path: 'freelancer', component: FreelancerShell, canActivate: [rolGuard(['freelancer'])], children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardFreelancer },
       { path: 'buscar-trabajo', component: BuscarTrabajo },
@@ -71,7 +74,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'admin', component: AdminShell, children: [
+    path: 'admin', component: AdminShell, canActivate: [rolGuard(['administrador'])], children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardAdmin },
       { path: 'usuarios', component: UsuariosAdmin },

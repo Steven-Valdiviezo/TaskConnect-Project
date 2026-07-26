@@ -1,58 +1,91 @@
 <div class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background-color:#F4FAF8;">
-    <div class="animate__animated animate__fadeIn" style="width:100%;max-width:460px;padding:0 1rem;">
-        <div class="text-center mb-4">
-            <i class="fa-solid fa-briefcase fa-2x mb-2" style="color:#0F6E56;"></i>
-            <h1 class="h4 fw-medium mb-1">Bienvenido de nuevo</h1>
-            <p class="text-secondary small">Selecciona tu tipo de cuenta para acceder</p>
-        </div>
-
-        <!-- Acceso rápido prueba -->
-        <div class="row g-3 mb-4">
-            <div class="col-4">
-                <a routerLink="/cliente/dashboard" class="card border-0 shadow-sm text-center p-3 text-decoration-none d-block">
-                    <i class="fa-solid fa-building fa-2x mb-2" style="color:#085041;"></i>
-                    <p class="fw-medium mb-1 small" style="color:#085041;">Soy Cliente</p>
-                    <small class="text-secondary" style="font-size:.72rem;">Gestiona proyectos</small>
-                </a>
-            </div>
-            <div class="col-4">
-                <a routerLink="/freelancer/dashboard" class="card border-0 shadow-sm text-center p-3 text-decoration-none d-block">
-                    <i class="fa-solid fa-user-tie fa-2x mb-2" style="color:#0C447C;"></i>
-                    <p class="fw-medium mb-1 small" style="color:#0C447C;">Soy Freelancer</p>
-                    <small class="text-secondary" style="font-size:.72rem;">Encuentra trabajo</small>
-                </a>
-            </div>
-            <div class="col-4">
-                <a routerLink="/admin/dashboard" class="card border-0 shadow-sm text-center p-3 text-decoration-none d-block">
-                    <i class="fa-solid fa-shield-halved fa-2x mb-2" style="color:#534AB7;"></i>
-                    <p class="fw-medium mb-1 small" style="color:#534AB7;">Administrador</p>
-                    <small class="text-secondary" style="font-size:.72rem;">Panel de control</small>
-                </a>
-            </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <hr class="flex-grow-1 m-0"><span class="text-secondary small">o ingresa con tu correo</span>
-            <hr class="flex-grow-1 m-0">
-        </div>
-
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <div class="mb-3">
-                    <label class="form-label small">Correo electrónico</label>
-                    <input type="email" class="form-control" placeholder="usuario@correo.com">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small">Contraseña</label>
-                    <input type="password" class="form-control" placeholder="••••••••">
-                </div>
-                <div class="d-flex gap-2">
-                    <a routerLink="/cliente/dashboard" class="btn flex-grow-1 btn-sm" style="background-color:#0F6E56;color:#E1F5EE;">Entrar como Cliente</a>
-                    <a routerLink="/freelancer/dashboard" class="btn flex-grow-1 btn-sm" style="background-color:#185FA5;color:#E6F1FB;">Entrar como Freelancer</a>
-                    <a routerLink="/admin/dashboard" class="btn flex-grow-1 btn-sm" style="background-color:#534AB7;color:#EEEDFE;">Entrar como Admin</a>
-                </div>
-            </div>
-        </div>
-        <p class="text-center small mt-3 mb-0">¿No tienes cuenta? <a routerLink="/registro" style="color:#0F6E56;">Regístrate</a></p>
+  <div class="animate__animated animate__fadeIn" style="width:100%;max-width:460px;padding:0 1rem;">
+    <div class="text-center mb-4">
+      <i class="fa-solid fa-briefcase fa-2x mb-2" style="color:#0F6E56;"></i>
+      <h1 class="h4 fw-medium mb-1">Bienvenido de nuevo</h1>
+      <p class="text-secondary small">Inicia sesión con tu correo y contraseña</p>
     </div>
+
+    @if (cuentasGuardadas().length && !mostrarFormulario()) {
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <p class="small fw-medium mb-3">Cuentas abiertas</p>
+
+          @for (c of cuentasGuardadas(); track c.usuario.id_usuario) {
+            <div class="d-flex align-items-center justify-content-between rounded-3 p-2 mb-2"
+                 style="cursor:pointer;background-color:#F4FAF8;" (click)="usarCuenta(c.usuario.id_usuario)">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium"
+                     style="width:36px;height:36px;background-color:#0F6E56;color:#E1F5EE;">
+                  {{ inicialesDe(c.usuario.nombre) }}
+                </div>
+                <div>
+                  <p class="small fw-medium mb-0">{{ c.usuario.nombre }}</p>
+                  <small class="text-secondary text-capitalize">{{ c.usuario.rol }}</small>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-link text-danger p-0" (click)="quitarCuenta(c.usuario.id_usuario, $event)">
+                Cerrar sesión
+              </button>
+            </div>
+          }
+
+          <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="mostrarFormulario.set(true)">
+            Usar otra cuenta
+          </button>
+        </div>
+      </div>
+    } @else {
+
+      @if (!correoEnviado()) {
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <form [formGroup]="form" (ngSubmit)="enviar()">
+              <div class="mb-3">
+                <label class="form-label small">Correo electrónico</label>
+                <input type="email" class="form-control" formControlName="correo" placeholder="usuario@correo.com">
+                @if (form.controls.correo.touched && form.controls.correo.invalid) {
+                  <small class="text-danger">Ingresa un correo válido.</small>
+                }
+              </div>
+              <div class="mb-3">
+                <label class="form-label small">Contraseña</label>
+                <input type="password" class="form-control" formControlName="contrasena" placeholder="••••••••">
+                @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
+                  <small class="text-danger">La contraseña es obligatoria.</small>
+                }
+              </div>
+
+              @if (error()) {
+                <div class="alert alert-danger small py-2">{{ error() }}</div>
+              }
+
+              <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;" [disabled]="cargando()">
+                @if (cargando()) { <span class="spinner-border spinner-border-sm me-2"></span>Verificando... } @else { Continuar }
+              </button>
+            </form>
+          </div>
+        </div>
+      } @else {
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <i class="fa-solid fa-envelope-circle-check fa-2x mb-3" style="color:#0F6E56;"></i>
+            <h2 class="h6 fw-medium">Revisa tu correo</h2>
+            <p class="text-secondary small">
+              Te enviamos un enlace de verificación a <strong>{{ form.value.correo }}</strong>.
+              Ábrelo desde este mismo dispositivo para completar el inicio de sesión.
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (cuentasGuardadas().length) {
+        <p class="text-center small mt-3">
+          <a href="javascript:void(0)" (click)="mostrarFormulario.set(false)" style="color:#0F6E56;">← Volver a mis cuentas</a>
+        </p>
+      }
+    }
+
+    <p class="text-center small mt-3 mb-0">¿No tienes cuenta? <a routerLink="/registro" style="color:#0F6E56;">Regístrate</a></p>
+  </div>
 </div>
