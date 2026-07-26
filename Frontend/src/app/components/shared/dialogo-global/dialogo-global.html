@@ -1,0 +1,26 @@
+@if (dialogo.estado().visible) {
+  <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate__animated animate__fadeIn animate__faster"
+       style="background-color:rgba(4,10,7,.65);z-index:2000;">
+    <div class="rounded-4 p-4 animate__animated animate__zoomIn animate__faster" style="max-width:380px;width:90%;background-color:#142b21;border:1px solid #1c3c2d;">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        @if (dialogo.estado().tipo === 'confirmar') {
+          <i class="fa-solid fa-triangle-exclamation" style="color:#EF9F27;"></i>
+        } @else {
+          <i class="fa-solid fa-circle-info" style="color:#5DCAA5;"></i>
+        }
+        <h2 class="h6 fw-medium mb-0" style="color:#cce8d8;">{{ dialogo.estado().titulo }}</h2>
+      </div>
+      <p class="small mb-4" style="color:#9fc2ae;">{{ dialogo.estado().mensaje }}</p>
+      <div class="d-flex justify-content-end gap-2">
+        @if (dialogo.estado().tipo === 'confirmar') {
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="dialogo.responder(false)">
+            {{ dialogo.estado().textoCancelar }}
+          </button>
+        }
+        <button type="button" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;" (click)="dialogo.responder(true)">
+          {{ dialogo.estado().textoConfirmar }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

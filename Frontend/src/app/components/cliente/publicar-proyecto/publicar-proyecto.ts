@@ -26,7 +26,8 @@ export class PublicarProyecto implements OnInit {
     titulo: ['', Validators.required],
     id_categoria: [null as number | null, Validators.required],
     presupuesto: [null as number | null, [Validators.required, Validators.min(1)]],
-    descripcion: ['', Validators.required]
+    descripcion: ['', Validators.required],
+    fecha_entrega: ['']
   });
 
   ngOnInit(): void {
@@ -43,7 +44,8 @@ export class PublicarProyecto implements OnInit {
     const v = this.form.getRawValue();
 
     this.proyectoSrv.crear({
-      titulo: v.titulo!, descripcion: v.descripcion!, presupuesto: v.presupuesto!, id_categoria: v.id_categoria!
+      titulo: v.titulo!, descripcion: v.descripcion!, presupuesto: v.presupuesto!, 
+      id_categoria: v.id_categoria!, fecha_entrega: v.fecha_entrega || undefined
     }).subscribe({
       next: () => this.router.navigateByUrl('/cliente/mis-proyectos'),
       error: (err: any) => {

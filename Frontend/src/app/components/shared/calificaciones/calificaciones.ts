@@ -5,6 +5,7 @@ import { ContratoService } from '../../../core/services/contrato.service';
 import { CalificacionService } from '../../../core/services/calificacion.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Calificacion } from '../../../models/calificacion.model';
+import { DialogoService } from '../../../core/services/dialogo.service';
 
 @Component({
   selector: 'app-calificaciones',
@@ -17,6 +18,7 @@ export class Calificaciones implements OnInit {
   private fb = inject(FormBuilder);
   private contratoSrv = inject(ContratoService);
   private calificacionSrv = inject(CalificacionService);
+  private dialogo = inject(DialogoService); 
 
   contratosCompletados = signal<Contrato[]>([]);
   emitidas = signal<Calificacion[]>([]);
@@ -52,14 +54,14 @@ export class Calificaciones implements OnInit {
     this.formsPorContrato[idContrato].patchValue({ puntuacion: valor });
   }
 
-  calificar(c: Contrato): void {
-    const form = this.formsPorContrato[c.id_contrato];
-    if (form.invalid || !form.value.puntuacion) {
-      alert('Selecciona una puntuación entre 1 y 5.');
-      return;
-    }
+  async calificar(c: Contrato): Promise<void> {
+  const form = this.formsPorContrato[c.id_contrato];
+  if (form.invalid || !form.value.puntuacion) {
+    await this.dialogo.avisar('Selecciona una puntuación entre 1 y 5.', 'Falta la puntuación');
+    return;
+  }
 
-    this.enviando.set(c.id_contrato);
+  this.enviando.set(c.id_contrato);
     this.calificacionSrv.registrar({
       id_contrato: c.id_contrato,
       puntuacion: form.value.puntuacion,
@@ -69,8 +71,8 @@ export class Calificaciones implements OnInit {
         this.emitidas.update(lista => [...lista, r.calificacion]);
         this.enviando.set(null);
       },
-      error: (err: any) => {
-        alert(err?.error?.mensaje ?? 'No se pudo registrar la calificación.');
+      error: async (err: any) => {
+        await this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo registrar la calificación.', 'Error');
         this.enviando.set(null);
       }
     });
