@@ -42,23 +42,21 @@ export const obtenerProyectoPorIdRepository = async (id) => {
   return resultado.rows[0];
 };
 
-export const crearProyectoRepository = async ({ id_cliente, id_categoria, titulo, descripcion, presupuesto }) => {
+export const crearProyectoRepository = async ({ id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega }) => {
   const resultado = await pool.query(
-    `INSERT INTO proyecto (id_cliente, id_categoria, titulo, descripcion, presupuesto, estado)
-     VALUES ($1, $2, $3, $4, $5, 'abierto')
+    `INSERT INTO proyecto (id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega, estado)
+     VALUES ($1, $2, $3, $4, $5, $6, 'abierto')
      RETURNING *`,
-    [id_cliente, id_categoria, titulo, descripcion, presupuesto]
+    [id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega ?? null]
   );
   return resultado.rows[0];
 };
 
-export const actualizarProyectoRepository = async (id, { titulo, descripcion, presupuesto, id_categoria }) => {
+export const actualizarProyectoRepository = async (id, { titulo, descripcion, presupuesto, id_categoria, fecha_entrega }) => {
   const resultado = await pool.query(
-    `UPDATE proyecto
-     SET titulo = $1, descripcion = $2, presupuesto = $3, id_categoria = $4
-     WHERE id_proyecto = $5
-     RETURNING *`,
-    [titulo, descripcion, presupuesto, id_categoria, id]
+    `UPDATE proyecto SET titulo = $1, descripcion = $2, presupuesto = $3, id_categoria = $4, fecha_entrega = $5
+     WHERE id_proyecto = $6 RETURNING *`,
+    [titulo, descripcion, presupuesto, id_categoria, fecha_entrega ?? null, id]
   );
   return resultado.rows[0];
 };

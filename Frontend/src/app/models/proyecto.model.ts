@@ -12,6 +12,7 @@ export interface Proyecto {
   estado: EstadoProyecto;
   fecha_publicacion: string;
   total_propuestas?: number;
+  fecha_entrega?: string;
 }
 
 export interface NuevoProyecto {
@@ -19,4 +20,5 @@ export interface NuevoProyecto {
   descripcion: string;
   presupuesto: number;
   id_categoria: number;
+  fecha_entrega?: string;
 }

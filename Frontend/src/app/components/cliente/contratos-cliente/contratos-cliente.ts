@@ -7,6 +7,7 @@ import { CatalogoService } from '../../../core/services/catalogo.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Pago } from '../../../models/pago.model';
 import { MetodoPago } from '../../../models/catalogo.model';
+import { DialogoService } from '../../../core/services/dialogo.service';
 
 @Component({
   selector: 'app-contratos-cliente',
@@ -20,6 +21,7 @@ export class ContratosCliente implements OnInit {
   private contratoSrv = inject(ContratoService);
   private pagoSrv = inject(PagoService);
   private catalogo = inject(CatalogoService);
+  private dialogo = inject(DialogoService);
 
   filas = signal<FilaPagoContrato[]>([]);
   metodos = signal<MetodoPago[]>([]);
@@ -44,11 +46,13 @@ export class ContratosCliente implements OnInit {
     });
   }
 
-  completar(c: Contrato): void {
-    if (!confirm('¿Marcar este contrato como completado?')) return;
+  async completar(c: Contrato): Promise<void> {
+    const ok = await this.dialogo.confirmar('¿Marcar este contrato como completado?', { titulo: 'Completar contrato', textoConfirmar: 'Sí, completar' });
+    if (!ok) return;
+  
     this.contratoSrv.completar(c.id_contrato).subscribe({
       next: () => this.cargar(),
-      error: (err: any) => alert(err?.error?.mensaje ?? 'No se pudo completar el contrato.')
+      error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo completar el contrato.', 'Error')
     });
   }
 
@@ -65,14 +69,14 @@ export class ContratosCliente implements OnInit {
     const v = this.formPago.getRawValue();
     this.pagoSrv.registrar({ id_contrato: c.id_contrato, id_metodo_pago: v.id_metodo_pago!, monto: v.monto! }).subscribe({
       next: () => { this.formPagoAbiertoPara.set(null); this.cargar(); },
-      error: (err: any) => alert(err?.error?.mensaje ?? 'No se pudo registrar el pago.')
+      error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo registrar el pago.', 'Error')
     });
   }
 
   marcarPagado(p: Pago): void {
     this.pagoSrv.marcarPagado(p.id_pago).subscribe({
       next: () => this.cargar(),
-      error: (err: any) => alert(err?.error?.mensaje ?? 'No se pudo confirmar el pago.')
+      error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo confirmar el pago.', 'Error')
     });
   }
 

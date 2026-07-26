@@ -5,6 +5,7 @@ import { PropuestaService } from '../../../core/services/propuesta.service';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { Proyecto } from '../../../models/proyecto.model';
 import { Propuesta } from '../../../models/propuesta.model';
+import { DialogoService } from '../../../core/services/dialogo.service';
 
 @Component({
   selector: 'app-propuestas-cliente',
@@ -17,6 +18,7 @@ export class PropuestasCliente implements OnInit {
   private proyectoSrv = inject(ProyectoService);
   private propuestaSrv = inject(PropuestaService);
   private contratoSrv = inject(ContratoService);
+  private dialogo = inject(DialogoService);
 
   proyectos = signal<Proyecto[]>([]);
   propuestas = signal<Propuesta[]>([]);
@@ -45,13 +47,18 @@ export class PropuestasCliente implements OnInit {
     });
   }
 
-  aceptar(p: Propuesta): void {
-    if (!confirm(`¿Aceptar la propuesta de ${p.nombre_freelancer}? Se generará un contrato y se rechazarán las demás.`)) return;
+  async aceptar(p: Propuesta): Promise<void> {
+    const ok = await this.dialogo.confirmar(
+      `¿Aceptar la propuesta de ${p.nombre_freelancer}? Se generará un contrato y se rechazarán las demás.`,
+      { titulo: 'Aceptar propuesta', textoConfirmar: 'Sí, aceptar' }
+    );
+    if (!ok) return;
+  
     this.procesando.set(p.id_propuesta);
     this.contratoSrv.aceptarPropuesta(p.id_propuesta).subscribe({
       next: () => { this.cargarPropuestas(p.id_proyecto); this.procesando.set(null); },
-      error: (err: any) => {
-        alert(err?.error?.mensaje ?? 'No se pudo aceptar la propuesta.');
+      error: async (err: any) => {
+        await this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo aceptar la propuesta.', 'Error');
         this.procesando.set(null);
       }
     });

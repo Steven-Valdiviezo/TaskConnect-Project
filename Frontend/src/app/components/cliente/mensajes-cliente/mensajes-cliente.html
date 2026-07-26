@@ -1,62 +1,70 @@
-<div class="d-flex" style="min-height:calc(100vh - 56px);">
-  <div style="width:220px;background-color:#091410;border-right:1px solid #1c3c2d;">
-    <p class="small fw-medium px-3 pt-3 mb-2" style="color:#6e9e85;">Conversaciones</p>
+<div class="d-flex flex-column" style="height: calc(115vh - 200px);">
+  <h1 class="h5 fw-medium mb-3" style="color:#cce8d8;">Mensajes</h1>
 
-    @if (!contratosActivos().length) {
-      <p class="small px-3" style="color:#6e9e85;">No tienes contratos activos.</p>
-    }
+  <div class="d-flex flex-grow-1 rounded-3 overflow-hidden" style="border:1px solid #1c3c2d;min-height:0;">
+    <!-- Lista de conversaciones -->
+    <div class="d-flex flex-column flex-shrink-0" style="width:260px;background-color:#091410;border-right:1px solid #1c3c2d;overflow-y:auto;">
+      <p class="small fw-medium px-3 pt-3 mb-2" style="color:#6e9e85;">Conversaciones</p>
 
-    @for (c of contratosActivos(); track c.id_contrato) {
-      <div class="d-flex align-items-start gap-2 p-2 px-3" style="cursor:pointer;"
-           [style.background-color]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '#0f2619' : 'transparent'"
-           [style.border-left]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '3px solid #5DCAA5' : '3px solid transparent'"
-           (click)="seleccionar(c)">
-        <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">
-          {{ iniciales(c.nombre_contraparte) }}
-        </div>
-        <div>
-          <p class="small fw-medium mb-0" style="color:#cce8d8;">{{ c.nombre_contraparte }}</p>
-          <small style="color:#6e9e85;">{{ c.titulo_proyecto }}</small>
-        </div>
-      </div>
-    }
-  </div>
+      @if (!contratosActivos().length) {
+        <p class="small px-3" style="color:#6e9e85;">No tienes contratos activos.</p>
+      }
 
-  <div class="flex-grow-1 p-3 d-flex flex-column">
-    @if (contratoSeleccionado(); as c) {
-      <div class="d-flex align-items-center gap-2 pb-2 mb-3" style="border-bottom:1px solid #1c3c2d;">
-        <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">
-          {{ iniciales(c.nombre_contraparte) }}
+      @for (c of contratosActivos(); track c.id_contrato) {
+        <div class="d-flex align-items-start gap-2 p-2 px-3" style="cursor:pointer;"
+             [style.background-color]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '#0f2619' : 'transparent'"
+             [style.border-left]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '3px solid #5DCAA5' : '3px solid transparent'"
+             (click)="seleccionar(c)">
+          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">
+            {{ iniciales(c.nombre_contraparte) }}
+          </div>
+          <div class="text-truncate">
+            <p class="small fw-medium mb-0 text-truncate" style="color:#cce8d8;">{{ c.nombre_contraparte }}</p>
+            <small class="text-truncate d-block" style="color:#6e9e85;">{{ c.titulo_proyecto }}</small>
+          </div>
         </div>
-        <div>
-          <p class="small fw-medium mb-0" style="color:#cce8d8;">{{ c.nombre_contraparte }}</p>
-          <small style="color:#6e9e85;">Proyecto: {{ c.titulo_proyecto }}</small>
-        </div>
-      </div>
+      }
+    </div>
 
-      <div class="flex-grow-1">
-        @if (cargandoMensajes()) {
-          <p class="small" style="color:#6e9e85;">Cargando mensajes...</p>
-        }
-        @for (m of mensajes(); track m.id_mensaje) {
-          @if (m.remitente === miIdUsuario()) {
-            <div class="d-flex justify-content-end mb-2">
-              <div class="p-2 rounded-3 small" style="background-color:#1c3c2d;color:#5DCAA5;max-width:70%;">{{ m.contenido }}</div>
-            </div>
-          } @else {
-            <div class="d-flex mb-2">
-              <div class="p-2 rounded-3 small" style="background-color:#142b21;color:#cce8d8;max-width:70%;">{{ m.contenido }}</div>
-            </div>
+    <!-- Panel de chat -->
+    <div class="d-flex flex-column flex-grow-1" style="background-color:#142b21;min-width:0;">
+      @if (contratoSeleccionado(); as c) {
+        <div class="d-flex align-items-center gap-2 p-3 flex-shrink-0" style="border-bottom:1px solid #1c3c2d;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">
+            {{ iniciales(c.nombre_contraparte) }}
+          </div>
+          <div class="text-truncate">
+            <p class="small fw-medium mb-0" style="color:#cce8d8;">{{ c.nombre_contraparte }}</p>
+            <small style="color:#6e9e85;">Proyecto: {{ c.titulo_proyecto }}</small>
+          </div>
+        </div>
+
+        <div class="flex-grow-1 p-3" style="overflow-y:auto;min-height:0;">
+          @if (cargandoMensajes()) {
+            <p class="small" style="color:#6e9e85;">Cargando mensajes...</p>
           }
-        }
-      </div>
+          @for (m of mensajes(); track m.id_mensaje) {
+            @if (m.remitente === miIdUsuario()) {
+              <div class="d-flex justify-content-end mb-2">
+                <div class="p-2 rounded-3 small" style="background-color:#1c3c2d;color:#5DCAA5;max-width:70%;word-break:break-word;">{{ m.contenido }}</div>
+              </div>
+            } @else {
+              <div class="d-flex mb-2">
+                <div class="p-2 rounded-3 small" style="background-color:#0f2619;color:#cce8d8;max-width:70%;word-break:break-word;">{{ m.contenido }}</div>
+              </div>
+            }
+          }
+        </div>
 
-      <form [formGroup]="formMensaje" (ngSubmit)="enviar()" class="d-flex gap-2 mt-2">
-        <input type="text" class="form-control" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="Escribe un mensaje..." formControlName="texto">
-        <button type="submit" class="btn flex-shrink-0" style="background-color:#5DCAA5;color:#04342C;"><i class="fa-solid fa-paper-plane"></i></button>
-      </form>
-    } @else {
-      <p class="small" style="color:#6e9e85;">Selecciona una conversación.</p>
-    }
+        <form [formGroup]="formMensaje" (ngSubmit)="enviar()" class="d-flex gap-2 p-3 flex-shrink-0" style="border-top:1px solid #1c3c2d;">
+          <input type="text" class="form-control" style="background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Escribe un mensaje..." formControlName="texto">
+          <button type="submit" class="btn flex-shrink-0" style="background-color:#5DCAA5;color:#04342C;"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+      } @else {
+        <div class="d-flex align-items-center justify-content-center h-100">
+          <p class="small" style="color:#6e9e85;">Selecciona una conversación.</p>
+        </div>
+      }
+    </div>
   </div>
 </div>

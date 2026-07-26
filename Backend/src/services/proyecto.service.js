@@ -17,7 +17,7 @@ export const obtenerProyectoService = async (id) => {
 };
 
 export const crearProyectoService = async (id_cliente, datos) => {
-  const { titulo, descripcion, presupuesto, id_categoria } = datos;
+  const { titulo, descripcion, presupuesto, id_categoria, fecha_entrega } = datos;
 
   if (!titulo || !descripcion || !presupuesto || !id_categoria) {
     const error = new Error('titulo, descripcion, presupuesto e id_categoria son obligatorios');
@@ -36,7 +36,8 @@ export const crearProyectoService = async (id_cliente, datos) => {
     id_categoria,
     titulo,
     descripcion,
-    presupuesto
+    presupuesto,
+    fecha_entrega
   });
 };
 

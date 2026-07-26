@@ -5,6 +5,7 @@ import { MensajeService } from '../../../core/services/mensaje.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Mensaje } from '../../../models/mensaje.model';
+import { DialogoService } from '../../../core/services/dialogo.service';
 
 @Component({
   selector: 'app-mensajes-cliente',
@@ -18,6 +19,7 @@ export class MensajesCliente implements OnInit {
   private contratoSrv = inject(ContratoService);
   private mensajeSrv = inject(MensajeService);
   private auth = inject(AuthService);
+  private dialogo = inject(DialogoService);
 
   contratosActivos = signal<Contrato[]>([]);
   contratoSeleccionado = signal<Contrato | null>(null);
@@ -52,10 +54,10 @@ export class MensajesCliente implements OnInit {
     if (!c || this.formMensaje.invalid) return;
     const texto = this.formMensaje.getRawValue().texto!.trim();
     if (!texto) return;
-
+  
     this.mensajeSrv.enviar(c.id_usuario_contraparte!, texto).subscribe({
       next: () => { this.formMensaje.reset(); this.seleccionar(c); },
-      error: (err: any) => alert(err?.error?.mensaje ?? 'No se pudo enviar el mensaje.')
+      error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo enviar el mensaje.', 'Error')
     });
   }
 

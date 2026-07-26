@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { Proyecto } from '../../../models/proyecto.model';
+import { DialogoService } from '../../../core/services/dialogo.service';
 
 @Component({
   selector: 'app-mis-proyectos',
@@ -11,6 +12,7 @@ import { Proyecto } from '../../../models/proyecto.model';
 })
 export class MisProyectos implements OnInit {
   private proyectoSrv = inject(ProyectoService);
+  private dialogo = inject(DialogoService);
 
   proyectos = signal<Proyecto[]>([]);
   cargando = signal(true);
@@ -27,11 +29,16 @@ export class MisProyectos implements OnInit {
     });
   }
 
-  cancelar(p: Proyecto): void {
-    if (!confirm(`¿Cancelar el proyecto "${p.titulo}"? Esta acción no se puede deshacer.`)) return;
+  async cancelar(p: Proyecto): Promise<void> {
+    const ok = await this.dialogo.confirmar(
+      `¿Cancelar el proyecto "${p.titulo}"? Esta acción no se puede deshacer.`,
+      { titulo: 'Cancelar proyecto', textoConfirmar: 'Sí, cancelar' }
+    );
+    if (!ok) return;
+  
     this.proyectoSrv.cancelar(p.id_proyecto).subscribe({
       next: () => this.cargar(),
-      error: (err: any) => alert(err?.error?.mensaje ?? 'No se pudo cancelar el proyecto.')
+      error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo cancelar el proyecto.', 'Error')
     });
   }
 
