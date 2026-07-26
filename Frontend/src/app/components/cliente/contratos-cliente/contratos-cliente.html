@@ -1,21 +1,49 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Contratos</h1>
+  <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Contratos</h1>
+
+  @if (cargando()) {
+    <p class="small" style="color:#6e9e85;">Cargando...</p>
+  } @else if (!filas().length) {
+    <p class="small" style="color:#6e9e85;">Aún no tienes contratos.</p>
+  }
+
+  @for (f of filas(); track f.contrato.id_contrato) {
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cce8d8;">Diseño landing page e-commerce</p>
-                <small style="color:#6e9e85;">Con María Andrade · Inicio: 20 jun 2026 · $420</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#FAEEDA;color:#633806;">en progreso</span>
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <p class="fw-medium small mb-1" style="color:#cce8d8;">{{ f.contrato.titulo_proyecto }}</p>
+          <small style="color:#6e9e85;">Con {{ f.contrato.nombre_contraparte }} · Inicio: {{ f.contrato.fecha_inicio | date:'dd MMM yyyy' }}</small>
         </div>
-    </div>
-    <div class="rounded-3 p-3 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cce8d8;">Logo startup de tecnología</p>
-                <small style="color:#6e9e85;">Con Carlos Mora · Finalizado: 10 abr 2026 · $150</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#2a3a30;color:#6e9e85;">finalizado</span>
+        <div class="text-end">
+          <span class="badge rounded-pill d-block mb-2" [style.background-color]="claseBadge(f.contrato.estado).bg" [style.color]="claseBadge(f.contrato.estado).color">{{ f.contrato.estado }}</span>
+
+          @if (f.contrato.estado === 'activo') {
+            <button class="btn btn-sm btn-outline-light me-1" (click)="completar(f.contrato)">Marcar completado</button>
+          }
+          @if (!f.pago && f.contrato.estado !== 'cancelado') {
+            <button class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;" (click)="abrirFormPago(f.contrato)">Registrar pago</button>
+          }
+          @if (f.pago?.estado === 'pendiente') {
+            <button class="btn btn-sm btn-outline-warning" (click)="marcarPagado(f.pago!)">Marcar pagado</button>
+          }
+          @if (f.pago?.estado === 'pagado') {
+            <span class="small d-block" style="color:#6e9e85;">Pagado: ${{ f.pago!.monto }}</span>
+          }
         </div>
+      </div>
+
+      @if (formPagoAbiertoPara() === f.contrato.id_contrato) {
+        <form [formGroup]="formPago" (ngSubmit)="registrarPago(f.contrato)" class="mt-3 pt-3 d-flex gap-2 flex-wrap align-items-start" style="border-top:1px solid #1c3c2d;">
+          <select class="form-select form-select-sm" style="max-width:200px;background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" formControlName="id_metodo_pago">
+            <option [ngValue]="null" disabled>Método de pago</option>
+            @for (m of metodos(); track m.id_metodo_pago) {
+              <option [ngValue]="m.id_metodo_pago">{{ m.nombre }}</option>
+            }
+          </select>
+          <input type="number" class="form-control form-control-sm" style="max-width:140px;background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Monto" formControlName="monto">
+          <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Confirmar</button>
+        </form>
+      }
     </div>
+  }
 </div>

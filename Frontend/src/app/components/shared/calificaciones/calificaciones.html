@@ -1,35 +1,56 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Calificaciones</h1>
+  <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Calificaciones</h1>
+
+  @for (item of yaCalificados(); track item.calificacion.id_calificacion) {
     <div class="rounded-3 p-3 mb-3 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div class="d-flex gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">CM</div>
-                <div>
-                    <p class="fw-medium small mb-0" style="color:#cce8d8;">Carlos Mora</p>
-                    <small style="color:#6e9e85;">Logo startup · abr 2026</small>
-                    <p class="small mt-1 mb-0" style="color:#6e9e85;">"Excelente trabajo, entregó antes del plazo."</p>
-                </div>
-            </div>
-            <div style="color:#EF9F27;white-space:nowrap;">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex gap-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#1c3c2d;color:#5DCAA5;">
+            {{ (item.contrato?.nombre_contraparte ?? '??').slice(0,2).toUpperCase() }}
+          </div>
+          <div>
+            <p class="fw-medium small mb-0" style="color:#cce8d8;">{{ item.contrato?.nombre_contraparte }}</p>
+            <small style="color:#6e9e85;">{{ item.contrato?.titulo_proyecto }} · {{ item.calificacion.fecha | date:'MMM yyyy' }}</small>
+            @if (item.calificacion.comentario) {
+              <p class="small mt-1 mb-0" style="color:#6e9e85;">"{{ item.calificacion.comentario }}"</p>
+            }
+          </div>
         </div>
+        <div style="color:#EF9F27;white-space:nowrap;">
+          @for (n of [1,2,3,4,5]; track n) {
+            <i class="fa-solid fa-star" [style.opacity]="n <= item.calificacion.puntuacion ? 1 : 0.25"></i>
+          }
+        </div>
+      </div>
     </div>
-    <div class="rounded-3 p-3" style="background-color:#142b21;border:1px dashed #1c3c2d;">
-        <p class="fw-medium small mb-1" style="color:#cce8d8;">María Andrade — Diseño landing page</p>
-        <small style="color:#6e9e85;">Contrato activo · pendiente de calificación</small>
-        <form class="mt-3 animate__animated animate__fadeIn">
-            <div class="mb-2">
-                <label class="form-label small" style="color:#6e9e85;">Puntuación</label>
-                <div class="fs-5" style="color:#6e9e85;">
-                    <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label small" style="color:#6e9e85;">Comentario</label>
-                <textarea class="form-control" rows="3" style="background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Comparte tu experiencia..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Enviar calificación</button>
-        </form>
-    </div>
+  }
+
+  @for (c of pendientes(); track c.id_contrato) {
+    <form [formGroup]="formsPorContrato[c.id_contrato]" (ngSubmit)="calificar(c)" class="rounded-3 p-3" style="background-color:#142b21;border:1px dashed #1c3c2d;">
+      <p class="fw-medium small mb-1" style="color:#cce8d8;">{{ c.nombre_contraparte }} — {{ c.titulo_proyecto }}</p>
+      <small style="color:#6e9e85;">Contrato completado · pendiente de calificación</small>
+
+      <div class="mt-3">
+        <div class="mb-2">
+          <label class="form-label small" style="color:#6e9e85;">Puntuación</label>
+          <div class="fs-5">
+            @for (n of [1,2,3,4,5]; track n) {
+              <i class="fa-solid fa-star" style="cursor:pointer;"
+                 [style.color]="(formsPorContrato[c.id_contrato].value.puntuacion ?? 0) >= n ? '#EF9F27' : '#6e9e85'"
+                 (click)="setPuntuacion(c.id_contrato, n)"></i>
+            }
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small" style="color:#6e9e85;">Comentario</label>
+          <textarea class="form-control" rows="3" style="background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Comparte tu experiencia..." formControlName="comentario"></textarea>
+        </div>
+        <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;" [disabled]="enviando() === c.id_contrato">Enviar calificación</button>
+      </div>
+    </form>
+  }
+
+  @if (!pendientes().length && !yaCalificados().length) {
+    <p class="small" style="color:#6e9e85;">Aún no tienes contratos completados para calificar.</p>
+  }
 </div>

@@ -63,6 +63,17 @@
               <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;" [disabled]="cargando()">
                 @if (cargando()) { <span class="spinner-border spinner-border-sm me-2"></span>Verificando... } @else { Continuar }
               </button>
+
+              @if (loginPruebaDisponible) {
+                <button type="button" class="btn btn-outline-secondary w-100 mt-2"
+                        (click)="entrarConUsuarioPrueba()" [disabled]="loginPruebaCargando()">
+                  @if (loginPruebaCargando()) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>Entrando...
+                  } @else {
+                    🧪 Entrar sin 2FA (solo desarrollo)
+                  }
+                </button>
+              }
             </form>
           </div>
         </div>
