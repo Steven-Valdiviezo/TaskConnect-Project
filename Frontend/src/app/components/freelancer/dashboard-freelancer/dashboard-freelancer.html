@@ -2,51 +2,48 @@
     <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Dashboard</h1>
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#162234;border:1px solid #1c2d3c;">
+            <div class="p-3 rounded-3 h-100" style="background-color:#162234;border:1px solid #1c2d3c;">
                 <small style="color:#6e8fa8;">Propuestas enviadas</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">8</div>
-                <small style="color:#6e8fa8;">2 aceptadas</small>
+                <div class="fs-4 fw-medium" style="color:#cde0f0;">{{ propuestas().length }}</div>
+                <small style="color:#6e8fa8;">{{ propuestasAceptadas() }} aceptadas</small>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#162234;border:1px solid #1c2d3c;">
+            <div class="p-3 rounded-3 h-100" style="background-color:#162234;border:1px solid #1c2d3c;">
                 <small style="color:#6e8fa8;">Contratos activos</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">2</div>
+                <div class="fs-4 fw-medium" style="color:#cde0f0;">{{ contratosActivos() }}</div>
                 <small style="color:#6e8fa8;">en progreso</small>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#162234;border:1px solid #1c2d3c;">
+            <div class="p-3 rounded-3 h-100" style="background-color:#162234;border:1px solid #1c2d3c;">
                 <small style="color:#6e8fa8;">Ingresos este mes</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">$580</div>
-                <small style="color:#6e8fa8;">pagados</small>
+                <div class="fs-4 fw-medium" style="color:#cde0f0;">${{ ingresosEsteMes().toFixed(2) }}</div>
+                <small style="color:#6e8fa8;">netos, comisión ya descontada</small>
             </div>
         </div>
     </div>
 
     <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Proyectos recomendados</h2>
-    <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
+
+    @if (cargando()) {
+      <p class="small" style="color:#6e8fa8;">Cargando...</p>
+    } @else if (!recomendados().length) {
+      <p class="small" style="color:#6e8fa8;">No hay proyectos nuevos disponibles por ahora.</p>
+    }
+
+    @for (p of recomendados(); track p.id_proyecto) {
+      <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
         <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-                <p class="fw-medium small mb-0" style="color:#cde0f0;">App móvil de seguimiento de hábitos</p>
-                <small style="color:#6e8fa8;">Desarrollo móvil · Presupuesto: $500–800</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
+          <div>
+            <p class="fw-medium small mb-0" style="color:#cde0f0;">{{ p.titulo }}</p>
+            <small style="color:#6e8fa8;">{{ p.nombre_categoria }} · Presupuesto: ${{ p.presupuesto }}</small>
+          </div>
+          <span class="badge rounded-pill" [style.background-color]="claseBadge(p.estado).bg" [style.color]="claseBadge(p.estado).color">{{ p.estado }}</span>
         </div>
         <div class="d-flex justify-content-end">
-            <a routerLink="/freelancer/proyecto/1" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;">Ver detalles</a>
+          <a [routerLink]="['/freelancer/proyecto', p.id_proyecto]" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;">Ver detalles</a>
         </div>
-    </div>
-    <div class="rounded-3 p-3 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-                <p class="fw-medium small mb-0" style="color:#cde0f0;">Integración de pasarela de pagos</p>
-                <small style="color:#6e8fa8;">Backend · Presupuesto: $200–400</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
-        </div>
-        <div class="d-flex justify-content-end">
-            <a routerLink="/freelancer/proyecto/2" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;">Ver detalles</a>
-        </div>
-    </div>
+      </div>
+    }
 </div>

@@ -34,6 +34,10 @@ export class PagosCliente implements OnInit {
     return this.pagadas().filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear()).length;
   });
   totalPendiente = computed(() => this.filas().filter(f => f.pago?.estado === 'pendiente').reduce((a, f) => a + Number(f.pago!.monto), 0));
+  
+  //Comision agregada por el sistema
+  totalComision = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.comision), 0));
+  totalNetoFreelancers = computed(() => this.pagadas().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
 
   ngOnInit(): void {
     this.catalogo.listarMetodosPago().subscribe(r => this.metodos.set(r.metodos));

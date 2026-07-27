@@ -43,14 +43,24 @@
           @if (cargandoMensajes()) {
             <p class="small" style="color:#6e9e85;">Cargando mensajes...</p>
           }
+          <!-- Parte actualizada pra mostrar el leido -->
           @for (m of mensajes(); track m.id_mensaje) {
             @if (m.remitente === miIdUsuario()) {
               <div class="d-flex justify-content-end mb-2">
-                <div class="p-2 rounded-3 small" style="background-color:#1c3c2d;color:#5DCAA5;max-width:70%;word-break:break-word;">{{ m.contenido }}</div>
+                <div class="text-end">
+                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#1c3c2d;color:#5DCAA5;max-width:320px;word-break:break-word;">{{ m.contenido }}</div>
+                  <div class="small mt-1" style="color:#6e9e85;">
+                    {{ horaDe(m.fecha_envio) }}
+                    <i class="fa-solid ms-1" [class.fa-check]="!m.leido" [class.fa-check-double]="m.leido" [style.color]="m.leido ? '#5DCAA5' : '#6e9e85'"></i>
+                  </div>
+                </div>
               </div>
             } @else {
               <div class="d-flex mb-2">
-                <div class="p-2 rounded-3 small" style="background-color:#0f2619;color:#cce8d8;max-width:70%;word-break:break-word;">{{ m.contenido }}</div>
+                <div>
+                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#0f2619;color:#cce8d8;max-width:320px;word-break:break-word;">{{ m.contenido }}</div>
+                  <div class="small mt-1" style="color:#6e9e85;">{{ horaDe(m.fecha_envio) }}</div>
+                </div>
               </div>
             }
           }

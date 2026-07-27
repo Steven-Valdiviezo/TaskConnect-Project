@@ -108,3 +108,13 @@ export const actualizarClienteRepository = async (id_usuario, { empresa, direcci
     );
     return r.rows[0];
 };
+
+export const actualizarFreelancerRepository = async (id_usuario, { id_profesion, descripcion, experiencia }) => {
+    const r = await pool.query(
+        `UPDATE freelancer SET id_profesion = $1, descripcion = $2, experiencia = $3
+         WHERE id_usuario = $4
+         RETURNING id_freelancer, id_profesion, descripcion, experiencia`,
+        [id_profesion, descripcion, experiencia, id_usuario]
+    );
+    return r.rows[0];
+};

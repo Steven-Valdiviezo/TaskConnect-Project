@@ -46,6 +46,7 @@ export class MensajesCliente implements OnInit {
     this.mensajeSrv.conversacionCon(c.id_usuario_contraparte!).subscribe(r => {
       this.mensajes.set(r.conversacion);
       this.cargandoMensajes.set(false);
+      this.marcarComoLeidos(r.conversacion);
     });
   }
 
@@ -63,5 +64,20 @@ export class MensajesCliente implements OnInit {
 
   iniciales(nombre?: string): string {
     return (nombre ?? '').split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  }
+
+  //Metodos para leer mensajes y hora
+  private marcarComoLeidos(conversacion: Mensaje[]): void {
+    conversacion
+      .filter(m => m.destinatario === this.miIdUsuario() && !m.leido)
+      .forEach(m => {
+        this.mensajeSrv.marcarLeido(m.id_mensaje).subscribe(() => {
+          this.mensajes.update(lista => lista.map(x => x.id_mensaje === m.id_mensaje ? { ...x, leido: true } : x));
+        });
+      });
+  }
+  
+  horaDe(fechaIso: string): string {
+    return new Date(fechaIso).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
   }
 }

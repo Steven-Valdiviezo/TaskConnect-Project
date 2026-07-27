@@ -6,7 +6,8 @@ import {
     obtenerDatosClienteRepository,
     obtenerDatosFreelancerRepository,
     actualizarPerfilUsuarioRepository,
-    actualizarClienteRepository
+    actualizarClienteRepository,
+    actualizarFreelancerRepository
 } from '../repositories/usuario.repository.js';
 import { hashPassword, compararPassword } from '../utils/password.util.js';
 import { generarToken, generarPreAuthToken, verificarPreAuthToken } from '../utils/jwt.util.js';
@@ -138,7 +139,7 @@ export const obtenerPerfilService = async (id_usuario) => {
 
 // Servicio para actualizar el perfil del usuario
 export const actualizarPerfilService = async (usuarioActual, datos) => {
-    const { nombre, telefono, empresa, direccion } = datos;
+    const { nombre, telefono, empresa, direccion, id_profesion, descripcion, experiencia } = datos;
 
     if (!nombre || !nombre.trim()) {
         const error = new Error('El nombre es obligatorio');
@@ -146,15 +147,20 @@ export const actualizarPerfilService = async (usuarioActual, datos) => {
         throw error;
     }
 
-    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, {
-        nombre, telefono: telefono ?? null
-    });
+    if (usuarioActual.rol === 'freelancer' && (!id_profesion || !descripcion || !descripcion.trim())) {
+        const error = new Error('La profesión y la descripción son obligatorias');
+        error.status = 400;
+        throw error;
+    }
+
+    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, { nombre, telefono: telefono ?? null });
 
     let perfil = null;
     if (usuarioActual.rol === 'cliente') {
-        perfil = await actualizarClienteRepository(usuarioActual.id_usuario, {
-            empresa: empresa ?? null, direccion: direccion ?? null
-        });
+        perfil = await actualizarClienteRepository(usuarioActual.id_usuario, { empresa: empresa ?? null, direccion: direccion ?? null });
+    }
+    if (usuarioActual.rol === 'freelancer') {
+        perfil = await actualizarFreelancerRepository(usuarioActual.id_usuario, { id_profesion, descripcion, experiencia: experiencia ?? 0 });
     }
 
     return { usuario, perfil };

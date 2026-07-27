@@ -13,9 +13,10 @@
                     <div>
                         <div class="fs-4 fw-bold" style="color:#5DCAA5;">2026</div><small style="color:#9FE1CB;">Año de fundación</small></div>
                     <div>
-                        <div class="fs-4 fw-bold" style="color:#5DCAA5;">2+</div><small style="color:#9FE1CB;">Países</small></div>
+                        <!-- Buscar algo mejor que poner, porque paises pues no hay apartado para que el usuario agrege un pais -->
+                        <div class="fs-4 fw-bold" style="color:#5DCAA5;">4</div><small style="color:#9FE1CB;">Desarolladores</small></div>
                     <div>
-                        <div class="fs-4 fw-bold" style="color:#5DCAA5;">+1k</div><small style="color:#9FE1CB;">Usuarios activos</small></div>
+                        <div class="fs-4 fw-bold" style="color:#5DCAA5;">{{ estadisticas()?.total_usuarios ?? '—' }}</div><small style="color:#9FE1CB;">Usuarios activos</small></div>
                 </div>
             </div>
             <div class="col-lg-6 animate__animated animate__fadeInRight">

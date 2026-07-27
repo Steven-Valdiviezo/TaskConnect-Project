@@ -11,6 +11,12 @@ export class PropuestaService {
   listarDeProyecto(idProyecto: number) {
     return this.http.get<{ propuestas: Propuesta[] }>(`${this.baseUrl}/proyecto/${idProyecto}`);
   }
+  listarRecibidas() {
+    return this.http.get<{ propuestas: Propuesta[] }>(`${this.baseUrl}/mias/recibidas`);
+  }
+  listarEnviadas() {
+  return this.http.get<{ propuestas: Propuesta[] }>(`${this.baseUrl}/mias/enviadas`);
+  }
   enviar(datos: { id_proyecto: number; mensaje: string; monto_propuesto: number }) {
     return this.http.post<{ propuesta: Propuesta }>(this.baseUrl, datos);
   }

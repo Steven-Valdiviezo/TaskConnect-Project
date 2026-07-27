@@ -1,41 +1,57 @@
 <div>
-    <a routerLink="/freelancer/buscar-trabajo" class="small d-inline-flex align-items-center gap-1 mb-3 text-decoration-none" style="color:#6e8fa8;">
-        <i class="fa-solid fa-arrow-left"></i> Volver a búsqueda
-    </a>
+  <a routerLink="/freelancer/buscar-trabajo" class="small d-inline-flex align-items-center gap-1 mb-3 text-decoration-none" style="color:#6e8fa8;">
+    <i class="fa-solid fa-arrow-left"></i> Volver a búsqueda
+  </a>
+
+  @if (cargando()) {
+    <p class="small" style="color:#6e8fa8;">Cargando...</p>
+  } @else if (proyecto(); as p) {
     <div class="rounded-3 p-4 mb-4 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-            <h1 class="h5 fw-medium mb-0" style="color:#cde0f0;">App móvil de seguimiento de hábitos</h1>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
-        </div>
-        <p class="small mb-3" style="color:#6e8fa8;">Desarrollo móvil · Presupuesto: $500–800 · Cliente: Empresa XYZ</p>
-        <p class="small mb-3" style="color:#8dafc8;">Se necesita una aplicación iOS/Android desarrollada con Flutter y backend en Firebase, para registrar hábitos diarios y mostrar estadísticas semanales de progreso.</p>
-        <span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Flutter</span>
-        <span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Firebase</span>
-        <span class="badge" style="background-color:#1c2d3c;color:#6e8fa8;">Dart</span>
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h1 class="h5 fw-medium mb-0" style="color:#cde0f0;">{{ p.titulo }}</h1>
+        <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">{{ p.estado }}</span>
+      </div>
+      <p class="small mb-3" style="color:#6e8fa8;">
+        - {{ p.nombre_categoria }} - Presupuesto: ${{ p.presupuesto }}
+        @if (p.nombre_cliente) { - Cliente: {{ p.nombre_cliente }} }
+        @if (p.fecha_entrega) { - Entrega estimada: {{ p.fecha_entrega | date:'dd MMM yyyy':'UTC' }} }
+      </p>
+      <p class="small mb-0" style="color:#8dafc8;">{{ p.descripcion }}</p>
     </div>
 
-    <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Enviar propuesta</h2>
-    <form class="animate__animated animate__fadeIn" style="max-width:680px;">
+    @if (yaPropuesto()) {
+      <div class="rounded-3 p-3" style="background-color:#162234;border:1px solid #1c2d3c;">
+        <p class="small mb-0" style="color:#6e8fa8;"><i class="fa-solid fa-circle-check me-2" style="color:#60b4e8;"></i>Ya enviaste una propuesta para este proyecto. Revísala en "Mis propuestas".</p>
+      </div>
+    } @else if (p.estado !== 'abierto') {
+      <div class="rounded-3 p-3" style="background-color:#162234;border:1px solid #1c2d3c;">
+        <p class="small mb-0" style="color:#6e8fa8;">Este proyecto ya no está abierto a nuevas propuestas.</p>
+      </div>
+    } @else {
+      <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Enviar propuesta</h2>
+      <form [formGroup]="form" (ngSubmit)="enviar()" class="animate__animated animate__fadeIn" style="max-width:680px;">
         <div class="mb-3">
-            <label class="form-label small" style="color:#6e8fa8;">Tu mensaje al cliente *</label>
-            <textarea class="form-control" rows="4" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Describe tu experiencia y por qué eres el candidato ideal..."></textarea>
+          <label class="form-label small" style="color:#6e8fa8;">Tu mensaje al cliente *</label>
+          <textarea class="form-control" rows="4" formControlName="mensaje" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Describe tu experiencia y por qué eres el candidato ideal..."></textarea>
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label small" style="color:#6e8fa8;">Monto propuesto (USD) *</label>
-                <div class="input-group">
-                    <span class="input-group-text" style="background-color:#1c2d3c;border-color:#1c2d3c;color:#6e8fa8;">$</span>
-                    <input type="number" class="form-control" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="0.00">
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label small" style="color:#6e8fa8;">Tiempo estimado *</label>
-                <input type="text" class="form-control" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Ej. 10 días">
-            </div>
+        <div class="mb-3" style="max-width:260px;">
+          <label class="form-label small" style="color:#6e8fa8;">Monto propuesto (USD) *</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background-color:#1c2d3c;border-color:#1c2d3c;color:#6e8fa8;">$</span>
+            <input type="number" class="form-control" formControlName="monto_propuesto" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="0.00">
+          </div>
         </div>
+
+        @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
+
         <div class="d-flex justify-content-end gap-2">
-            <a routerLink="/freelancer/dashboard" class="btn btn-outline-secondary">Cancelar</a>
-            <button type="submit" class="btn" style="background-color:#185FA5;color:#E6F1FB;">Enviar propuesta</button>
+          <a routerLink="/freelancer/buscar-trabajo" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn" style="background-color:#185FA5;color:#E6F1FB;" [disabled]="enviando()">
+            @if (enviando()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            Enviar propuesta
+          </button>
         </div>
-    </form>
+      </form>
+    }
+  }
 </div>

@@ -16,7 +16,10 @@ export class UsuarioService {
   obtenerPerfil() {
     return this.http.get<PerfilRespuesta>(`${this.baseUrl}/perfil`);
   }
-  actualizarPerfil(datos: { nombre: string; telefono?: string; empresa?: string; direccion?: string }) {
+  actualizarPerfil(datos: {
+    nombre: string; telefono?: string; empresa?: string; direccion?: string;
+    id_profesion?: number; experiencia?: number; descripcion?: string;
+  }) {
     return this.http.put<PerfilRespuesta>(`${this.baseUrl}/perfil`, datos);
   }
 }

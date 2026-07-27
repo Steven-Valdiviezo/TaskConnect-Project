@@ -1,30 +1,26 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Mis propuestas</h1>
+  <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Mis propuestas</h1>
+
+  @if (cargando()) {
+    <p class="small" style="color:#6e8fa8;">Cargando...</p>
+  } @else if (!propuestas().length) {
+    <p class="small" style="color:#6e8fa8;">Aún no has enviado propuestas.</p>
+  }
+
+  @for (p of propuestas(); track p.id_propuesta) {
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cde0f0;">App móvil de seguimiento de hábitos</p>
-                <small style="color:#6e8fa8;">Propuse: $720 · 12 días · Enviada hace 3 días</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">en revisión</span>
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <p class="fw-medium small mb-1" style="color:#cde0f0;">{{ p.titulo_proyecto }}</p>
+          <small style="color:#6e8fa8;">Propuse: ${{ p.monto_propuesto }} · {{ p.fecha_propuesta | date:'dd MMM yyyy' }}</small>
         </div>
-    </div>
-    <div class="rounded-3 p-3 mb-2" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cde0f0;">Diseño de landing page e-commerce</p>
-                <small style="color:#6e8fa8;">Propuse: $420 · 9 días · Enviada hace 1 semana</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">aceptada</span>
+        <div class="text-end">
+          <span class="badge rounded-pill d-block mb-2" [style.background-color]="claseBadge(p.estado).bg" [style.color]="claseBadge(p.estado).color">{{ p.estado }}</span>
+          @if (p.estado === 'pendiente') {
+            <button class="btn btn-sm btn-outline-danger" [disabled]="procesando() === p.id_propuesta" (click)="retirar(p)">Retirar</button>
+          }
         </div>
+      </div>
     </div>
-    <div class="rounded-3 p-3" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cde0f0;">Sistema de reservas online</p>
-                <small style="color:#6e8fa8;">Propuse: $550 · 15 días · Enviada hace 2 semanas</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#2a3040;color:#6e8fa8;">rechazada</span>
-        </div>
-    </div>
+  }
 </div>

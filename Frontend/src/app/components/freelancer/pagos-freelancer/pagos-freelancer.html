@@ -1,73 +1,74 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Mis pagos</h1>
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
-                <small style="color:#6e8fa8;">Total recibido</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">$1,580</div>
-                <small style="color:#6e8fa8;">en la plataforma</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
-                <small style="color:#6e8fa8;">Este mes</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">$580</div>
-                <small style="color:#6e8fa8;">2 contratos</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3 rounded-3" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
-                <small style="color:#6e8fa8;">Por cobrar</small>
-                <div class="fs-4 fw-medium" style="color:#cde0f0;">$320</div>
-                <small style="color:#6e8fa8;">contrato activo</small>
-            </div>
-        </div>
-    </div>
+  <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Mis pagos</h1>
 
-    <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Historial de cobros</h2>
-    <div class="table-responsive">
-        <table class="table align-middle" style="--bs-table-bg:transparent;--bs-table-color:#cde0f0;">
-            <thead>
-                <tr style="border-color:#1c2d3c;">
-                    <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Proyecto / Cliente</th>
-                    <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Método</th>
-                    <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Fecha</th>
-                    <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Monto</th>
-                    <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Estado</th>
-                </tr>
-            </thead>
-            <tbody class="small">
-                <tr style="border-color:#1c2d3c;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cde0f0;">API REST inventario</p>
-                        <small style="color:#6e8fa8;">Luis Comercios</small>
-                    </td>
-                    <td style="color:#6e8fa8;">Transferencia</td>
-                    <td style="color:#6e8fa8;">20 abr 2026</td>
-                    <td style="color:#cde0f0;">$600</td>
-                    <td><span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span></td>
-                </tr>
-                <tr style="border-color:#1c2d3c;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cde0f0;">Rediseño portafolio</p>
-                        <small style="color:#6e8fa8;">Andrés V.</small>
-                    </td>
-                    <td style="color:#6e8fa8;">PayPal</td>
-                    <td style="color:#6e8fa8;">05 mar 2026</td>
-                    <td style="color:#cde0f0;">$180</td>
-                    <td><span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span></td>
-                </tr>
-                <tr style="border-color:#1c2d3c;">
-                    <td>
-                        <p class="fw-medium mb-0" style="color:#cde0f0;">Diseño landing page</p>
-                        <small style="color:#6e8fa8;">Juan Carlos M.</small>
-                    </td>
-                    <td style="color:#6e8fa8;">Pendiente</td>
-                    <td style="color:#6e8fa8;">Al finalizar</td>
-                    <td style="color:#cde0f0;">$320</td>
-                    <td><span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">pendiente</span></td>
-                </tr>
-            </tbody>
-        </table>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="p-3 rounded-3 h-100" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
+        <small style="color:#6e8fa8;">Total recibido (neto)</small>
+        <div class="fs-4 fw-medium" style="color:#cde0f0;">${{ totalRecibidoNeto().toFixed(2) }}</div>
+        <small style="color:#6e8fa8;">ya con comisión descontada</small>
+      </div>
     </div>
+    <div class="col-md-3">
+      <div class="p-3 rounded-3 h-100" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
+        <small style="color:#6e8fa8;">Este mes</small>
+        <div class="fs-4 fw-medium" style="color:#cde0f0;">${{ totalEsteMesNeto().toFixed(2) }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="p-3 rounded-3 h-100" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
+        <small style="color:#6e8fa8;">Por cobrar</small>
+        <div class="fs-4 fw-medium" style="color:#cde0f0;">${{ totalPorCobrarNeto().toFixed(2) }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="p-3 rounded-3 h-100" style="background-color:#0f1e30;border:1px solid #1c2d3c;">
+        <small style="color:#6e8fa8;">Comisión retenida</small>
+        <div class="fs-4 fw-medium" style="color:#EF9F27;">${{ totalComisionRetenida().toFixed(2) }}</div>
+        <small style="color:#6e8fa8;">10% cobrado por la plataforma</small>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h6 fw-medium mb-3" style="color:#cde0f0;">Historial de cobros</h2>
+  <div class="table-responsive">
+    <table class="table align-middle" style="--bs-table-bg:transparent;--bs-table-color:#cde0f0;">
+      <thead>
+        <tr style="border-color:#1c2d3c;">
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Proyecto / Cliente</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Método</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Fecha</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Monto</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Comisión</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Recibiste</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Estado</th>
+        </tr>
+      </thead>
+      <tbody class="small">
+        @if (!cargando() && !registrados().length) {
+          <tr><td colspan="7" style="color:#6e8fa8;">Aún no tienes pagos registrados.</td></tr>
+        }
+        @for (f of registrados(); track f.pago!.id_pago) {
+          <tr style="border-color:#1c2d3c;">
+            <td>
+              <p class="fw-medium mb-0" style="color:#cde0f0;">{{ f.contrato.titulo_proyecto }}</p>
+              <small style="color:#6e8fa8;">{{ f.contrato.nombre_contraparte }}</small>
+            </td>
+            <td style="color:#6e8fa8;">{{ nombreMetodo(f.pago!.id_metodo_pago) }}</td>
+            <td style="color:#6e8fa8;">{{ f.pago!.fecha_pago ? (f.pago!.fecha_pago | date:'dd MMM yyyy') : 'Pendiente' }}</td>
+            <td style="color:#cde0f0;">${{ f.pago!.monto }}</td>
+            <td style="color:#EF9F27;">-${{ f.pago!.comision }}</td>
+            <td style="color:#60b4e8;">${{ (f.pago!.monto - f.pago!.comision).toFixed(2) }}</td>
+            <td>
+              @if (f.pago!.estado === 'pagado') {
+                <span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span>
+              } @else {
+                <span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">pendiente</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

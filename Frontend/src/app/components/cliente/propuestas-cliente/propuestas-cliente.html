@@ -1,18 +1,33 @@
 <div>
   <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Propuestas recibidas</h1>
 
-  @if (proyectos().length) {
-    <select class="form-select form-select-sm mb-3" style="max-width:360px;background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" [formControl]="filtroProyecto">
-      @for (p of proyectos(); track p.id_proyecto) {
-        <option [ngValue]="p.id_proyecto">{{ p.titulo }} ({{ p.total_propuestas ?? 0 }})</option>
-      }
-    </select>
-  }
+  <div class="d-flex gap-2 align-items-center mb-3 flex-wrap">
+    <button type="button" class="btn btn-sm"
+        [style.background-color]="verTodas() ? '#5DCAA5' : '#142b21'"
+        [style.color]="verTodas() ? '#04342C' : '#cce8d8'"
+        [style.opacity]="verTodas() ? '0.7' : '1'"
+        style="border:1px solid #1c3c2d;"
+        [disabled]="verTodas()"
+        (click)="verTodasLasPropuestas()">
+      Ver todas las propuestas
+    </button>
+
+    @if (proyectos().length) {
+      <select class="form-select form-select-sm" style="max-width:360px;background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" [formControl]="filtroProyecto">
+        <!-- Opción que actúa como placeholder -->
+        <option [ngValue]="null" disabled>Seleccione el proyecto para ver sus propuestas...</option>
+
+        @for (p of proyectos(); track p.id_proyecto) {
+          <option [ngValue]="p.id_proyecto">{{ p.titulo }} ({{ p.total_propuestas ?? 0 }})</option>
+        }
+      </select>
+    }
+  </div>
 
   @if (cargandoPropuestas()) {
     <p class="small" style="color:#6e9e85;">Cargando propuestas...</p>
   } @else if (!propuestas().length) {
-    <p class="small" style="color:#6e9e85;">Este proyecto todavía no tiene propuestas.</p>
+    <p class="small" style="color:#6e9e85;">{{ verTodas() ? 'Aún no has recibido propuestas.' : 'Este proyecto todavía no tiene propuestas.' }}</p>
   }
 
   @for (p of propuestas(); track p.id_propuesta) {
@@ -25,6 +40,9 @@
           <div>
             <p class="fw-medium small mb-0" style="color:#cce8d8;">{{ p.nombre_freelancer }}</p>
             <small style="color:#6e9e85;">Propone ${{ p.monto_propuesto }} · {{ p.mensaje }}</small>
+            @if (verTodas() && p.titulo_proyecto) {
+              <br><small style="color:#5DCAA5;">Proyecto: {{ p.titulo_proyecto }}</small>
+            }
           </div>
         </div>
         <div class="text-end">
