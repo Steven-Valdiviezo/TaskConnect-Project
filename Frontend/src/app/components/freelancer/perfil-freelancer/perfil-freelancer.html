@@ -1,103 +1,99 @@
 <div class="animate__animated animate__fadeIn">
-    <h1 class="h5 fw-semibold mb-4" style="color:#cde0f0;">
-        Mi perfil - Freelancer
-    </h1>
-    <div class="rounded-4 p-4" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+  <h1 class="h5 fw-semibold mb-4" style="color:#cde0f0;">Mi perfil - Freelancer</h1>
 
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width:60px;height:60px;background-color:#8FB7FF;color:#173963;">
-                    {{usuario.iniciales}}
-                </div>
-                <div>
-                    <h5 class="mb-1">{{usuario.nombre}}</h5>
+  <div class="rounded-4 p-4" style="background-color:#162234;border:1px solid #1c2d3c;">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold" style="width:60px;height:60px;background-color:#8FB7FF;color:#173963;">
+          {{ iniciales() }}
+        </div>
+        <div>
+          <h5 class="mb-1">{{ usuario()?.nombre }}</h5>
+          <small style="color:#8ea8c2;">Freelancer</small>
+        </div>
+      </div>
+      @if (!editando()) {
+        <button class="btn btn-secondary btn-sm" (click)="activarEdicion()">
+          <i class="fa-solid fa-pen me-2"></i>Editar
+        </button>
+      }
+    </div>
 
-                    <small style="color:#8ea8c2;">
-                        {{usuario.descripcion}}
-                    </small>
-                </div>
-            </div>
-            <button class="btn btn-secondary btn-sm">
-                <i class="fa-solid fa-pen me-2"></i>
-                Editar
-            </button>
+    <div class="row mb-4">
+      <div class="col-md-4 mb-3">
+        <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
+          <small style="color:#8ea8c2;">Calificación promedio</small>
+          <h3 class="mt-2 mb-0">{{ rating() }} <i class="fa-solid fa-star text-warning"></i></h3>
         </div>
-        <!-- Métricas -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
-                    <small style="color:#8ea8c2;">
-                        Calificación promedio
-                    </small>
-                    <h3 class="mt-2 mb-0">
-                        {{usuario.rating}}
-                        <i class="fa-solid fa-star text-warning"></i>
-                    </h3>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
-                    <small style="color:#8ea8c2;">
-                        Contratos completados
-                    </small>
-                    <h3 class="mt-2 mb-0">
-                        {{usuario.contratos}}
-                    </h3>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
-                    <small style="color:#8ea8c2;">
-                        Ingresos totales
-                    </small>
-                    <h3 class="mt-2 mb-0">
-                        ${{usuario.ingresos}}
-                    </h3>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
+          <small style="color:#8ea8c2;">Contratos completados</small>
+          <h3 class="mt-2 mb-0">{{ contratosCompletados() }}</h3>
         </div>
-        <hr style="border-color:#1c2d3c;">
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <h6 class="mb-3">Información personal</h6>
-                <div class="mb-3">
-                    <label class="form-label small">Nombre completo</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.nombreCompleto">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small">Correo electrónico</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.correo">
-                </div>
-                <div>
-                    <label class="form-label small">Teléfono</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.telefono">
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <h6 class="mb-3">Información profesional</h6>
-                <div class="mb-3">
-                    <label class="form-label small">Profesión</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.profesion">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small">Años de experiencia</label>
-                    <input class="form-control bg-dark text-light border-secondary" [value]="usuario.experiencia">
-                </div>
-                <div>
-                    <label class="form-label small">Descripción</label>
-                    <textarea rows="3" class="form-control bg-dark text-light border-secondary">{{usuario.descripcionPerfil}}</textarea>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="rounded-3 p-3 text-center h-100" style="background-color:#0f1e30;">
+          <small style="color:#8ea8c2;">Ingresos totales (netos)</small>
+          <h3 class="mt-2 mb-0">${{ ingresosTotales().toFixed(2) }}</h3>
         </div>
+      </div>
+    </div>
+    <hr style="border-color:#1c2d3c;">
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <h6 class="mb-3">Información personal</h6>
+          <div class="mb-3">
+            <label class="form-label small">Nombre completo</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="nombre" [readonly]="!editando()">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Correo electrónico</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="correo" readonly>
+          </div>
+          <div>
+            <label class="form-label small">Teléfono</label>
+            <input class="form-control bg-dark text-light border-secondary" formControlName="telefono" [readonly]="!editando()">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <h6 class="mb-3">Información profesional</h6>
+          <div class="mb-3">
+            <label class="form-label small">Profesión</label>
+            @if (editando()) {
+              <select class="form-select bg-dark text-light border-secondary" formControlName="id_profesion">
+                @for (p of profesiones(); track p.id_profesion) {
+                  <option [ngValue]="p.id_profesion">{{ p.nombre }}</option>
+                }
+              </select>
+            } @else {
+              <input class="form-control bg-dark text-light border-secondary" [value]="profesiones().find(p => p.id_profesion === form.value.id_profesion)?.nombre ?? ''" readonly>
+            }
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Años de experiencia</label>
+            <input type="number" class="form-control bg-dark text-light border-secondary" formControlName="experiencia" [readonly]="!editando()">
+          </div>
+          <div>
+            <label class="form-label small">Descripción</label>
+            <textarea rows="3" class="form-control bg-dark text-light border-secondary" formControlName="descripcion" [readonly]="!editando()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      @if (error()) { <div class="alert alert-danger small py-2 mt-3 mb-0">{{ error() }}</div> }
+
+      @if (editando()) {
         <hr style="border-color:#1c2d3c;">
         <div class="text-end">
-            <button class="btn btn-secondary me-2" routerLink="/freelancer/dashboard">
-                Cancelar
-            </button>
-            <button class="btn" style="background-color:#60b4e8;color:#0d1420;font-weight:600;">
-                Guardar cambios
-            </button>
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelarEdicion()">Cancelar</button>
+          <button type="submit" class="btn" style="background-color:#60b4e8;color:#0d1420;font-weight:600;" [disabled]="guardando()">
+            Guardar cambios
+          </button>
         </div>
-    </div>
+      }
+    </form>
+  </div>
 </div>

@@ -37,3 +37,29 @@ export const eliminarPropuestaRepository = async (id_propuesta, id_freelancer) =
   );
   return resultado.rows[0];
 };
+// Agregado para mostrar las propuestas
+export const listarPropuestasPorClienteRepository = async (id_cliente) => {
+  const resultado = await pool.query(
+    `SELECT pr.*, u.nombre AS nombre_freelancer, p.titulo AS titulo_proyecto
+     FROM propuesta pr
+     JOIN proyecto p ON p.id_proyecto = pr.id_proyecto
+     JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
+     JOIN usuario u ON u.id_usuario = f.id_usuario
+     WHERE p.id_cliente = $1
+     ORDER BY pr.fecha_propuesta DESC`,
+    [id_cliente]
+  );
+  return resultado.rows;
+};
+
+export const listarPropuestasPorFreelancerRepository = async (id_freelancer) => {
+  const resultado = await pool.query(
+    `SELECT pr.*, p.titulo AS titulo_proyecto, p.presupuesto AS presupuesto_proyecto
+     FROM propuesta pr
+     JOIN proyecto p ON p.id_proyecto = pr.id_proyecto
+     WHERE pr.id_freelancer = $1
+     ORDER BY pr.fecha_propuesta DESC`,
+    [id_freelancer]
+  );
+  return resultado.rows;
+};

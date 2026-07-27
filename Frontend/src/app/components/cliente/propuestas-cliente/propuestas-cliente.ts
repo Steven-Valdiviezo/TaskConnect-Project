@@ -25,17 +25,33 @@ export class PropuestasCliente implements OnInit {
   cargandoPropuestas = signal(false);
   procesando = signal<number | null>(null);
 
+  /** true = viendo todas las propuestas de todos los proyectos; false = filtrado por un proyecto */
+  verTodas = signal(false);
+  
   filtroProyecto = new FormControl<number | null>(null);
 
   ngOnInit(): void {
     this.filtroProyecto.valueChanges.subscribe(id => {
-      if (id) this.cargarPropuestas(id);
+      if (id) {
+        this.verTodas.set(false);
+        this.cargarPropuestas(id);
+      }
     });
-
+  
     this.proyectoSrv.listarMios().subscribe(r => {
       this.proyectos.set(r.proyectos);
       const primero = r.proyectos.find(p => (p.total_propuestas ?? 0) > 0) ?? r.proyectos[0];
       if (primero) this.filtroProyecto.setValue(primero.id_proyecto);
+    });
+  }
+
+  verTodasLasPropuestas(): void {
+    this.verTodas.set(true);
+    this.filtroProyecto.setValue(null, { emitEvent: false });
+    this.cargandoPropuestas.set(true);
+    this.propuestaSrv.listarRecibidas().subscribe(r => {
+      this.propuestas.set(r.propuestas);
+      this.cargandoPropuestas.set(false);
     });
   }
 
@@ -56,7 +72,11 @@ export class PropuestasCliente implements OnInit {
   
     this.procesando.set(p.id_propuesta);
     this.contratoSrv.aceptarPropuesta(p.id_propuesta).subscribe({
-      next: () => { this.cargarPropuestas(p.id_proyecto); this.procesando.set(null); },
+      next: () => {
+        if (this.verTodas()) this.verTodasLasPropuestas();
+        else this.cargarPropuestas(p.id_proyecto);
+        this.procesando.set(null);
+      },
       error: async (err: any) => {
         await this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo aceptar la propuesta.', 'Error');
         this.procesando.set(null);
@@ -71,4 +91,5 @@ export class PropuestasCliente implements OnInit {
       default: return { bg: '#2a3a30', color: '#6e9e85' };
     }
   }
+
 }

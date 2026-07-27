@@ -3,39 +3,31 @@ import { pool } from '../database/connection.js';
 export const listarProyectosRepository = async ({ id_categoria, presupuesto_min, presupuesto_max }) => {
   const condiciones = [];
   const valores = [];
-
-  if (id_categoria) {
-    valores.push(id_categoria);
-    condiciones.push(`p.id_categoria = $${valores.length}`);
-  }
-  if (presupuesto_min) {
-    valores.push(presupuesto_min);
-    condiciones.push(`p.presupuesto >= $${valores.length}`);
-  }
-  if (presupuesto_max) {
-    valores.push(presupuesto_max);
-    condiciones.push(`p.presupuesto <= $${valores.length}`);
-  }
-
+  if (id_categoria) { valores.push(id_categoria); condiciones.push(`p.id_categoria = $${valores.length}`); }
+  if (presupuesto_min) { valores.push(presupuesto_min); condiciones.push(`p.presupuesto >= $${valores.length}`); }
+  if (presupuesto_max) { valores.push(presupuesto_max); condiciones.push(`p.presupuesto <= $${valores.length}`); }
   const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
 
   const resultado = await pool.query(
-    `SELECT p.*, c.nombre_categoria
+    `SELECT p.*, c.nombre_categoria, u.nombre AS nombre_cliente
      FROM proyecto p
      JOIN categoria c ON c.id_categoria = p.id_categoria
+     JOIN cliente cl ON cl.id_cliente = p.id_cliente
+     JOIN usuario u ON u.id_usuario = cl.id_usuario
      ${where}
      ORDER BY p.fecha_publicacion DESC`,
     valores
   );
-
   return resultado.rows;
 };
 
 export const obtenerProyectoPorIdRepository = async (id) => {
   const resultado = await pool.query(
-    `SELECT p.*, c.nombre_categoria
+    `SELECT p.*, c.nombre_categoria, u.nombre AS nombre_cliente
      FROM proyecto p
      JOIN categoria c ON c.id_categoria = p.id_categoria
+     JOIN cliente cl ON cl.id_cliente = p.id_cliente
+     JOIN usuario u ON u.id_usuario = cl.id_usuario
      WHERE p.id_proyecto = $1`,
     [id]
   );

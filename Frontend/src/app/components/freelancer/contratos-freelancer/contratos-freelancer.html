@@ -1,21 +1,33 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Contratos</h1>
+  <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Contratos</h1>
+
+  @if (cargando()) {
+    <p class="small" style="color:#6e8fa8;">Cargando...</p>
+  } @else if (!filas().length) {
+    <p class="small" style="color:#6e8fa8;">Aún no tienes contratos.</p>
+  }
+
+  @for (f of filas(); track f.contrato.id_contrato) {
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cde0f0;">Diseño landing page e-commerce</p>
-                <small style="color:#6e8fa8;">Cliente: Juan Carlos · Inicio: 20 jun 2026 · $420</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#FAEEDA;color:#633806;">en progreso</span>
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <p class="fw-medium small mb-1" style="color:#cde0f0;">{{ f.contrato.titulo_proyecto }}</p>
+          <small style="color:#6e8fa8;">Cliente: {{ f.contrato.nombre_contraparte }} · Inicio: {{ f.contrato.fecha_inicio | date:'dd MMM yyyy' }}</small>
         </div>
-    </div>
-    <div class="rounded-3 p-3 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="fw-medium small mb-1" style="color:#cde0f0;">Integración de pagos Node.js</p>
-                <small style="color:#6e8fa8;">Cliente: Empresa XYZ · Finalizado: 5 may 2026 · $350</small>
-            </div>
-            <span class="badge rounded-pill" style="background-color:#2a3040;color:#6e8fa8;">finalizado</span>
+        <span class="badge rounded-pill" [style.background-color]="claseBadge(f.contrato.estado).bg" [style.color]="claseBadge(f.contrato.estado).color">{{ f.contrato.estado }}</span>
+      </div>
+
+      @if (f.pago) {
+        <div class="small text-end mt-2 pt-2" style="color:#6e8fa8;border-top:1px solid #1c2d3c;">
+          <span class="d-block">Monto acordado: ${{ f.pago.monto }}</span>
+          <span class="d-block" style="color:#EF9F27;">Comisión de la plataforma (10%): -${{ f.pago.comision }}</span>
+          <span class="d-block fw-medium" style="color:#60b4e8;">
+            {{ f.pago.estado === 'pagado' ? 'Recibiste' : 'Recibirás' }}: ${{ (f.pago.monto - f.pago.comision).toFixed(2) }}
+          </span>
         </div>
+      } @else if (f.contrato.estado === 'activo') {
+        <p class="small text-end mt-2 mb-0" style="color:#6e8fa8;">El cliente aún no ha registrado el pago de este contrato.</p>
+      }
     </div>
+  }
 </div>

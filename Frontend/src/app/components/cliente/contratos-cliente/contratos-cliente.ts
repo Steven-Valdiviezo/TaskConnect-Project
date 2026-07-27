@@ -87,4 +87,9 @@ export class ContratosCliente implements OnInit {
       default: return { bg: '#3a2a2a', color: '#e0a8a8' };
     }
   }
+  // Comision agregada
+  get comisionEstimada(): number {
+  const monto = this.formPago.value.monto ?? 0;
+  return Math.round(monto * 0.10 * 100) / 100;
+  }
 }

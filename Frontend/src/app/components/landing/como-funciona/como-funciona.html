@@ -38,6 +38,14 @@
                 </div>
             </div>
         </div>
+
+        @if (estadisticas(); as stats) {
+            <p class="text-center text-secondary small mb-4">
+                Únete a los <strong style="color:#0F6E56;">+{{ stats.total_proyectos }}</strong> proyectos ya publicados
+                por <strong style="color:#0F6E56;">+{{ stats.total_freelancers }}</strong> freelancers en la plataforma.
+            </p>
+        }
+        
         <div class="text-center d-flex gap-3 justify-content-center">
             <a routerLink="/registro" class="btn" style="background-color:#0F6E56;color:#E1F5EE;">Comenzar ahora</a>
             <a routerLink="/categorias" class="btn btn-outline-secondary">Ver categorías <i class="fa-solid fa-arrow-right ms-1"></i></a>

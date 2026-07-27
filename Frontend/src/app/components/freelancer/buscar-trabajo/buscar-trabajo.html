@@ -1,46 +1,40 @@
 <div>
-    <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Buscar trabajos</h1>
-    <div class="d-flex gap-2 mb-4">
-        <input type="text" class="form-control" placeholder="Buscar por título, habilidad o categoría..." style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;">
-        <select class="form-select" style="max-width:160px;background-color:#162234;border-color:#1c2d3c;color:#cde0f0;">
-      <option>Todas</option><option>Desarrollo web</option><option>Diseño</option><option>Marketing</option>
-    </select>
-        <button class="btn flex-shrink-0" style="background-color:#185FA5;color:#E6F1FB;">Buscar</button>
-    </div>
-    <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
+    <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Buscar Proyectos Disponibles</h1>
+
+    <form [formGroup]="form" class="d-flex gap-2 mb-4">
+        <input type="text" class="form-control" formControlName="texto" placeholder="Buscar por título o descripción..." style="background-color:#cfe2ff;border-color:#b6d4fe;color:#084298;">
+        <select class="form-select" style="max-width:220px;background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" formControlName="id_categoria">
+            <option [ngValue]="null">Todas las categorías</option>
+            @for (c of categorias(); track c.id_categoria) {
+              <option [ngValue]="c.id_categoria">{{ c.nombre_categoria }}</option>
+            }
+        </select>
+    </form>
+
+    @if (cargando()) {
+      <p class="small" style="color:#6e8fa8;">Cargando proyectos...</p>
+    } @else if (!proyectosFiltrados().length) {
+      <p class="small" style="color:#6e8fa8;">No se encontraron proyectos con esos filtros.</p>
+    }
+
+    @for (p of proyectosFiltrados(); track p.id_proyecto) {
+      <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
         <div class="d-flex justify-content-between align-items-start mb-1">
-            <h3 class="h6 mb-0" style="color:#cde0f0;">App móvil de seguimiento de hábitos</h3>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
+          <h3 class="h6 mb-0" style="color:#cde0f0;">{{ p.titulo }}</h3>
+          <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">{{ p.estado }}</span>
         </div>
-        <small style="color:#6e8fa8;">Desarrollo móvil · $500–800 · Publicado hace 2 días</small>
-        <p class="small mt-2 mb-2" style="color:#8dafc8;">Se necesita app iOS/Android con Flutter y Firebase para registrar hábitos diarios.</p>
-        <div class="d-flex justify-content-between align-items-center">
-            <div><span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Flutter</span><span class="badge" style="background-color:#1c2d3c;color:#6e8fa8;">Firebase</span></div>
-            <a routerLink="/freelancer/proyecto/1" class="btn btn-sm" style="background-color:#185FA5;color:#E6F1FB;font-size:.75rem;">Ver y proponer</a>
+        <small style="color:#6e8fa8;">
+          {{ p.nombre_categoria }} · ${{ p.presupuesto }}
+          @if (p.nombre_cliente) { · {{ p.nombre_cliente }} }
+        </small>
+        <p class="small mt-2 mb-2" style="color:#8dafc8;">{{ p.descripcion }}</p>
+        <div class="d-flex justify-content-end">
+          @if (yaPropuesto(p.id_proyecto)) {
+            <span class="small" style="color:#6e8fa8;"><i class="fa-solid fa-circle-check me-1"></i>Ya enviaste una propuesta</span>
+          } @else {
+            <a [routerLink]="['/freelancer/proyecto', p.id_proyecto]" class="btn btn-sm" style="background-color:#185FA5;color:#E6F1FB;font-size:.75rem;">Ver y proponer</a>
+          }
         </div>
-    </div>
-    <div class="rounded-3 p-3 mb-2" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-            <h3 class="h6 mb-0" style="color:#cde0f0;">Integración de pasarela de pagos</h3>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
-        </div>
-        <small style="color:#6e8fa8;">Backend · $200–400 · Publicado hace 5 días</small>
-        <p class="small mt-2 mb-2" style="color:#8dafc8;">Implementar Stripe/PayPal en plataforma Node.js existente.</p>
-        <div class="d-flex justify-content-between align-items-center">
-            <div><span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Node.js</span><span class="badge" style="background-color:#1c2d3c;color:#6e8fa8;">Stripe</span></div>
-            <a routerLink="/freelancer/proyecto/2" class="btn btn-sm" style="background-color:#185FA5;color:#E6F1FB;font-size:.75rem;">Ver y proponer</a>
-        </div>
-    </div>
-    <div class="rounded-3 p-3" style="background-color:#162234;border:1px solid #1c2d3c;">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-            <h3 class="h6 mb-0" style="color:#cde0f0;">Diseño de identidad de marca</h3>
-            <span class="badge rounded-pill" style="background-color:#E1F5EE;color:#085041;">abierto</span>
-        </div>
-        <small style="color:#6e8fa8;">Diseño gráfico · $300–500 · Publicado hace 1 día</small>
-        <p class="small mt-2 mb-2" style="color:#8dafc8;">Logo, paleta de colores y guía de marca para startup fintech.</p>
-        <div class="d-flex justify-content-between align-items-center">
-            <div><span class="badge me-1" style="background-color:#1c2d3c;color:#6e8fa8;">Figma</span><span class="badge" style="background-color:#1c2d3c;color:#6e8fa8;">Illustrator</span></div>
-            <a routerLink="/freelancer/proyecto/3" class="btn btn-sm" style="background-color:#185FA5;color:#E6F1FB;font-size:.75rem;">Ver y proponer</a>
-        </div>
-    </div>
+      </div>
+    }
 </div>

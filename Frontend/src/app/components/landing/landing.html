@@ -13,22 +13,53 @@
                 </div>
                 <div class="d-flex gap-4 mt-4">
                     <div>
-                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">+1,200</div><small style="color:#9FE1CB;">Freelancers activos</small></div>
+                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">
+                            @if (cargandoEstadisticas()) { <span class="placeholder-glow"><span class="placeholder col-4"></span></span> }
+                            @else { +{{ estadisticas()?.total_freelancers ?? 0 }} }
+                        </div>
+                        <small style="color:#9FE1CB;">Freelancers activos</small>
+                    </div>
                     <div>
-                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">+850</div><small style="color:#9FE1CB;">Proyectos publicados</small></div>
+                        <div class="fs-5 fw-bold" style="color:#5DCAA5;">
+                            @if (cargandoEstadisticas()) { <span class="placeholder-glow"><span class="placeholder col-4"></span></span> }
+                            @else { +{{ estadisticas()?.total_proyectos ?? 0 }} }
+                        </div>
+                        <small style="color:#9FE1CB;">Proyectos publicados</small>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-5 d-flex flex-column gap-3 mt-4 mt-lg-0 animate__animated animate__fadeInRight">
                 <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
-                    <div class="fs-3 fw-medium">+1,200</div>
+                    <div class="fs-3 fw-medium">+{{ estadisticas()?.total_freelancers ?? 0 }}</div>
                     <small style="color:#5DCAA5;">Freelancers activos</small>
                 </div>
                 <div class="text-center rounded-3 p-3" style="background-color:#0F6E56;border:1px solid #1D9E75;">
-                    <div class="fs-3 fw-medium">+850</div>
+                    <div class="fs-3 fw-medium">+{{ estadisticas()?.total_proyectos ?? 0 }}</div>
                     <small style="color:#5DCAA5;">Proyectos publicados</small>
                 </div>
             </div>
         </div>
+
+        @if (proyectosRecientes().length) {
+            <div class="mt-5 pt-4" style="border-top:1px solid rgba(159,225,203,.15);">
+                <p class="text-uppercase small fw-bold mb-3" style="color:#5DCAA5;letter-spacing:.1em;">Oportunidades recientes</p>
+                <div class="row g-3">
+                    @for (proyecto of proyectosRecientes(); track proyecto.id_proyecto) {
+                        <div class="col-md-4">
+                            <div class="h-100 rounded-3 p-3" style="background-color:#0a3322;border:1px solid #1D9E75;">
+                                <span class="badge mb-2" style="background-color:#5DCAA5;color:#04342C;">{{ proyecto.nombre_categoria }}</span>
+                                <p class="fw-medium mb-1 text-white">{{ proyecto.titulo }}</p>
+                                <p class="small mb-2" style="color:#9FE1CB;">
+                                    {{ proyecto.presupuesto | currency:'USD':'symbol':'1.0-0' }} · publicado el {{ proyecto.fecha_publicacion | date:'d MMM' }}
+                                </p>
+                                <a routerLink="/registro" class="small text-decoration-none" style="color:#5DCAA5;">Regístrate para postular →</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
         <div class="text-center mt-5">
             <a routerLink="/como-funciona" style="color:#5DCAA5;" class="text-decoration-none small">
         Ver cómo funciona <i class="fa-solid fa-arrow-down ms-1"></i>

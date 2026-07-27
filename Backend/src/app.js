@@ -16,7 +16,7 @@ import calificacionRoutes from './routes/calificacion.routes.js';
 import catalogoRoutes from './routes/catalogo.routes.js';
 
 import adminRoutes from './routes/admin.routes.js';
-
+import estadisticasRoutes from './routes/estadisticas.routes.js';
 
 dotenv.config();
 
@@ -40,6 +40,7 @@ app.use('/api/calificaciones', calificacionRoutes);
 app.use('/api', catalogoRoutes); // ya define /categorias, /profesiones, /metodos-pago
 
 app.use('/api/admin', adminRoutes);
+app.use('/api/estadisticas', estadisticasRoutes);
 
 app.use(manejarErrores);
 

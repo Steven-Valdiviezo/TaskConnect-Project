@@ -1,10 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { PagoService, FilaPagoContrato } from '../../../core/services/pago.service';
+import { CatalogoService } from '../../../core/services/catalogo.service';
+import { MetodoPago } from '../../../models/catalogo.model';
 
 @Component({
   selector: 'app-pagos-freelancer',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './pagos-freelancer.html',
-  styleUrl: './pagos-freelancer.css',
+  styleUrl: './pagos-freelancer.css'
 })
-export class PagosFreelancer {}
+export class PagosFreelancer implements OnInit {
+  private pagoSrv = inject(PagoService);
+  private catalogo = inject(CatalogoService);
+
+  filas = signal<FilaPagoContrato[]>([]);
+  metodos = signal<MetodoPago[]>([]);
+  cargando = signal(true);
+
+  registrados = computed(() => this.filas().filter(f => !!f.pago));
+  pagados = computed(() => this.filas().filter(f => f.pago?.estado === 'pagado'));
+
+  totalRecibidoNeto = computed(() => this.pagados().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
+  totalComisionRetenida = computed(() => this.pagados().reduce((a, f) => a + Number(f.pago!.comision), 0));
+  totalEsteMesNeto = computed(() => {
+    const ahora = new Date();
+    return this.pagados()
+      .filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear())
+      .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0);
+  });
+  totalPorCobrarNeto = computed(() => this.filas()
+    .filter(f => f.pago?.estado === 'pendiente')
+    .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
+
+  ngOnInit(): void {
+    this.catalogo.listarMetodosPago().subscribe(r => this.metodos.set(r.metodos));
+    this.pagoSrv.listarDeMisContratos().subscribe(lista => {
+      this.filas.set(lista);
+      this.cargando.set(false);
+    });
+  }
+
+  nombreMetodo(id: number): string {
+    return this.metodos().find(m => m.id_metodo_pago === id)?.nombre ?? '—';
+  }
+}

@@ -13,6 +13,7 @@ export interface Proyecto {
   fecha_publicacion: string;
   total_propuestas?: number;
   fecha_entrega?: string;
+  nombre_cliente?: string;
 }
 
 export interface NuevoProyecto {

@@ -36,6 +36,20 @@
                 </div>
             </div>
         </div>
+        
+        @if (categorias().length) {
+            <div class="mb-5">
+                <p class="text-center small fw-bold text-uppercase mb-3" style="color:#0F6E56;">Categorías de proyectos disponibles</p>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    @for (categoria of categorias(); track categoria.id_categoria) {
+                        <span class="badge rounded-pill px-3 py-2" style="background-color:#E1F5EE;color:#085041;border:1px solid #9FE1CB;">
+                            {{ categoria.nombre_categoria }}
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+
         <div class="text-center">
             <a routerLink="/acerca" class="btn btn-outline-secondary">Acerca de TaskConnect <i class="fa-solid fa-arrow-right ms-1"></i></a>
         </div>

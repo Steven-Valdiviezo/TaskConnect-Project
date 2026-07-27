@@ -1,11 +1,21 @@
 import {
   listarPropuestasPorProyectoRepository,
   crearPropuestaRepository,
-  eliminarPropuestaRepository
+  eliminarPropuestaRepository,
+  listarPropuestasPorClienteRepository,
+  listarPropuestasPorFreelancerRepository
 } from '../repositories/propuesta.repository.js';
 
 export const listarPropuestasService = async (id_proyecto) => {
   return await listarPropuestasPorProyectoRepository(id_proyecto);
+};
+
+export const listarPropuestasDelClienteService = async (id_cliente) => {
+  return await listarPropuestasPorClienteRepository(id_cliente);
+};
+
+export const listarPropuestasDelFreelancerService = async (id_freelancer) => {
+  return await listarPropuestasPorFreelancerRepository(id_freelancer);
 };
 
 export const crearPropuestaService = async (id_freelancer, datos) => {
