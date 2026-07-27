@@ -117,3 +117,8 @@ export const listarProyectosPorClienteRepository = async (id_cliente) => {
   );
   return resultado.rows;
 };
+
+export const eliminarProyectoRepository = async (id_proyecto) => {
+  const r = await pool.query('DELETE FROM proyecto WHERE id_proyecto = $1 RETURNING *', [id_proyecto]);
+  return r.rows[0];
+};

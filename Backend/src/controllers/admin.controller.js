@@ -2,7 +2,8 @@ import {
   listarUsuariosService,
   desactivarUsuarioService,
   reactivarUsuarioService,
-  listarAuditoriaService
+  listarAuditoriaService,
+  obtenerEstadisticasAdminService
 } from '../services/admin.service.js';
 
 export const listarUsuarios = async (req, res, next) => {
@@ -43,4 +44,11 @@ export const listarAuditoria = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const obtenerEstadisticasAdmin = async (req, res, next) => {
+  try {
+    const estadisticas = await obtenerEstadisticasAdminService();
+    res.json({ mensaje: 'Estadísticas administrativas', estadisticas });
+  } catch (error) { next(error); }
 };

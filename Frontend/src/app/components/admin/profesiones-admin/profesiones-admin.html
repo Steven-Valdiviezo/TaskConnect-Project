@@ -2,6 +2,8 @@
 <div class="row g-4">
     <div class="col-md-7">
         <h2 class="h6 fw-medium mb-2" style="color:#d8d5f5;">Profesiones registradas</h2>
+        @if (cargando()) { <p class="small" style="color:#8e89c4;">Cargando...</p> }
+        @else if (!profesiones().length) { <p class="small" style="color:#8e89c4;">Aún no hay profesiones.</p> }
         <div class="table-responsive">
             <table class="table align-middle" style="--bs-table-bg:transparent;--bs-table-color:#d8d5f5;">
                 <thead>
@@ -12,65 +14,40 @@
                     </tr>
                 </thead>
                 <tbody class="small">
+                  @for (p of profesiones(); track p.id_profesion) {
                     <tr style="border-color:#2a2550;">
-                        <td style="color:#d8d5f5;">Desarrollador web</td>
-                        <td style="color:#8e89c4;">42</td>
+                        <td style="color:#d8d5f5;">{{ p.nombre }}</td>
+                        <td style="color:#8e89c4;">{{ freelancersDe(p.id_profesion) }}</td>
                         <td>
                             <div class="d-flex gap-1">
-                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-trash"></i></button>
+                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;" (click)="editar(p)"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;" (click)="eliminar(p)"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
-                    <tr style="border-color:#2a2550;">
-                        <td style="color:#d8d5f5;">Diseñador UX/UI</td>
-                        <td style="color:#8e89c4;">28</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="border-color:#2a2550;">
-                        <td style="color:#d8d5f5;">Community Manager</td>
-                        <td style="color:#8e89c4;">19</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="border-color:#2a2550;">
-                        <td style="color:#d8d5f5;">Desarrollador móvil</td>
-                        <td style="color:#8e89c4;">15</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                  }
                 </tbody>
             </table>
         </div>
     </div>
     <div class="col-md-5">
-        <h2 class="h6 fw-medium mb-3" style="color:#d8d5f5;">Nueva profesión</h2>
+        <h2 class="h6 fw-medium mb-3" style="color:#d8d5f5;">{{ editando() ? 'Editar profesión' : 'Nueva profesión' }}</h2>
         <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
-            <form>
+            <form [formGroup]="form" (ngSubmit)="guardar()">
                 <div class="mb-3">
                     <label class="form-label small" style="color:#8e89c4;">Nombre *</label>
-                    <input type="text" class="form-control" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Analista de datos">
+                    <input type="text" class="form-control" formControlName="nombre" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Analista de datos">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small" style="color:#8e89c4;">Descripción</label>
-                    <textarea class="form-control" rows="2" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Breve descripción del rol..."></textarea>
+                    <label class="form-label small" style="color:#8e89c4;">Descripción *</label>
+                    <textarea class="form-control" rows="2" formControlName="descripcion" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Breve descripción del rol..."></textarea>
                 </div>
+                @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
                 <div class="d-flex gap-2 justify-content-end">
-                    <button type="button" class="btn btn-sm" style="background-color:#12102a;color:#8e89c4;border:1px solid #2a2550;">Cancelar</button>
-                    <button type="submit" class="btn btn-sm" style="background-color:#534AB7;color:#EEEDFE;">Guardar</button>
+                    @if (editando()) {
+                      <button type="button" class="btn btn-sm" style="background-color:#12102a;color:#8e89c4;border:1px solid #2a2550;" (click)="nuevo()">Cancelar</button>
+                    }
+                    <button type="submit" class="btn btn-sm" style="background-color:#534AB7;color:#EEEDFE;" [disabled]="guardando()">{{ editando() ? 'Actualizar' : 'Guardar' }}</button>
                 </div>
             </form>
         </div>

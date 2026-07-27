@@ -38,4 +38,7 @@ export class ProyectoService {
   cancelar(id: number) {
     return this.http.patch<{ proyecto: Proyecto }>(`${this.baseUrl}/${id}/cancelar`, {});
   }
+  eliminar(id: number) {
+  return this.http.delete<{ proyecto: Proyecto }>(`${this.baseUrl}/${id}`);
+  }
 }

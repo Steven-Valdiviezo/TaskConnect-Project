@@ -4,7 +4,8 @@ import {
   crearProyectoService,
   actualizarProyectoService,
   cancelarProyectoService,
-  listarMisProyectosService
+  listarMisProyectosService,
+  eliminarProyectoService
 } from '../services/proyecto.service.js';
 
 export const listarProyectos = async (req, res, next) => {
@@ -62,4 +63,14 @@ export const listarMisProyectos = async (req, res, next) => {
     const proyectos = await listarMisProyectosService(req.usuario.id_cliente);
     res.json({ mensaje: 'Mis proyectos', total: proyectos.length, proyectos });
   } catch (error) { next(error); }
+};
+
+export const eliminarProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await eliminarProyectoService(Number(req.params.id));
+    res.json({ mensaje: 'Proyecto eliminado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
 };

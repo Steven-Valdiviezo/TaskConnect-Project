@@ -2,7 +2,9 @@ import {
   listarUsuariosRepository,
   desactivarUsuarioRepository,
   reactivarUsuarioRepository,
-  listarAuditoriaRepository
+  listarAuditoriaRepository,
+  contarUsuariosDetalladoRepository, contarProyectosDetalladoRepository, proyectosPorCategoriaRepository,
+  freelancersPorProfesionRepository, contarPropuestasRepository, contarContratosRepository, sumarPagosRepository
 } from '../repositories/admin.repository.js';
 
 export const listarUsuariosService = async (filtros) => {
@@ -41,4 +43,33 @@ export const reactivarUsuarioService = async (id_usuario) => {
 
 export const listarAuditoriaService = async (filtros) => {
   return await listarAuditoriaRepository(filtros);
+};
+
+// Actualizado por lo nuevo de repostory 
+export const obtenerEstadisticasAdminService = async () => {
+  const [usuariosDetalle, proyectos, categorias, profesiones, propuestas, contratos, pagos] = await Promise.all([
+    contarUsuariosDetalladoRepository(),
+    contarProyectosDetalladoRepository(),
+    proyectosPorCategoriaRepository(),
+    freelancersPorProfesionRepository(),
+    contarPropuestasRepository(),
+    contarContratosRepository(),
+    sumarPagosRepository()
+  ]);
+
+  const totalClientes = usuariosDetalle.filter(u => u.rol === 'cliente').reduce((a, u) => a + u.total, 0);
+  const totalFreelancers = usuariosDetalle.filter(u => u.rol === 'freelancer').reduce((a, u) => a + u.total, 0);
+
+  return {
+    total_usuarios: totalClientes + totalFreelancers,
+    total_clientes: totalClientes,
+    total_freelancers: totalFreelancers,
+    proyectos,
+    proyectos_por_categoria: categorias,
+    freelancers_por_profesion: profesiones,
+    propuestas,
+    contratos,
+    monto_total_pagado: Number(pagos.total_pagado),
+    comision_total: Number(pagos.total_comision)
+  };
 };
