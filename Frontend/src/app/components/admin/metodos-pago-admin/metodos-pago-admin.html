@@ -1,0 +1,55 @@
+<h1 class="h5 fw-medium mb-4" style="color:#d8d5f5;">Gestión de métodos de pago</h1>
+<div class="row g-4">
+    <div class="col-md-7">
+        <h2 class="h6 fw-medium mb-2" style="color:#d8d5f5;">Métodos registrados</h2>
+        @if (cargando()) { <p class="small" style="color:#8e89c4;">Cargando...</p> }
+        @else if (!metodos().length) { <p class="small" style="color:#8e89c4;">Aún no hay métodos de pago.</p> }
+        <div class="table-responsive">
+            <table class="table align-middle" style="--bs-table-bg:transparent;--bs-table-color:#d8d5f5;">
+                <thead>
+                    <tr style="border-color:#2a2550;">
+                        <th class="small" style="color:#8e89c4;border-color:#2a2550;">Nombre</th>
+                        <th class="small" style="color:#8e89c4;border-color:#2a2550;">Descripción</th>
+                        <th class="small" style="color:#8e89c4;border-color:#2a2550;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                  @for (m of metodos(); track m.id_metodo_pago) {
+                    <tr style="border-color:#2a2550;">
+                        <td style="color:#d8d5f5;">{{ m.nombre }}</td>
+                        <td style="color:#8e89c4;">{{ m.descripcion }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm" style="background-color:#1e1a35;color:#8e89c4;font-size:.75rem;padding:2px 7px;" (click)="editar(m)"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-sm" style="background-color:#2a1a1a;color:#e88080;font-size:.75rem;padding:2px 7px;" (click)="eliminar(m)"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                  }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <h2 class="h6 fw-medium mb-3" style="color:#d8d5f5;">{{ editando() ? 'Editar método de pago' : 'Nuevo método de pago' }}</h2>
+        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+            <form [formGroup]="form" (ngSubmit)="guardar()">
+                <div class="mb-3">
+                    <label class="form-label small" style="color:#8e89c4;">Nombre *</label>
+                    <input type="text" class="form-control" formControlName="nombre" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Transferencia bancaria">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small" style="color:#8e89c4;">Descripción *</label>
+                    <textarea class="form-control" rows="2" formControlName="descripcion" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Breve descripción del método..."></textarea>
+                </div>
+                @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
+                <div class="d-flex gap-2 justify-content-end">
+                    @if (editando()) {
+                      <button type="button" class="btn btn-sm" style="background-color:#12102a;color:#8e89c4;border:1px solid #2a2550;" (click)="nuevo()">Cancelar</button>
+                    }
+                    <button type="submit" class="btn btn-sm" style="background-color:#534AB7;color:#EEEDFE;" [disabled]="guardando()">{{ editando() ? 'Actualizar' : 'Guardar' }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,13 +1,40 @@
 <div class="d-flex flex-column min-vh-100" style="background-color:#12102a;">
     <nav class="navbar px-3 flex-shrink-0" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
-        <span class="navbar-brand mb-0" style="color:#9FE1CB;">
+        <a routerLink="/" class="navbar-brand mb-0 text-decoration-none" style="color:#9FE1CB;cursor:pointer;">
             <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
-        </span>
+        </a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <span class="badge rounded-pill" style="background-color:#EEEDFE;color:#534AB7;">Administrador</span>
-            <i class="fa-solid fa-bell text-white" style="cursor:pointer;"></i>
-            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#EEEDFE;color:#534AB7;">AD</div>
-            <a routerLink="/login" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</a>
+
+            <div class="position-relative">
+                <i class="fa-solid fa-bell text-white position-relative" style="cursor:pointer;"
+                   (click)="mostrarNotificaciones.set(!mostrarNotificaciones())">
+                    @if (notificaciones().length) {
+                        <span class="position-absolute rounded-circle" style="top:-4px;right:-6px;width:8px;height:8px;background-color:#EF9F27;"></span>
+                    }
+                </i>
+
+                @if (mostrarNotificaciones()) {
+                    <div class="position-absolute rounded-3 shadow-lg animate__animated animate__fadeIn animate__faster"
+                         style="top:32px;right:0;width:300px;background-color:#1e1a35;border:1px solid #2a2550;z-index:1050;max-height:360px;overflow-y:auto;">
+                        <p class="small fw-medium px-3 pt-3 mb-2" style="color:#d8d5f5;">Nuevos usuarios (últimos 7 días)</p>
+                        @if (!notificaciones().length) {
+                            <p class="small px-3 pb-3 mb-0" style="color:#8e89c4;">No hay registros nuevos.</p>
+                        }
+                        @for (n of notificaciones(); track n.texto) {
+                            <div class="d-flex align-items-start gap-2 px-3 py-2" style="cursor:pointer;border-top:1px solid #2a2550;" (click)="irA()">
+                                <i class="fa-solid mt-1" [class]="n.icono" [style.color]="n.color"></i>
+                                <p class="small mb-0" style="color:#d8d5f5;">{{ n.texto }}</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#EEEDFE;color:#534AB7;">
+                {{ iniciales() }}
+            </div>
+            <button type="button" routerLink="/login" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</button>
         </div>
     </nav>
 
@@ -26,8 +53,11 @@
             <a routerLink="/admin/categorias" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-list"></i> Categorías
             </a>
-            <a routerLink="/admin/profesiones" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+            <a routerLink="/admin/profesiones" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-toolbox"></i> Profesiones
+            </a>
+            <a routerLink="/admin/metodos-pago" routerLinkActive="side-active-a" class="side-link-a d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+                <i class="fa-solid fa-credit-card"></i> Métodos de pago
             </a>
         </aside>
 
@@ -38,21 +68,7 @@
 </div>
 
 <style>
-    .side-link-a {
-        color: #8e89c4;
-        font-size: .875rem;
-        transition: .15s;
-    }
-    
-    .side-link-a:hover {
-        color: #d8d5f5;
-        background-color: #1e1a35 !important;
-    }
-    
-    .side-active-a {
-        color: #9b96e0 !important;
-        background-color: #1e1a35 !important;
-        font-weight: 600;
-        border-left: 3px solid #9b96e0;
-    }
+    .side-link-a { color:#8e89c4; font-size:.875rem; transition:.15s; }
+    .side-link-a:hover { color:#d8d5f5; background-color:#1e1a35 !important; }
+    .side-active-a { color:#9b96e0 !important; background-color:#1e1a35 !important; font-weight:600; border-left:3px solid #9b96e0; }
 </style>

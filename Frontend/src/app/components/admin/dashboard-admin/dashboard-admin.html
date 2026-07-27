@@ -1,105 +1,80 @@
-<h1 class="h5 fw-medium mb-4" style="color:#d8d5f5;">Estadísticas generales Admin - Dashboard</h1>
+<h1 class="h5 fw-medium mb-4" style="color:#d8d5f5;">Estadísticas generales</h1>
+
+@if (cargando()) {
+  <p class="small" style="color:#8e89c4;">Cargando estadísticas...</p>
+} @else if (estadisticas(); as e) {
 
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Total usuarios</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">248</div>
-            <small style="color:#9b96e0;">+12 este mes</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.total_usuarios }}</div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Freelancers</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">142</div>
-            <small style="color:#8e89c4;">57% del total</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.total_freelancers }}</div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Clientes</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">106</div>
-            <small style="color:#8e89c4;">43% del total</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.total_clientes }}</div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Proyectos activos</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">34</div>
-            <small style="color:#8e89c4;">8 en progreso</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.proyectos.total_abiertos + e.proyectos.total_ejecucion }}</div>
+            <small style="color:#8e89c4;">{{ e.proyectos.total_ejecucion }} en progreso</small>
         </div>
     </div>
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+    <div class="col-md-3">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Propuestas totales</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">189</div>
-            <small style="color:#8e89c4;">62 aceptadas</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.propuestas.total }}</div>
+            <small style="color:#8e89c4;">{{ e.propuestas.total_aceptadas }} aceptadas</small>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+    <div class="col-md-3">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Contratos completados</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">47</div>
-            <small style="color:#8e89c4;">este trimestre</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">{{ e.contratos.total_completados }}</div>
+            <small style="color:#8e89c4;">de {{ e.contratos.total }} en total</small>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background-color:#1e1a35;border:1px solid #2a2550;">
+    <div class="col-md-3">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
             <small style="color:#8e89c4;">Monto total pagado</small>
-            <div class="fs-4 fw-medium" style="color:#d8d5f5;">$18.4k</div>
-            <small style="color:#8e89c4;">en la plataforma</small>
+            <div class="fs-4 fw-medium" style="color:#d8d5f5;">${{ e.monto_total_pagado.toFixed(2) }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="p-3 rounded-3 h-100" style="background-color:#1e1a35;border:1px solid #2a2550;">
+            <small style="color:#8e89c4;">Comisión generada</small>
+            <div class="fs-4 fw-medium" style="color:#9b96e0;">${{ e.comision_total.toFixed(2) }}</div>
+            <small style="color:#8e89c4;">ingreso de la plataforma</small>
         </div>
     </div>
 </div>
 
 <h2 class="h6 fw-medium mb-3" style="color:#d8d5f5;">Proyectos por categoría</h2>
 <div class="d-flex flex-column gap-2" style="max-width:560px;">
+  @for (c of e.proyectos_por_categoria; track c.id_categoria; let i = $index) {
     <div>
-        <div class="d-flex justify-content-between mb-1">
-            <small style="color:#8e89c4;">Desarrollo web</small>
-            <small style="color:#d8d5f5;">38%</small>
-        </div>
-        <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
-            <div class="rounded-pill" style="height:6px;width:38%;background-color:#185FA5;"></div>
-        </div>
+      <div class="d-flex justify-content-between mb-1">
+        <small style="color:#8e89c4;">{{ c.nombre_categoria }}</small>
+        <small style="color:#d8d5f5;">{{ c.total }} ({{ porcentaje(e.proyectos.total, c.total) }}%)</small>
+      </div>
+      <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
+        <div class="rounded-pill" [style.height.px]="6" [style.width.%]="porcentaje(e.proyectos.total, c.total)" [style.background-color]="colorBarra(i)"></div>
+      </div>
     </div>
-    <div>
-        <div class="d-flex justify-content-between mb-1">
-            <small style="color:#8e89c4;">Diseño gráfico</small>
-            <small style="color:#d8d5f5;">24%</small>
-        </div>
-        <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
-            <div class="rounded-pill" style="height:6px;width:24%;background-color:#0F6E56;"></div>
-        </div>
-    </div>
-    <div>
-        <div class="d-flex justify-content-between mb-1">
-            <small style="color:#8e89c4;">Marketing digital</small>
-            <small style="color:#d8d5f5;">18%</small>
-        </div>
-        <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
-            <div class="rounded-pill" style="height:6px;width:18%;background-color:#854F0B;"></div>
-        </div>
-    </div>
-    <div>
-        <div class="d-flex justify-content-between mb-1">
-            <small style="color:#8e89c4;">Desarrollo móvil</small>
-            <small style="color:#d8d5f5;">12%</small>
-        </div>
-        <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
-            <div class="rounded-pill" style="height:6px;width:12%;background-color:#9b96e0;"></div>
-        </div>
-    </div>
-    <div>
-        <div class="d-flex justify-content-between mb-1">
-            <small style="color:#8e89c4;">Otros</small>
-            <small style="color:#d8d5f5;">8%</small>
-        </div>
-        <div class="rounded-pill" style="height:6px;background-color:#2a2550;">
-            <div class="rounded-pill" style="height:6px;width:8%;background-color:#4a4580;"></div>
-        </div>
-    </div>
+  }
 </div>
+
+}

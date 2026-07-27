@@ -5,7 +5,8 @@ import {
   actualizarProyectoRepository,
   obtenerDueñoProyectoRepository,
   cancelarProyectoRepository,
-  listarProyectosPorClienteRepository
+  listarProyectosPorClienteRepository,
+  eliminarProyectoRepository
 } from '../repositories/proyecto.repository.js';
 
 export const listarProyectosService = async (filtros) => {
@@ -89,4 +90,14 @@ export const cancelarProyectoService = async (id_proyecto, id_cliente) => {
 
 export const listarMisProyectosService = async (id_cliente) => {
   return await listarProyectosPorClienteRepository(id_cliente);
+};
+
+export const eliminarProyectoService = async (id_proyecto) => {
+  const proyecto = await eliminarProyectoRepository(id_proyecto);
+  if (!proyecto) {
+    const error = new Error('Proyecto no encontrado');
+    error.status = 404;
+    throw error;
+  }
+  return proyecto;
 };

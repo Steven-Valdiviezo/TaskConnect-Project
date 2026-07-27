@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import {
   listarProyectos, obtenerProyecto, crearProyecto, 
-  editarProyecto, cancelarProyecto, listarMisProyectos
+  editarProyecto, cancelarProyecto, listarMisProyectos,
+  eliminarProyecto
 } from '../controllers/proyecto.controller.js';
 import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
 
@@ -13,5 +14,6 @@ router.get('/:id', obtenerProyecto);
 router.post('/', autenticar, permitirRoles('cliente'), crearProyecto);
 router.put('/:id', autenticar, permitirRoles('cliente'), editarProyecto);
 router.patch('/:id/cancelar', autenticar, permitirRoles('cliente'), cancelarProyecto);
+router.delete('/:id', autenticar, permitirRoles('administrador'), eliminarProyecto);
 
 export default router;

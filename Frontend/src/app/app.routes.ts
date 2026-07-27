@@ -35,6 +35,7 @@ import { UsuariosAdmin } from './components/admin/usuarios-admin/usuarios-admin'
 import { ProyectosAdmin } from './components/admin/proyectos-admin/proyectos-admin';
 import { CategoriasAdmin } from './components/admin/categorias-admin/categorias-admin';
 import { ProfesionesAdmin } from './components/admin/profesiones-admin/profesiones-admin';
+import { MetodosPagoAdmin } from './components/admin/metodos-pago-admin/metodos-pago-admin';
 // importa guardias para proteger rutas
 import { rolGuard } from './core/guards/auth.guard';
 
@@ -80,7 +81,8 @@ export const routes: Routes = [
       { path: 'usuarios', component: UsuariosAdmin },
       { path: 'proyectos', component: ProyectosAdmin },
       { path: 'categorias', component: CategoriasAdmin },
-      { path: 'profesiones', component: ProfesionesAdmin }
+      { path: 'profesiones', component: ProfesionesAdmin },
+      { path: 'metodos-pago', component: MetodosPagoAdmin }
     ]
   },
   { path: '**', redirectTo: '' }
