@@ -2,7 +2,8 @@ import {
   obtenerPropuestaConProyectoRepository,
   crearContratoRepository,
   listarContratosPorUsuarioRepository,
-  actualizarEstadoContratoRepository
+  actualizarEstadoContratoRepository,
+  obtenerContratoConFreelancerRepository
 } from '../repositories/contrato.repository.js';
 
 export const aceptarPropuestaYCrearContratoService = async (id_cliente, id_propuesta) => {
@@ -23,6 +24,12 @@ export const aceptarPropuestaYCrearContratoService = async (id_cliente, id_propu
   if (propuesta.estado !== 'pendiente') {
     const error = new Error('Solo se pueden aceptar propuestas en estado pendiente');
     error.status = 400;
+    throw error;
+  }
+  // Valida si el freelancer es activo
+  if (propuesta.estado_freelancer !== 'activo') {
+    const error = new Error(`No es posible aceptar la propuesta porque el freelancer "${propuesta.nombre_freelancer}" se encuentra inactivo.`);
+    error.status = 409;
     throw error;
   }
 
@@ -46,7 +53,20 @@ export const listarMisContratosService = async (id_usuario, rol) => {
 };
 
 export const completarContratoService = async (id_contrato) => {
-  // El trigger trg_proyecto_finalizado marca el proyecto como 'finalizado'
+  const contrato = await obtenerContratoConFreelancerRepository(id_contrato);
+
+  if (!contrato) {
+    const error = new Error('Contrato no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (contrato.estado_freelancer !== 'activo') {
+    const error = new Error(`No es posible marcar el contrato como completado porque el freelancer "${contrato.nombre_freelancer}" se encuentra inactivo.`);
+    error.status = 409;
+    throw error;
+  }
+  // El trigger marca como finalizado
   return await actualizarEstadoContratoRepository(id_contrato, 'completado', new Date());
 };
 

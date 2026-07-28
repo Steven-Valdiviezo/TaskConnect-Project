@@ -75,7 +75,12 @@
           </div>
 
           <div>
-            <p class="fw-medium small mb-0" style="color:#cce8d8;">{{ p.nombre_freelancer }}</p>
+            <p class="fw-medium small mb-0" style="color:#cce8d8;">
+              {{ p.nombre_freelancer }}
+              @if (p.estado_freelancer === 'inactivo') {
+                <span class="badge rounded-pill ms-1" style="background-color:#FCEBEB;color:#791F1F;font-size:.65rem;">Inactivo</span>
+              }
+            </p>
             <small style="color:#6e9e85;">Propone ${{ p.monto_propuesto }} · {{ p.mensaje }}</small>
             @if (verTodas() && p.titulo_proyecto) {
               <br><small style="color:#5DCAA5;">Proyecto: {{ p.titulo_proyecto }}</small>
@@ -87,7 +92,11 @@
 
           <div class="d-flex flex-wrap gap-1 justify-content-end">
             @if (p.estado === 'pendiente') {
-              <button class="btn btn-sm btn-outline-success" style="border-color: #5DCAA5; color: #0c7564;" [disabled]="procesando() === p.id_propuesta" (click)="aceptar(p)">Aceptar</button>
+              <button class="btn btn-sm btn-outline-success" style="border-color: #5DCAA5; color: #0c7564;"
+                [disabled]="procesando() === p.id_propuesta || p.estado_freelancer === 'inactivo'"
+                [title]="p.estado_freelancer === 'inactivo' ? 'El freelancer está inactivo' : ''"
+                (click)="aceptar(p)">Aceptar
+              </button>
               <button class="btn btn-sm btn-outline-danger" [disabled]="procesando() === p.id_propuesta" (click)="rechazar(p)">Rechazar</button>
             }
             <button class="btn btn-sm btn-outline-secondary" (click)="verPerfil(p.id_freelancer)">Ver perfil</button>

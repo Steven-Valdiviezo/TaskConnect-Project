@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { PropuestaService } from '../../../core/services/propuesta.service';
 import { PagoService } from '../../../core/services/pago.service';
+import { MensajeService } from '../../../core/services/mensaje.service';
 
 interface Notificacion { icono: string; color: string; texto: string; ruta: string; }
 
@@ -18,6 +19,7 @@ export class FreelancerShell implements OnInit {
   private router = inject(Router);
   private propuestaSrv = inject(PropuestaService);
   private pagoSrv = inject(PagoService);
+  private mensajeSrv = inject(MensajeService);
 
   usuario = this.auth.usuario;
   iniciales = computed(() => {
@@ -27,9 +29,14 @@ export class FreelancerShell implements OnInit {
 
   notificaciones = signal<Notificacion[]>([]);
   mostrarNotificaciones = signal(false);
+  hayMensajesNuevos = signal(false);
 
   ngOnInit(): void {
     this.cargarNotificaciones();
+    this.mensajeSrv.contarNoLeidos().subscribe({
+      next: (r) => this.hayMensajesNuevos.set(r.total > 0),
+      error: () => this.hayMensajesNuevos.set(false)
+    });
   }
 
   private cargarNotificaciones(): void {

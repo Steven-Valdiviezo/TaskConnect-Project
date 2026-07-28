@@ -13,6 +13,10 @@
         <div>
           <p class="fw-medium small mb-1" style="color:#cde0f0;">{{ f.contrato.titulo_proyecto }}</p>
           <small style="color:#6e8fa8;">Cliente: {{ f.contrato.nombre_contraparte }} · Inicio: {{ f.contrato.fecha_inicio | date:'dd MMM yyyy' }}</small>
+          <br>
+          <small style="color:#6e8fa8;">
+            Presupuesto del proyecto: ${{ f.contrato.presupuesto }} · Monto acordado: ${{ f.contrato.monto_propuesto }}
+          </small>
         </div>
         <span class="badge rounded-pill" [style.background-color]="claseBadge(f.contrato.estado).bg" [style.color]="claseBadge(f.contrato.estado).color">{{ f.contrato.estado }}</span>
       </div>

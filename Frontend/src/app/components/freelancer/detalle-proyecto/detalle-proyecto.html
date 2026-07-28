@@ -34,12 +34,25 @@
           <label class="form-label small" style="color:#6e8fa8;">Tu mensaje al cliente *</label>
           <textarea class="form-control" rows="4" formControlName="mensaje" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="Describe tu experiencia y por qué eres el candidato ideal..."></textarea>
         </div>
-        <div class="mb-3" style="max-width:260px;">
+
+        <div class="mb-3" style="max-width:280px;">
           <label class="form-label small" style="color:#6e8fa8;">Monto propuesto (USD) *</label>
           <div class="input-group">
             <span class="input-group-text" style="background-color:#1c2d3c;border-color:#1c2d3c;color:#6e8fa8;">$</span>
-            <input type="number" class="form-control" formControlName="monto_propuesto" style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" placeholder="0.00">
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="monto_propuesto" 
+              [max]="p.presupuesto"
+              style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" 
+              placeholder="0.00">
           </div>
+
+          @if (form.get('monto_propuesto')?.hasError('max') && form.get('monto_propuesto')?.touched) {
+            <small class="text-danger d-block mt-1" style="font-size: 0.75rem;">
+              No puede superar el presupuesto del proyecto (${{ p.presupuesto }}).
+            </small>
+          }
         </div>
 
         @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }

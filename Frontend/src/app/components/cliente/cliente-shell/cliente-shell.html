@@ -62,6 +62,9 @@
             <hr style="border-color:#1c3c2d;margin:.5rem 0;">
             <a routerLink="/cliente/mensajes" routerLinkActive="side-active" class="side-link d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-message"></i> Mensajes
+                @if (hayMensajesNuevos()) {
+                <span class="rounded-circle ms-auto" style="width:8px;height:8px;background-color:#EF9F27;flex-shrink:0;"></span>
+                }
             </a>
             <a routerLink="/cliente/pagos" routerLinkActive="side-active" class="side-link d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-credit-card"></i> Pagos

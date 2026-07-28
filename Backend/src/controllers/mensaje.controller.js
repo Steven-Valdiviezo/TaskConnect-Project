@@ -1,4 +1,6 @@
-import { enviarMensajeService, obtenerConversacionService, marcarLeidoService } from '../services/mensaje.service.js';
+import { enviarMensajeService, obtenerConversacionService, 
+  marcarLeidoService, contarNoLeidosService
+ } from '../services/mensaje.service.js';
 
 export const enviarMensaje = async (req, res, next) => {
   try {
@@ -25,6 +27,15 @@ export const marcarLeido = async (req, res, next) => {
     res.json({ mensaje: 'Mensaje marcado como leído', datos: mensaje });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const contarNoLeidos = async (req, res, next) => {
+  try {
+    const total = await contarNoLeidosService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Mensajes no leídos', total });
+  } catch (error) {
     next(error);
   }
 };
