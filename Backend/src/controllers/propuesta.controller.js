@@ -1,6 +1,6 @@
 import { 
   listarPropuestasService, listarPropuestasDelClienteService, listarPropuestasDelFreelancerService,
-  crearPropuestaService, retirarPropuestaService } 
+  crearPropuestaService, retirarPropuestaService, rechazarPropuestaService } 
 from '../services/propuesta.service.js';
 
 export const listarPropuestasDeProyecto = async (req, res, next) => {
@@ -35,6 +35,17 @@ export const retirarPropuesta = async (req, res, next) => {
   try {
     const propuesta = await retirarPropuestaService(req.usuario.id_freelancer, Number(req.params.id));
     res.json({ mensaje: 'Propuesta retirada correctamente', propuesta });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Agregado para rechazar propuestas
+export const rechazarPropuesta = async (req, res, next) => {
+  try {
+    const propuesta = await rechazarPropuestaService(req.usuario.id_cliente, Number(req.params.id));
+    res.json({ mensaje: 'Propuesta rechazada correctamente', propuesta });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);

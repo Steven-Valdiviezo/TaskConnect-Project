@@ -118,3 +118,44 @@ export const actualizarFreelancerRepository = async (id_usuario, { id_profesion,
     );
     return r.rows[0];
 };
+
+export const obtenerPerfilPublicoFreelancerRepository = async (id_freelancer) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, u.nombre, u.fecha_registro,
+                p.nombre AS profesion, f.descripcion, f.experiencia,
+                (SELECT COUNT(*) FROM contrato c
+                 WHERE c.id_freelancer = f.id_freelancer AND c.estado = 'completado')::int AS contratos_completados
+         FROM freelancer f
+         JOIN usuario u ON u.id_usuario = f.id_usuario
+         JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_freelancer = $1`,
+        [id_freelancer]
+    );
+    return r.rows[0];
+};
+// Obtiene perfil para contacto
+export const obtenerPerfilFreelancerConContactoRepository = async (id_freelancer) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, u.nombre, u.correo, u.telefono, u.fecha_registro,
+                p.nombre AS profesion, f.descripcion, f.experiencia,
+                (SELECT COUNT(*) FROM contrato c
+                 WHERE c.id_freelancer = f.id_freelancer AND c.estado = 'completado')::int AS contratos_completados
+         FROM freelancer f
+         JOIN usuario u ON u.id_usuario = f.id_usuario
+         JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_freelancer = $1`,
+        [id_freelancer]
+    );
+    return r.rows[0];
+};
+
+export const existeContratoEntreClienteYFreelancerRepository = async (id_cliente, id_freelancer) => {
+    const r = await pool.query(
+        `SELECT 1 FROM contrato c
+         JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+         WHERE c.id_freelancer = $1 AND p.id_cliente = $2
+         LIMIT 1`,
+        [id_freelancer, id_cliente]
+    );
+    return r.rowCount > 0;
+};

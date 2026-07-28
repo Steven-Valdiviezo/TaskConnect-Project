@@ -7,7 +7,10 @@ import {
     obtenerDatosFreelancerRepository,
     actualizarPerfilUsuarioRepository,
     actualizarClienteRepository,
-    actualizarFreelancerRepository
+    actualizarFreelancerRepository,
+    obtenerPerfilPublicoFreelancerRepository,
+    obtenerPerfilFreelancerConContactoRepository,
+    existeContratoEntreClienteYFreelancerRepository
 } from '../repositories/usuario.repository.js';
 import { hashPassword, compararPassword } from '../utils/password.util.js';
 import { generarToken, generarPreAuthToken, verificarPreAuthToken } from '../utils/jwt.util.js';
@@ -199,4 +202,41 @@ export const loginPruebaService = async ({ correo, contrasena }) => {
     const token = generarToken(payload);
 
     return { token, usuario: payload };
+};
+// para observar el perfil
+export const obtenerPerfilPublicoFreelancerService = async (id_freelancer) => {
+    const perfil = await obtenerPerfilPublicoFreelancerRepository(id_freelancer);
+
+    if (!perfil) {
+        const error = new Error('Freelancer no encontrado');
+        error.status = 404;
+        throw error;
+    }
+
+    return perfil;
+};
+
+// Para obtener el perfil de un freelancer con información de contacto si hay un contrato con el cliente
+export const obtenerPerfilConContactoFreelancerService = async (usuarioActual, id_freelancer) => {
+    if (usuarioActual.rol !== 'cliente') {
+        const error = new Error('Solo un cliente puede ver el contacto de un freelancer');
+        error.status = 403;
+        throw error;
+    }
+
+    const tieneContrato = await existeContratoEntreClienteYFreelancerRepository(usuarioActual.id_cliente, id_freelancer);
+    if (!tieneContrato) {
+        const error = new Error('Solo puedes ver el contacto de freelancers con los que ya tienes un contrato');
+        error.status = 403;
+        throw error;
+    }
+
+    const perfil = await obtenerPerfilFreelancerConContactoRepository(id_freelancer);
+    if (!perfil) {
+        const error = new Error('Freelancer no encontrado');
+        error.status = 404;
+        throw error;
+    }
+
+    return perfil;
 };

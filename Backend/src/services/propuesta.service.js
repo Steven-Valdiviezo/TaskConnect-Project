@@ -3,7 +3,8 @@ import {
   crearPropuestaRepository,
   eliminarPropuestaRepository,
   listarPropuestasPorClienteRepository,
-  listarPropuestasPorFreelancerRepository
+  listarPropuestasPorFreelancerRepository,
+  rechazarPropuestaRepository
 } from '../repositories/propuesta.repository.js';
 
 export const listarPropuestasService = async (id_proyecto) => {
@@ -49,6 +50,18 @@ export const retirarPropuestaService = async (id_freelancer, id_propuesta) => {
 
   if (!propuesta) {
     const error = new Error('Propuesta no encontrada, no te pertenece, o ya no se puede retirar (estado aceptada)');
+    error.status = 404;
+    throw error;
+  }
+
+  return propuesta;
+};
+
+export const rechazarPropuestaService = async (id_cliente, id_propuesta) => {
+  const propuesta = await rechazarPropuestaRepository(id_propuesta, id_cliente);
+
+  if (!propuesta) {
+    const error = new Error('Propuesta no encontrada, no pertenece a uno de tus proyectos, o ya no está pendiente');
     error.status = 404;
     throw error;
   }

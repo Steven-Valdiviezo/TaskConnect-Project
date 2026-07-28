@@ -63,3 +63,19 @@ export const listarPropuestasPorFreelancerRepository = async (id_freelancer) => 
   );
   return resultado.rows;
 };
+
+// Rechazar una propuesta (actualizar estado a 'retirada')
+export const rechazarPropuestaRepository = async (id_propuesta, id_cliente) => {
+  const resultado = await pool.query(
+    `UPDATE propuesta
+     SET estado = 'rechazada'
+     FROM proyecto
+     WHERE propuesta.id_propuesta = $1
+       AND propuesta.id_proyecto = proyecto.id_proyecto
+       AND proyecto.id_cliente = $2
+       AND propuesta.estado = 'pendiente'
+     RETURNING propuesta.*`,
+    [id_propuesta, id_cliente]
+  );
+  return resultado.rows[0];
+};

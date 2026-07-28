@@ -2,15 +2,43 @@
   <h1 class="h5 fw-medium mb-4" style="color:#cce8d8;">Propuestas recibidas</h1>
 
   <div class="d-flex gap-2 align-items-center mb-3 flex-wrap">
-    <button type="button" class="btn btn-sm"
-        [style.background-color]="verTodas() ? '#5DCAA5' : '#142b21'"
-        [style.color]="verTodas() ? '#04342C' : '#cce8d8'"
-        [style.opacity]="verTodas() ? '0.7' : '1'"
-        style="border:1px solid #1c3c2d;"
-        [disabled]="verTodas()"
-        (click)="verTodasLasPropuestas()">
-      Ver todas las propuestas
-    </button>
+      <button type="button" class="btn btn-sm"
+          [style.background-color]="verTodas() ? '#5DCAA5' : '#142b21'"
+          [style.color]="verTodas() ? '#04342C' : '#cce8d8'"
+          [style.opacity]="verTodas() ? '0.7' : '1'"
+          style="border:1px solid #1c3c2d;"
+          [disabled]="verTodas()"
+          (click)="verTodasLasPropuestas()">
+        Ver de todos los proyectos
+      </button>
+      <button type="button" class="btn btn-sm"
+              [style.background-color]="filtroEstado() === 'todas' ? '#5DCAA5' : '#142b21'"
+              [style.color]="filtroEstado() === 'todas' ? '#04342C' : '#cce8d8'"
+              style="border:1px solid #1c3c2d;"
+              (click)="filtrarPorEstado('todas')">
+        Todas ({{ propuestas().length }})
+      </button>
+      <button type="button" class="btn btn-sm"
+              [style.background-color]="filtroEstado() === 'pendiente' ? '#A8E6CF' : '#142b21'"
+              [style.color]="filtroEstado() === 'pendiente' ? '#04342C' : '#cce8d8'"
+              style="border:1px solid #1c3c2d;"
+              (click)="filtrarPorEstado('pendiente')">
+        Pendientes ({{ conteoPendientes() }})
+      </button>
+      <button type="button" class="btn btn-sm"
+              [style.background-color]="filtroEstado() === 'aceptada' ? '#2F9E6E' : '#142b21'"
+              [style.color]="filtroEstado() === 'aceptada' ? '#eafff5' : '#cce8d8'"
+              style="border:1px solid #1c3c2d;"
+              (click)="filtrarPorEstado('aceptada')">
+        Aceptadas ({{ conteoAceptadas() }})
+      </button>
+      <button type="button" class="btn btn-sm"
+              [style.background-color]="filtroEstado() === 'rechazada' ? '#1F5C42' : '#142b21'"
+              [style.color]="filtroEstado() === 'rechazada' ? '#eafff5' : '#cce8d8'"
+              style="border:1px solid #1c3c2d;"
+              (click)="filtrarPorEstado('rechazada')">
+        Rechazadas ({{ conteoRechazadas() }})
+      </button>
 
     @if (proyectos().length) {
       <select class="form-select form-select-sm" style="max-width:360px;background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" [formControl]="filtroProyecto">
@@ -26,17 +54,26 @@
 
   @if (cargandoPropuestas()) {
     <p class="small" style="color:#6e9e85;">Cargando propuestas...</p>
-  } @else if (!propuestas().length) {
-    <p class="small" style="color:#6e9e85;">{{ verTodas() ? 'Aún no has recibido propuestas.' : 'Este proyecto todavía no tiene propuestas.' }}</p>
+  } @else if (!propuestasFiltradas().length) {
+    <p class="small" style="color:#6e9e85;">
+      @if (!propuestas().length) { {{ verTodas() ? 'Aún no has recibido propuestas.' : 'Este proyecto todavía no tiene propuestas.' }} }
+      @else { No hay propuestas con este filtro. }
+    </p>
   }
 
-  @for (p of propuestas(); track p.id_propuesta) {
+  @for (p of propuestasFiltradas(); track p.id_propuesta) {
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
       <div class="d-flex justify-content-between align-items-start">
         <div class="d-flex gap-3 align-items-center">
-          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:36px;height:36px;background-color:#1c3c2d;color:#5DCAA5;">
+
+          <!-- Botón para abrir el perfil del freelancer desde el circulo de perfil -->
+          <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0"
+              style="width:36px;height:36px;background-color:#1c3c2d;color:#5DCAA5;cursor:pointer;"
+              title="Ver perfil de {{ p.nombre_freelancer }}"
+              (click)="verPerfil(p.id_freelancer)">
             {{ p.nombre_freelancer?.slice(0,2)?.toUpperCase() }}
           </div>
+
           <div>
             <p class="fw-medium small mb-0" style="color:#cce8d8;">{{ p.nombre_freelancer }}</p>
             <small style="color:#6e9e85;">Propone ${{ p.monto_propuesto }} · {{ p.mensaje }}</small>
@@ -45,12 +82,68 @@
             }
           </div>
         </div>
-        <div class="text-end">
+        <div class="text-end" style="min-width:170px;">
           <span class="badge rounded-pill d-block mb-2" [style.background-color]="claseBadge(p.estado).bg" [style.color]="claseBadge(p.estado).color">{{ p.estado }}</span>
-          @if (p.estado === 'pendiente') {
-            <button class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;" [disabled]="procesando() === p.id_propuesta" (click)="aceptar(p)">Aceptar</button>
-          }
+
+          <div class="d-flex flex-wrap gap-1 justify-content-end">
+            @if (p.estado === 'pendiente') {
+              <button class="btn btn-sm btn-outline-success" style="border-color: #5DCAA5; color: #0c7564;" [disabled]="procesando() === p.id_propuesta" (click)="aceptar(p)">Aceptar</button>
+              <button class="btn btn-sm btn-outline-danger" [disabled]="procesando() === p.id_propuesta" (click)="rechazar(p)">Rechazar</button>
+            }
+            <button class="btn btn-sm btn-outline-secondary" (click)="verPerfil(p.id_freelancer)">Ver perfil</button>
+          </div>
         </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal para ver el perfil del freelancer -->
+   @if (perfilAbierto()) {
+    <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center animate__animated animate__fadeIn"
+         style="background-color:rgba(0,0,0,.6);z-index:1050;" (click)="cerrarPerfil()">
+
+      <div class="rounded-3 p-4" style="background-color:#0f2018;border:1px solid #1c3c2d;max-width:520px;width:90%;" (click)="$event.stopPropagation()">
+
+        @if (cargandoPerfil()) {
+          <p class="small text-center mb-0" style="color:#6e9e85;">Cargando perfil...</p>
+        } @else if (perfilSeleccionado(); as perfil) {
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="d-flex gap-3 align-items-center">
+              <div class="rounded-circle d-flex align-items-center justify-content-center fw-medium flex-shrink-0" style="width:52px;height:52px;background-color:#1c3c2d;color:#5DCAA5;font-size:1.1rem;">
+                {{ perfil.nombre.slice(0,2).toUpperCase() }}
+              </div>
+              <div>
+                <p class="fw-medium mb-0" style="color:#cce8d8;">{{ perfil.nombre }}</p>
+                <small style="color:#6e9e85;">{{ perfil.profesion }} · {{ perfil.experiencia }} años exp.</small>
+              </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" (click)="cerrarPerfil()"></button>
+          </div>
+
+          <p class="small mb-3" style="color:#9fbcae;">{{ perfil.descripcion }}</p>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <div class="rounded-3 p-2 text-center" style="background-color:#142b21;border:1px solid #1c3c2d;">
+                <div class="fs-5 fw-medium" style="color:#5DCAA5;">{{ perfil.contratos_completados }}</div>
+                <small style="color:#6e9e85;">Contratos completados</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="rounded-3 p-2 text-center" style="background-color:#142b21;border:1px solid #1c3c2d;">
+                <div class="fs-5 fw-medium" style="color:#5DCAA5;">
+                  @if (ratingSeleccionado() > 0) { {{ ratingSeleccionado() | number:'1.1-1' }} ★ }
+                  @else { Sin calificar }
+                </div>
+                <small style="color:#6e9e85;">Calificación</small>
+              </div>
+            </div>
+          </div>
+
+          <p class="small mb-0 text-center" style="color:#6e9e85;">Miembro desde {{ perfil.fecha_registro | date:'MMMM yyyy' }}</p>
+        } @else {
+          <p class="small text-center mb-0" style="color:#6e9e85;">No se pudo cargar el perfil.</p>
+        }
       </div>
     </div>
   }

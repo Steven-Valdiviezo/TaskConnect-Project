@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { PropuestaService } from '../../../core/services/propuesta.service';
 import { DialogoService } from '../../../core/services/dialogo.service';
@@ -18,6 +18,18 @@ export class MisPropuestas implements OnInit {
   propuestas = signal<Propuesta[]>([]);
   cargando = signal(true);
   procesando = signal<number | null>(null);
+
+  filtroEstado = signal<'todas' | 'pendiente' | 'aceptada' | 'rechazada'>('todas');
+
+  propuestasFiltradas = computed(() =>
+    this.filtroEstado() === 'todas'
+      ? this.propuestas()
+      : this.propuestas().filter(p => p.estado === this.filtroEstado())
+  );
+  
+  conteoPendientes = computed(() => this.propuestas().filter(p => p.estado === 'pendiente').length);
+  conteoAceptadas = computed(() => this.propuestas().filter(p => p.estado === 'aceptada').length);
+  conteoRechazadas = computed(() => this.propuestas().filter(p => p.estado === 'rechazada').length);
 
   ngOnInit(): void {
     this.cargar();
@@ -43,6 +55,10 @@ export class MisPropuestas implements OnInit {
         this.procesando.set(null);
       }
     });
+  }
+
+  filtrarPorEstado(estado: 'todas' | 'pendiente' | 'aceptada' | 'rechazada'): void {
+    this.filtroEstado.set(estado);
   }
 
   claseBadge(estado: string): { bg: string; color: string } {
