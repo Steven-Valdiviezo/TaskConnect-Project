@@ -23,4 +23,8 @@ export class PropuestaService {
   retirar(id: number) {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
+  // Rechazo de propuesta enviada por el freelancer
+  rechazar(id: number) {
+  return this.http.patch<{ propuesta: Propuesta }>(`${this.baseUrl}/${id}/rechazar`, {});
+  }
 }

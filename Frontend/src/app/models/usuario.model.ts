@@ -45,4 +45,16 @@ export interface RegistroFreelancerPayload {
   perfil: { id_profesion: number; descripcion: string; experiencia: number };
 }
 
+export interface PerfilPublicoFreelancer {
+  id_freelancer: number;
+  nombre: string;
+  fecha_registro: string;
+  profesion: string;
+  descripcion: string;
+  experiencia: number;
+  contratos_completados: number;
+  correo?: string;
+  telefono?: string;
+}
+
 export type RegistroPayload = RegistroClientePayload | RegistroFreelancerPayload;

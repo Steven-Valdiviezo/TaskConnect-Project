@@ -1,13 +1,47 @@
 <div>
   <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Mis propuestas</h1>
 
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <button type="button" class="btn btn-sm"
+            [style.background-color]="filtroEstado() === 'todas' ? '#60b4e8' : '#162234'"
+            [style.color]="filtroEstado() === 'todas' ? '#0f1e30' : '#cde0f0'"
+            style="border:1px solid #1c2d3c;"
+            (click)="filtrarPorEstado('todas')">
+      Todas ({{ propuestas().length }})
+    </button>
+    <button type="button" class="btn btn-sm"
+            [style.background-color]="filtroEstado() === 'pendiente' ? '#8FB7FF' : '#162234'"
+            [style.color]="filtroEstado() === 'pendiente' ? '#0f1e30' : '#cde0f0'"
+            style="border:1px solid #1c2d3c;"
+            (click)="filtrarPorEstado('pendiente')">
+      Pendientes ({{ conteoPendientes() }})
+    </button>
+    <button type="button" class="btn btn-sm"
+            [style.background-color]="filtroEstado() === 'aceptada' ? '#185FA5' : '#162234'"
+            [style.color]="filtroEstado() === 'aceptada' ? '#E6F1FB' : '#cde0f0'"
+            style="border:1px solid #1c2d3c;"
+            (click)="filtrarPorEstado('aceptada')">
+      Aceptadas ({{ conteoAceptadas() }})
+    </button>
+    <button type="button" class="btn btn-sm"
+            [style.background-color]="filtroEstado() === 'rechazada' ? '#173963' : '#162234'"
+            [style.color]="filtroEstado() === 'rechazada' ? '#E6F1FB' : '#cde0f0'"
+            style="border:1px solid #1c2d3c;"
+            (click)="filtrarPorEstado('rechazada')">
+      Rechazadas ({{ conteoRechazadas() }})
+    </button>
+  </div>
+
   @if (cargando()) {
     <p class="small" style="color:#6e8fa8;">Cargando...</p>
-  } @else if (!propuestas().length) {
-    <p class="small" style="color:#6e8fa8;">Aún no has enviado propuestas.</p>
+  } @else if (!propuestasFiltradas().length) {
+    <p class="small" style="color:#6e8fa8;">
+      @if (!propuestas().length) { Aún no has enviado propuestas. }
+      @else { No hay propuestas con este filtro. }
+    </p>
   }
 
-  @for (p of propuestas(); track p.id_propuesta) {
+  @for (p of propuestasFiltradas(); track p.id_propuesta) {
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#162234;border:1px solid #1c2d3c;">
       <div class="d-flex justify-content-between align-items-start">
         <div>

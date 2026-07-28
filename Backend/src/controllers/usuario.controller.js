@@ -4,7 +4,9 @@ import {
   obtenerPerfilService,
   confirmarLogin2FAService,
   actualizarPerfilService,
-  loginPruebaService
+  loginPruebaService,
+  obtenerPerfilPublicoFreelancerService,
+  obtenerPerfilConContactoFreelancerService
 } from '../services/usuario.service.js';
 
 export const registrarUsuario = async (req, res, next) => {
@@ -75,6 +77,28 @@ export const loginPrueba = async (req, res, next) => {
     }
     const resultado = await loginPruebaService({ correo, contrasena });
     res.json({ mensaje: 'Inicio de sesión de prueba exitoso (sin 2FA)', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Obtener perfil público de un freelancer por su ID
+export const perfilPublicoFreelancer = async (req, res, next) => {
+  try {
+    const perfil = await obtenerPerfilPublicoFreelancerService(Number(req.params.id));
+    res.json({ mensaje: 'Perfil público del freelancer', perfil });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Obtener perfil de un freelancer con información de contacto si hay contrato con el cliente
+export const perfilFreelancerConContacto = async (req, res, next) => {
+  try {
+    const perfil = await obtenerPerfilConContactoFreelancerService(req.usuario, Number(req.params.id));
+    res.json({ mensaje: 'Perfil del freelancer con datos de contacto', perfil });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);
