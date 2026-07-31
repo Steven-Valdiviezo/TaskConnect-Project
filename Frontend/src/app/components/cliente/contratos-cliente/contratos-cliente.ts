@@ -40,9 +40,11 @@ export class ContratosCliente implements OnInit {
   perfilSeleccionado = signal<PerfilPublicoFreelancer | null>(null);
   ratingSeleccionado = signal(0);
 
+  contratoEnPago = signal<Contrato | null>(null);
+
   formPago = this.fb.group({
     id_metodo_pago: [null as number | null, Validators.required],
-    monto: [null as number | null, [Validators.required, Validators.min(1)]]
+    adicional: [0, [Validators.min(0)]]
   });
 
   ngOnInit(): void {
@@ -77,18 +79,37 @@ export class ContratosCliente implements OnInit {
   }
 
   abrirFormPago(c: Contrato): void {
-    this.formPago.reset();
+    this.formPago.reset({ id_metodo_pago: null, adicional: 0 });
     this.formPagoAbiertoPara.set(c.id_contrato);
+    this.contratoEnPago.set(c);
+  }
+  
+  cerrarFormPago(): void {
+    this.formPagoAbiertoPara.set(null);
+    this.contratoEnPago.set(null);
   }
 
-  registrarPago(c: Contrato): void {
-    if (this.formPago.invalid) {
+  async registrarPago(c: Contrato): Promise<void> {
+    if (this.formPago.get('id_metodo_pago')!.invalid) {
       this.formPago.markAllAsTouched();
       return;
     }
+  
+    const base = c.monto_propuesto ?? 0;
+    const adicional = Number(this.formPago.value.adicional) || 0;
+    const montoFinal = base + adicional;
+  
+    if (adicional > 0 && c.presupuesto != null && montoFinal > c.presupuesto) {
+      await this.dialogo.avisar(
+        `El pago adicional hace que el total ($${montoFinal.toFixed(2)}) supere el presupuesto del proyecto ($${c.presupuesto}). Reduce el monto adicional.`,
+        'Supera el presupuesto'
+      );
+      return;
+    }
+  
     const v = this.formPago.getRawValue();
-    this.pagoSrv.registrar({ id_contrato: c.id_contrato, id_metodo_pago: v.id_metodo_pago!, monto: v.monto! }).subscribe({
-      next: () => { this.formPagoAbiertoPara.set(null); this.cargar(); },
+    this.pagoSrv.registrar({ id_contrato: c.id_contrato, id_metodo_pago: v.id_metodo_pago!, monto: montoFinal }).subscribe({
+      next: () => { this.formPagoAbiertoPara.set(null); this.contratoEnPago.set(null); this.cargar(); },
       error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo registrar el pago.', 'Error')
     });
   }
@@ -150,8 +171,27 @@ export class ContratosCliente implements OnInit {
     }
   }
   // Comision agregada
-  get comisionEstimada(): number {
-  const monto = this.formPago.value.monto ?? 0;
-  return Math.round(monto * 0.10 * 100) / 100;
+  get montoAPagar(): number {
+    const base = this.contratoEnPago()?.monto_propuesto ?? 0;
+    const adicional = Number(this.formPago.value.adicional) || 0;
+    return base + adicional;
+  }
+  
+  get margenDisponible(): number {
+    const c = this.contratoEnPago();
+    if (!c || c.presupuesto == null || c.monto_propuesto == null) return 0;
+    return Math.max(0, c.presupuesto - c.monto_propuesto);
+  }
+  
+  get comisionEstimadaMitad(): number {
+    return Math.round(this.montoAPagar * 0.05 * 100) / 100;
+  }
+  
+  get totalClienteEstimado(): number {
+    return Math.round((this.montoAPagar + this.comisionEstimadaMitad) * 100) / 100;
+  }
+  
+  get freelancerRecibiraEstimado(): number {
+    return Math.round((this.montoAPagar - this.comisionEstimadaMitad) * 100) / 100;
   }
 }

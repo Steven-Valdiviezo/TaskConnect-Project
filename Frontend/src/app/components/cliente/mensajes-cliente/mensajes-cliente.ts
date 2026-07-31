@@ -7,6 +7,15 @@ import { Contrato } from '../../../models/contrato.model';
 import { Mensaje } from '../../../models/mensaje.model';
 import { DialogoService } from '../../../core/services/dialogo.service';
 
+/** Una fila de "Conversaciones" = una persona, sin importar cuántos contratos/proyectos
+ *  tengas en común con ella (antes se repetía una fila por cada contrato). */
+interface ConversacionAgrupada {
+  idUsuarioContraparte: number;
+  nombreContraparte?: string;
+  proyectos: string[];
+  contrato: Contrato; // contrato representativo, solo para reusar sus datos si hace falta
+}
+
 @Component({
   selector: 'app-mensajes-cliente',
   standalone: true,
@@ -22,11 +31,39 @@ export class MensajesCliente implements OnInit {
   private dialogo = inject(DialogoService);
 
   contratosActivos = signal<Contrato[]>([]);
-  contratoSeleccionado = signal<Contrato | null>(null);
+  idContraparteSeleccionado = signal<number | null>(null);
   mensajes = signal<Mensaje[]>([]);
   cargandoMensajes = signal(false);
 
   miIdUsuario = computed(() => this.auth.usuario()?.id_usuario ?? 0);
+
+  /** Agrupa los contratos activos por persona, para no duplicar la misma
+   *  conversación una vez por cada proyecto que compartas con ese freelancer. */
+  conversaciones = computed<ConversacionAgrupada[]>(() => {
+    const mapa = new Map<number, ConversacionAgrupada>();
+
+    for (const c of this.contratosActivos()) {
+      if (!c.id_usuario_contraparte) continue;
+
+      const existente = mapa.get(c.id_usuario_contraparte);
+      if (existente) {
+        if (c.titulo_proyecto) existente.proyectos.push(c.titulo_proyecto);
+      } else {
+        mapa.set(c.id_usuario_contraparte, {
+          idUsuarioContraparte: c.id_usuario_contraparte,
+          nombreContraparte: c.nombre_contraparte,
+          proyectos: c.titulo_proyecto ? [c.titulo_proyecto] : [],
+          contrato: c
+        });
+      }
+    }
+
+    return Array.from(mapa.values());
+  });
+
+  conversacionSeleccionada = computed(() =>
+    this.conversaciones().find(c => c.idUsuarioContraparte === this.idContraparteSeleccionado()) ?? null
+  );
 
   formMensaje = this.fb.group({
     texto: ['', Validators.required]
@@ -36,14 +73,15 @@ export class MensajesCliente implements OnInit {
     this.contratoSrv.listarMios().subscribe(r => {
       const activos = r.contratos.filter(c => c.estado === 'activo');
       this.contratosActivos.set(activos);
-      if (activos[0]) this.seleccionar(activos[0]);
+      const primera = this.conversaciones()[0];
+      if (primera) this.seleccionar(primera);
     });
   }
 
-  seleccionar(c: Contrato): void {
-    this.contratoSeleccionado.set(c);
+  seleccionar(conv: ConversacionAgrupada): void {
+    this.idContraparteSeleccionado.set(conv.idUsuarioContraparte);
     this.cargandoMensajes.set(true);
-    this.mensajeSrv.conversacionCon(c.id_usuario_contraparte!).subscribe(r => {
+    this.mensajeSrv.conversacionCon(conv.idUsuarioContraparte).subscribe(r => {
       this.mensajes.set(r.conversacion);
       this.cargandoMensajes.set(false);
       this.marcarComoLeidos(r.conversacion);
@@ -51,13 +89,13 @@ export class MensajesCliente implements OnInit {
   }
 
   enviar(): void {
-    const c = this.contratoSeleccionado();
-    if (!c || this.formMensaje.invalid) return;
+    const conv = this.conversacionSeleccionada();
+    if (!conv || this.formMensaje.invalid) return;
     const texto = this.formMensaje.getRawValue().texto!.trim();
     if (!texto) return;
-  
-    this.mensajeSrv.enviar(c.id_usuario_contraparte!, texto).subscribe({
-      next: () => { this.formMensaje.reset(); this.seleccionar(c); },
+
+    this.mensajeSrv.enviar(conv.idUsuarioContraparte, texto).subscribe({
+      next: () => { this.formMensaje.reset(); this.seleccionar(conv); },
       error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo enviar el mensaje.', 'Error')
     });
   }
@@ -76,7 +114,7 @@ export class MensajesCliente implements OnInit {
         });
       });
   }
-  
+
   horaDe(fechaIso: string): string {
     return new Date(fechaIso).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
   }

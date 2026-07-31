@@ -54,7 +54,7 @@ export class FreelancerShell implements OnInit {
 
       pagos.filter(x => x.pago?.estado === 'pagado').forEach(x => notifs.push({
         icono: 'fa-sack-dollar', color: '#5DCAA5',
-        texto: `Cobraste $${(Number(x.pago!.monto) - Number(x.pago!.comision)).toFixed(2)} en "${x.contrato.titulo_proyecto}"`,
+        texto: `Cobraste $${(Number(x.pago!.monto) - Number(x.pago!.comision) / 2).toFixed(2)} en "${x.contrato.titulo_proyecto}"`,
         ruta: '/freelancer/pagos'
       }));
 

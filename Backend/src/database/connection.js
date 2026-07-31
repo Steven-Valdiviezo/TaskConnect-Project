@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const { Pool } = pg;
+const { Pool, types } = pg;
+
+types.setTypeParser(1700, (value) => (value === null ? null : parseFloat(value)));
 
 export const pool = new Pool({
     user: process.env.DB_USER,

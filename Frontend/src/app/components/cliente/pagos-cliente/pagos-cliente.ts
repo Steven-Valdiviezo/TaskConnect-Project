@@ -21,23 +21,24 @@ export class PagosCliente implements OnInit {
 
   pagadas = computed(() => this.filas().filter(f => f.pago?.estado === 'pagado'));
   registrados = computed(() => this.filas().filter(f => !!f.pago));
-
-  totalGastado = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.monto), 0));
+  
+  // Agregado del 5% de comision para cada rol
+  totalGastado = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0));
   totalEsteMes = computed(() => {
     const ahora = new Date();
     return this.pagadas()
       .filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear())
-      .reduce((a, f) => a + Number(f.pago!.monto), 0);
+      .reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0);
   });
   pagosEsteMesCantidad = computed(() => {
     const ahora = new Date();
     return this.pagadas().filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear()).length;
   });
-  totalPendiente = computed(() => this.filas().filter(f => f.pago?.estado === 'pendiente').reduce((a, f) => a + Number(f.pago!.monto), 0));
+  totalPendiente = computed(() => this.filas().filter(f => f.pago?.estado === 'pendiente').reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0));
   
-  //Comision agregada por el sistema
+  //Comision agregada por el sistema (el total del 10% no cambia, sigue siendo lo que recauda la plataforma)
   totalComision = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.comision), 0));
-  totalNetoFreelancers = computed(() => this.pagadas().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
+  totalNetoFreelancers = computed(() => this.pagadas().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision) / 2), 0));
 
   ngOnInit(): void {
     this.catalogo.listarMetodosPago().subscribe(r => this.metodos.set(r.metodos));
