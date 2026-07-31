@@ -40,7 +40,8 @@
           @if (!f.pago && f.contrato.estado !== 'cancelado') {
             <button class="btn btn-sm btn-outline-success" 
                     style="border-color: #5DCAA5; color: #0c7564;" 
-                    [disabled]="f.contrato.estado !== 'completado'"
+                    [disabled]="f.contrato.estado !== 'completado' || !f.contrato.monto_propuesto"
+                    [title]="!f.contrato.monto_propuesto ? 'No se encontró el monto acordado de este contrato' : ''"
                     (click)="abrirFormPago(f.contrato)">
               Registrar pago
             </button>
@@ -49,12 +50,13 @@
           @if (f.pago?.estado === 'pendiente') {
             <button class="btn btn-sm btn-outline-warning" (click)="marcarPagado(f.pago!)">Marcar pagado</button>
           }
-
+          <!-- Reparte la comision en 5% para cada uno de los roles -->
           @if (f.pago) {
             <div class="small text-end mt-1" style="color:#6e9e85;">
-              <span class="d-block">Monto: ${{ f.pago!.monto }}</span>
-              <span class="d-block" style="color:#EF9F27;">Comisión (10%): -${{ f.pago!.comision }}</span>
-              <span class="d-block fw-medium" style="color:#5DCAA5;">Freelancer recibe: ${{ (f.pago!.monto - f.pago!.comision).toFixed(2) }}</span>
+              <span class="d-block">Monto dado: ${{ f.pago!.monto }}</span>
+              <span class="d-block" style="color:#EF9F27;">Tu comisión (5%): -${{ (f.pago!.comision / 2).toFixed(2) }}</span>
+              <span class="d-block fw-medium" style="color:#cce8d8;">Total pagado por ti: ${{ (f.pago!.monto + f.pago!.comision / 2).toFixed(2) }}</span>
+              <span class="d-block fw-medium" style="color:#5DCAA5;">Freelancer recibe: ${{ (f.pago!.monto - f.pago!.comision / 2).toFixed(2) }}</span>
             </div>
           }
           
@@ -69,17 +71,25 @@
               <option [ngValue]="m.id_metodo_pago">{{ m.nombre }}</option>
             }
           </select>
-          <input type="number" class="form-control form-control-sm" style="max-width:140px;background-color:#091410;border-color:#1c3c2d;color:#cce8d8;" placeholder="Monto" formControlName="monto">
-          
-          @if (formPago.value.monto) {
-            <small class="d-block w-100" style="color:#6e9e85;">
-              Comisión estimada (10%): ${{ comisionEstimada }} · Freelancer recibirá: ${{ (formPago.value.monto! - comisionEstimada).toFixed(2) }}
-            </small>
-          }
 
-          <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Confirmar</button>
+          <div>
+            <input type="number" class="form-control form-control-sm" style="max-width:200px;background-color:#091410;border-color:#1c3c2d;color:#cce8d8;"
+                  placeholder="Pago adicional (opcional)" formControlName="adicional" min="0" [max]="margenDisponible">
+            <small class="d-block" style="color:#6e9e85;"><b>Ya acordado: </b>${{ f.contrato.monto_propuesto }} · <b>Margen extra disponible: </b>${{ margenDisponible.toFixed(2) }}</small>
+          </div>
+
+          <small class="d-block w-100" style="color:#6e9e85;">
+            Monto a pagar: ${{ montoAPagar.toFixed(2) }} · Tu comisión (5%): ${{ comisionEstimadaMitad.toFixed(2) }} ·
+            Pagarás en total: ${{ totalClienteEstimado.toFixed(2) }} · Freelancer recibirá: ${{ freelancerRecibiraEstimado.toFixed(2) }}
+          </small>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-sm" style="background-color:#5DCAA5;color:#04342C;">Confirmar pago</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cerrarFormPago()">Cancelar</button>
+          </div>
         </form>
       }
+
     </div>
   }
   <!-- Modal para el freelancer contacto-->
@@ -108,9 +118,9 @@
           <p class="small mb-3" style="color:#9fbcae;">{{ perfil.descripcion }}</p>
 
           <div class="rounded-3 p-2 mb-3" style="background-color:#142b21;border:1px solid #1c3c2d;">
-            <p class="small mb-1" style="color:#cce8d8;">📧 {{ perfil.correo }}</p>
+            <p class="small mb-1" style="color:#cce8d8;">📧 Correo: {{ perfil.correo }}</p>
             @if (perfil.telefono) {
-              <p class="small mb-0" style="color:#cce8d8;">📞 {{ perfil.telefono }}</p>
+              <p class="small mb-0" style="color:#cce8d8;">📞 Número de contacto: {{ perfil.telefono }}</p>
             }
           </div>
 

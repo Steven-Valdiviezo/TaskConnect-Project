@@ -31,7 +31,7 @@
                 }
             </div>
 
-            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#E6F1FB;color:#0C447C;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium" style="width:32px;height:32px;background-color:#E6F1FB;color:#0C447C;cursor:pointer;" routerLink="/freelancer/perfil">
                 {{ iniciales() }}
             </div>
             <button type="button" routerLink="/login" class="btn btn-sm btn-outline-light ms-2" style="font-size:.75rem;">Salir</button>
@@ -53,7 +53,7 @@
                 <i class="fa-solid fa-file-contract"></i> Contratos
             </a>
             <hr style="border-color:#1c2d3c;margin:.5rem 0;">
-            <a routerLink="/freelancer/mensajes" routerLinkActive="side-active" class="side-link d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
+            <a routerLink="/freelancer/mensajes" routerLinkActive="side-active-f" class="side-link-f d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-message"></i> Mensajes
                 @if (hayMensajesNuevos()) {
                 <span class="rounded-circle ms-auto" style="width:8px;height:8px;background-color:#EF9F27;flex-shrink:0;"></span>

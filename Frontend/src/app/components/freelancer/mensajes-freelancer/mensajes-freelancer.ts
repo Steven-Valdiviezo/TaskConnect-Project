@@ -7,6 +7,13 @@ import { DialogoService } from '../../../core/services/dialogo.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Mensaje } from '../../../models/mensaje.model';
 
+interface ConversacionAgrupada {
+  idUsuarioContraparte: number;
+  nombreContraparte?: string;
+  proyectos: string[];
+  contrato: Contrato;
+}
+
 @Component({
   selector: 'app-mensajes-freelancer',
   standalone: true,
@@ -22,11 +29,37 @@ export class MensajesFreelancer implements OnInit {
   private dialogo = inject(DialogoService);
 
   contratosActivos = signal<Contrato[]>([]);
-  contratoSeleccionado = signal<Contrato | null>(null);
+  idContraparteSeleccionado = signal<number | null>(null);
   mensajes = signal<Mensaje[]>([]);
   cargandoMensajes = signal(false);
 
   miIdUsuario = computed(() => this.auth.usuario()?.id_usuario ?? 0);
+
+  conversaciones = computed<ConversacionAgrupada[]>(() => {
+    const mapa = new Map<number, ConversacionAgrupada>();
+
+    for (const c of this.contratosActivos()) {
+      if (!c.id_usuario_contraparte) continue;
+
+      const existente = mapa.get(c.id_usuario_contraparte);
+      if (existente) {
+        if (c.titulo_proyecto) existente.proyectos.push(c.titulo_proyecto);
+      } else {
+        mapa.set(c.id_usuario_contraparte, {
+          idUsuarioContraparte: c.id_usuario_contraparte,
+          nombreContraparte: c.nombre_contraparte,
+          proyectos: c.titulo_proyecto ? [c.titulo_proyecto] : [],
+          contrato: c
+        });
+      }
+    }
+
+    return Array.from(mapa.values());
+  });
+
+  conversacionSeleccionada = computed(() =>
+    this.conversaciones().find(c => c.idUsuarioContraparte === this.idContraparteSeleccionado()) ?? null
+  );
 
   formMensaje = this.fb.group({ texto: [''] });
 
@@ -34,14 +67,15 @@ export class MensajesFreelancer implements OnInit {
     this.contratoSrv.listarMios().subscribe(r => {
       const activos = r.contratos.filter(c => c.estado === 'activo');
       this.contratosActivos.set(activos);
-      if (activos[0]) this.seleccionar(activos[0]);
+      const primera = this.conversaciones()[0];
+      if (primera) this.seleccionar(primera);
     });
   }
 
-  seleccionar(c: Contrato): void {
-    this.contratoSeleccionado.set(c);
+  seleccionar(conv: ConversacionAgrupada): void {
+    this.idContraparteSeleccionado.set(conv.idUsuarioContraparte);
     this.cargandoMensajes.set(true);
-    this.mensajeSrv.conversacionCon(c.id_usuario_contraparte!).subscribe(r => {
+    this.mensajeSrv.conversacionCon(conv.idUsuarioContraparte).subscribe(r => {
       this.mensajes.set(r.conversacion);
       this.cargandoMensajes.set(false);
       this.marcarComoLeidos(r.conversacion);
@@ -59,13 +93,13 @@ export class MensajesFreelancer implements OnInit {
   }
 
   enviar(): void {
-    const c = this.contratoSeleccionado();
-    if (!c) return;
+    const conv = this.conversacionSeleccionada();
+    if (!conv) return;
     const texto = (this.formMensaje.getRawValue().texto ?? '').trim();
     if (!texto) return;
 
-    this.mensajeSrv.enviar(c.id_usuario_contraparte!, texto).subscribe({
-      next: () => { this.formMensaje.reset(); this.seleccionar(c); },
+    this.mensajeSrv.enviar(conv.idUsuarioContraparte, texto).subscribe({
+      next: () => { this.formMensaje.reset(); this.seleccionar(conv); },
       error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo enviar el mensaje.', 'Error')
     });
   }

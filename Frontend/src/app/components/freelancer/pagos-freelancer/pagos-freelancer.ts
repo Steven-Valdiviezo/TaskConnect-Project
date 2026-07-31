@@ -21,18 +21,18 @@ export class PagosFreelancer implements OnInit {
 
   registrados = computed(() => this.filas().filter(f => !!f.pago));
   pagados = computed(() => this.filas().filter(f => f.pago?.estado === 'pagado'));
-
-  totalRecibidoNeto = computed(() => this.pagados().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
-  totalComisionRetenida = computed(() => this.pagados().reduce((a, f) => a + Number(f.pago!.comision), 0));
+  // Agreado de comision 5%
+  totalRecibidoNeto = computed(() => this.pagados().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision) / 2), 0));
+  totalComisionRetenida = computed(() => this.pagados().reduce((a, f) => a + Number(f.pago!.comision) / 2, 0));
   totalEsteMesNeto = computed(() => {
     const ahora = new Date();
     return this.pagados()
       .filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear())
-      .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0);
+      .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision) / 2), 0);
   });
   totalPorCobrarNeto = computed(() => this.filas()
     .filter(f => f.pago?.estado === 'pendiente')
-    .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision)), 0));
+    .reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision) / 2), 0));
 
   ngOnInit(): void {
     this.catalogo.listarMetodosPago().subscribe(r => this.metodos.set(r.metodos));

@@ -5,35 +5,35 @@
     <div class="d-flex flex-column flex-shrink-0" style="width:260px;background-color:#09121e;border-right:1px solid #1c2d3c;overflow-y:auto;">
       <p class="small fw-medium px-3 pt-3 mb-2" style="color:#6e8fa8;">Conversaciones</p>
 
-      @if (!contratosActivos().length) {
+      @if (!conversaciones().length) {
         <p class="small px-3" style="color:#6e8fa8;">No tienes contratos activos.</p>
       }
 
-      @for (c of contratosActivos(); track c.id_contrato) {
+      @for (conv of conversaciones(); track conv.idUsuarioContraparte) {
         <div class="d-flex align-items-start gap-2 p-2 px-3" style="cursor:pointer;"
-             [style.background-color]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '#0f1e30' : 'transparent'"
-             [style.border-left]="contratoSeleccionado()?.id_contrato === c.id_contrato ? '3px solid #60b4e8' : '3px solid transparent'"
-             (click)="seleccionar(c)">
+             [style.background-color]="idContraparteSeleccionado() === conv.idUsuarioContraparte ? '#0f1e30' : 'transparent'"
+             [style.border-left]="idContraparteSeleccionado() === conv.idUsuarioContraparte ? '3px solid #60b4e8' : '3px solid transparent'"
+             (click)="seleccionar(conv)">
           <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c2d3c;color:#60b4e8;">
-            {{ iniciales(c.nombre_contraparte) }}
+            {{ iniciales(conv.nombreContraparte) }}
           </div>
           <div class="text-truncate">
-            <p class="small fw-medium mb-0 text-truncate" style="color:#cde0f0;">{{ c.nombre_contraparte }}</p>
-            <small class="text-truncate d-block" style="color:#6e8fa8;">{{ c.titulo_proyecto }}</small>
+            <p class="small fw-medium mb-0 text-truncate" style="color:#cde0f0;">{{ conv.nombreContraparte }}</p>
+            <small class="text-truncate d-block" style="color:#6e8fa8;">{{ conv.proyectos.join(' · ') }}</small>
           </div>
         </div>
       }
     </div>
 
     <div class="d-flex flex-column flex-grow-1" style="background-color:#162234;min-width:0;">
-      @if (contratoSeleccionado(); as c) {
+      @if (conversacionSeleccionada(); as conv) {
         <div class="d-flex align-items-center gap-2 p-3 flex-shrink-0" style="border-bottom:1px solid #1c2d3c;">
           <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c2d3c;color:#60b4e8;">
-            {{ iniciales(c.nombre_contraparte) }}
+            {{ iniciales(conv.nombreContraparte) }}
           </div>
           <div class="text-truncate">
-            <p class="small fw-medium mb-0" style="color:#cde0f0;">{{ c.nombre_contraparte }}</p>
-            <small style="color:#6e8fa8;">Proyecto: {{ c.titulo_proyecto }}</small>
+            <p class="small fw-medium mb-0" style="color:#cde0f0;">{{ conv.nombreContraparte }}</p>
+            <small style="color:#6e8fa8;">{{ conv.proyectos.length > 1 ? 'Proyectos: ' : 'Proyecto: ' }}{{ conv.proyectos.join(' · ') }}</small>
           </div>
         </div>
 

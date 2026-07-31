@@ -71,7 +71,7 @@ export class PerfilFreelancer implements OnInit {
 
     this.pagoSrv.listarDeMisContratos().subscribe(lista => {
       const total = lista.filter(x => x.pago?.estado === 'pagado')
-        .reduce((acc, x) => acc + (Number(x.pago!.monto) - Number(x.pago!.comision)), 0);
+        .reduce((acc, x) => acc + (Number(x.pago!.monto) - Number(x.pago!.comision) / 2), 0);
       this.ingresosTotales.set(total);
     });
   }

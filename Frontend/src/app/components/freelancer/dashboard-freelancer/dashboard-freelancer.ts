@@ -49,7 +49,7 @@ export class DashboardFreelancer implements OnInit {
         .filter(x => x.pago?.estado === 'pagado' && x.pago.fecha_pago &&
           new Date(x.pago.fecha_pago).getMonth() === ahora.getMonth() &&
           new Date(x.pago.fecha_pago).getFullYear() === ahora.getFullYear())
-        .reduce((acc, x) => acc + (Number(x.pago!.monto) - Number(x.pago!.comision)), 0);
+        .reduce((acc, x) => acc + (Number(x.pago!.monto) - Number(x.pago!.comision) / 2), 0);
       this.ingresosEsteMes.set(total);
     });
   }
