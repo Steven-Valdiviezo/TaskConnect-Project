@@ -2,12 +2,12 @@ import { pool } from '../database/connection.js';
 
 export const listarPropuestasPorProyectoRepository = async (id_proyecto) => {
   const resultado = await pool.query(
-    `SELECT pr.*, u.nombre AS nombre_freelancer
-     FROM propuesta pr
-     JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
-     JOIN usuario u ON u.id_usuario = f.id_usuario
-     WHERE pr.id_proyecto = $1
-     ORDER BY pr.fecha_propuesta DESC`,
+    `SELECT pr.*, u.nombre AS nombre_freelancer, u.estado AS estado_freelancer
+      FROM propuesta pr
+      JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
+      JOIN usuario u ON u.id_usuario = f.id_usuario
+      WHERE pr.id_proyecto = $1
+      ORDER BY pr.fecha_propuesta DESC`,
     [id_proyecto]
   );
   return resultado.rows;
@@ -40,7 +40,7 @@ export const eliminarPropuestaRepository = async (id_propuesta, id_freelancer) =
 // Agregado para mostrar las propuestas
 export const listarPropuestasPorClienteRepository = async (id_cliente) => {
   const resultado = await pool.query(
-    `SELECT pr.*, u.nombre AS nombre_freelancer, p.titulo AS titulo_proyecto
+    `SELECT pr.*, u.nombre AS nombre_freelancer, u.estado AS estado_freelancer, p.titulo AS titulo_proyecto
      FROM propuesta pr
      JOIN proyecto p ON p.id_proyecto = pr.id_proyecto
      JOIN freelancer f ON f.id_freelancer = pr.id_freelancer

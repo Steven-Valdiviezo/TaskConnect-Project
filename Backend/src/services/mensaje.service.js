@@ -1,7 +1,8 @@
 import {
   crearMensajeRepository,
   obtenerConversacionRepository,
-  marcarMensajeLeidoRepository
+  marcarMensajeLeidoRepository,
+  contarMensajesNoLeidosRepository
 } from '../repositories/mensaje.repository.js';
 
 export const enviarMensajeService = async (remitente, datos) => {
@@ -37,4 +38,8 @@ export const marcarLeidoService = async (id_mensaje, destinatario) => {
   }
 
   return mensaje;
+};
+
+export const contarNoLeidosService = async (id_usuario) => {
+  return await contarMensajesNoLeidosRepository(id_usuario);
 };

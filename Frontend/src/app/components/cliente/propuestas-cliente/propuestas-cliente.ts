@@ -101,6 +101,14 @@ export class PropuestasCliente implements OnInit {
   }
 
   async aceptar(p: Propuesta): Promise<void> {
+    if (p.estado_freelancer === 'inactivo') {
+      await this.dialogo.avisar(
+        `No es posible aceptar la propuesta porque el freelancer "${p.nombre_freelancer}" se encuentra inactivo.`,
+        'Freelancer inactivo'
+      );
+      return;
+    }
+
     const ok = await this.dialogo.confirmar(
       `¿Aceptar la propuesta de ${p.nombre_freelancer}? Se generará un contrato y se rechazarán las demás.`,
       { titulo: 'Aceptar propuesta', textoConfirmar: 'Sí, aceptar' }

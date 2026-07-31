@@ -11,25 +11,45 @@
     <div class="rounded-3 p-3 mb-2 animate__animated animate__fadeIn" style="background-color:#142b21;border:1px solid #1c3c2d;">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
         <div>
-          <p class="fw-medium small mb-1" style="color:#cce8d8;">{{ f.contrato.titulo_proyecto }}</p>
+          <p class="fw-medium small mb-1" style="color:#cce8d8;">
+            {{ f.contrato.titulo_proyecto }}
+            @if (f.contrato.estado_contraparte === 'inactivo') {
+              <span class="badge rounded-pill ms-1" style="background-color:#FCEBEB;color:#791F1F;font-size:.65rem;">Freelancer inactivo</span>
+            }
+          </p>
           <small style="color:#6e9e85;"><b>Con Freelancer: </b> <span style="color:#5DCAA5;cursor:pointer;text-decoration:underline;" (click)="verPerfilConContacto(f.contrato.id_freelancer)">{{ f.contrato.nombre_contraparte }}</span>
             · <b>Inicio: </b> {{ f.contrato.fecha_inicio | date:'dd MMM yyyy' }}
             · <b>Fin: </b>{{ f.contrato.fecha_fin | date:'dd MMM yyyy' }}
+          </small>
+          <br>
+          <small style="color:#6e9e85;">
+            <b>Presupuesto: </b>${{ f.contrato.presupuesto }} · <b>Monto acordado: </b>${{ f.contrato.monto_propuesto }}
           </small>
         </div>
         <div class="text-end">
           <span class="badge rounded-pill d-block mb-2" [style.background-color]="claseBadge(f.contrato.estado).bg" [style.color]="claseBadge(f.contrato.estado).color">{{ f.contrato.estado }}</span>
 
           @if (f.contrato.estado === 'activo') {
-            <button class="btn btn-sm btn-outline-light me-1" (click)="completar(f.contrato)">Marcar completado</button>
+            <button class="btn btn-sm btn-outline-light me-1"
+                    [disabled]="f.contrato.estado_contraparte === 'inactivo'"
+                    [title]="f.contrato.estado_contraparte === 'inactivo' ? 'El freelancer está inactivo' : ''"
+                    (click)="completar(f.contrato)">Marcar completado</button>
             <button class="btn btn-sm btn-outline-danger me-1" (click)="cancelar(f.contrato)">Cancelar contrato</button>
           }
+
           @if (!f.pago && f.contrato.estado !== 'cancelado') {
-            <button class="btn btn-sm btn-outline-success" style="border-color: #5DCAA5; color: #0c7564;" (click)="abrirFormPago(f.contrato)">Registrar pago</button>
+            <button class="btn btn-sm btn-outline-success" 
+                    style="border-color: #5DCAA5; color: #0c7564;" 
+                    [disabled]="f.contrato.estado !== 'completado'"
+                    (click)="abrirFormPago(f.contrato)">
+              Registrar pago
+            </button>
           }
+
           @if (f.pago?.estado === 'pendiente') {
             <button class="btn btn-sm btn-outline-warning" (click)="marcarPagado(f.pago!)">Marcar pagado</button>
           }
+
           @if (f.pago) {
             <div class="small text-end mt-1" style="color:#6e9e85;">
               <span class="d-block">Monto: ${{ f.pago!.monto }}</span>
@@ -37,6 +57,7 @@
               <span class="d-block fw-medium" style="color:#5DCAA5;">Freelancer recibe: ${{ (f.pago!.monto - f.pago!.comision).toFixed(2) }}</span>
             </div>
           }
+          
         </div>
       </div>
 

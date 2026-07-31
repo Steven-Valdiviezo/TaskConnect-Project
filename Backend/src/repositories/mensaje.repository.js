@@ -30,3 +30,11 @@ export const marcarMensajeLeidoRepository = async (id_mensaje, destinatario) => 
   );
   return resultado.rows[0];
 };
+
+export const contarMensajesNoLeidosRepository = async (id_usuario) => {
+  const resultado = await pool.query(
+    `SELECT COUNT(*)::int AS total FROM mensaje WHERE destinatario = $1 AND leido = FALSE`,
+    [id_usuario]
+  );
+  return resultado.rows[0].total;
+};

@@ -59,6 +59,14 @@ export class ContratosCliente implements OnInit {
   }
 
   async completar(c: Contrato): Promise<void> {
+    if (c.estado_contraparte === 'inactivo') {
+      await this.dialogo.avisar(
+        `No es posible marcar el contrato como completado porque el freelancer "${c.nombre_contraparte}" se encuentra inactivo.`,
+        'Freelancer inactivo'
+      );
+      return;
+    }
+  
     const ok = await this.dialogo.confirmar('¿Marcar este contrato como completado?', { titulo: 'Completar contrato', textoConfirmar: 'Sí, completar' });
     if (!ok) return;
   

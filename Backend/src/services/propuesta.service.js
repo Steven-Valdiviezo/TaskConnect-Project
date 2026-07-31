@@ -7,6 +7,8 @@ import {
   rechazarPropuestaRepository
 } from '../repositories/propuesta.repository.js';
 
+import { obtenerProyectoPorIdRepository } from '../repositories/proyecto.repository.js';
+
 export const listarPropuestasService = async (id_proyecto) => {
   return await listarPropuestasPorProyectoRepository(id_proyecto);
 };
@@ -30,6 +32,21 @@ export const crearPropuestaService = async (id_freelancer, datos) => {
 
   if (Number(monto_propuesto) <= 0) {
     const error = new Error('El monto propuesto debe ser mayor a 0');
+    error.status = 400;
+    throw error;
+  }
+  // Validacion de presupesto del proyecto
+  // --- VALIDACIÓN DE PRESUPUESTO DEL PROYECTO ---
+  const proyecto = await obtenerProyectoPorIdRepository(id_proyecto);
+
+  if (!proyecto) {
+    const error = new Error('El proyecto especificado no existe');
+    error.status = 404;
+    throw error;
+  }
+
+  if (Number(monto_propuesto) > Number(proyecto.presupuesto)) {
+    const error = new Error(`El monto propuesto ($${monto_propuesto}) no puede ser mayor al presupuesto del proyecto ($${proyecto.presupuesto})`);
     error.status = 400;
     throw error;
   }

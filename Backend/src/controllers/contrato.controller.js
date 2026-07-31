@@ -32,6 +32,7 @@ export const completarContrato = async (req, res, next) => {
     const contrato = await completarContratoService(Number(req.params.id));
     res.json({ mensaje: 'Contrato marcado como completado', contrato });
   } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);
   }
 };

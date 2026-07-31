@@ -38,6 +38,15 @@ export class DetalleProyecto implements OnInit {
 
     this.proyectoSrv.obtener(id).subscribe(r => {
       this.proyecto.set(r.proyecto);
+
+      // --- Actualizacion: Asignar presupuesto máximo al validador del campo ---
+      if (r.proyecto?.presupuesto) {
+        this.form.get('monto_propuesto')?.addValidators(
+          Validators.max(Number(r.proyecto.presupuesto))
+        );
+        this.form.get('monto_propuesto')?.updateValueAndValidity();
+      }
+
       this.cargando.set(false);
     });
 

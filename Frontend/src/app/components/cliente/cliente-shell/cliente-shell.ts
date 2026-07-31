@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { PagoService } from '../../../core/services/pago.service';
 import { CalificacionService } from '../../../core/services/calificacion.service';
+import { MensajeService } from '../../../core/services/mensaje.service';
 
 interface Notificacion {
   icono: string;
@@ -25,6 +26,7 @@ export class ClienteShell implements OnInit {
   private proyectoSrv = inject(ProyectoService);
   private pagoSrv = inject(PagoService);
   private calificacionSrv = inject(CalificacionService);
+  private mensajeSrv = inject(MensajeService);
 
   usuario = this.auth.usuario;
   iniciales = computed(() => {
@@ -34,9 +36,14 @@ export class ClienteShell implements OnInit {
 
   notificaciones = signal<Notificacion[]>([]);
   mostrarNotificaciones = signal(false);
+  hayMensajesNuevos = signal(false);
 
   ngOnInit(): void {
     this.cargarNotificaciones();
+    this.mensajeSrv.contarNoLeidos().subscribe({
+      next: (r) => this.hayMensajesNuevos.set(r.total > 0),
+      error: () => this.hayMensajesNuevos.set(false)
+    });
   }
 
   private cargarNotificaciones(): void {

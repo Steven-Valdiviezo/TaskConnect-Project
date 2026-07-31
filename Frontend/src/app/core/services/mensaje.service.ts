@@ -17,4 +17,7 @@ export class MensajeService {
   marcarLeido(id: number) {
     return this.http.patch(`${this.baseUrl}/${id}/leido`, {});
   }
+  contarNoLeidos() {
+  return this.http.get<{ total: number }>(`${this.baseUrl}/no-leidos`);
+  }
 }

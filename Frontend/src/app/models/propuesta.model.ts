@@ -5,6 +5,7 @@ export interface Propuesta {
   id_proyecto: number;
   id_freelancer: number;
   nombre_freelancer?: string;
+  estado_freelancer?: 'activo' | 'inactivo';
   titulo_proyecto?: string;
   mensaje: string;
   monto_propuesto: number;
