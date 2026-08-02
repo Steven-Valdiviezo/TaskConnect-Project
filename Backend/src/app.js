@@ -22,7 +22,12 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
+const origenesPermitidos = [
+  'http://localhost:4200',
+  process.env.FRONTEND_URL // ej: https://taskconnect-web.vercel.app
+].filter(Boolean);
+
+app.use(cors({ origin: origenesPermitidos, credentials: true }));
 app.use(express.json());
 
 app.get('/', (req, res) => {
