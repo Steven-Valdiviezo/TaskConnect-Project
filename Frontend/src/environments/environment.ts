@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: 'https://taskconnect-project.onrender.com/api',
   firebaseConfig: {
     apiKey: 'AIzaSyC1_6dHDGHqTSmd_EXAoP5dlMEJ2cO0hxc',
     authDomain: 'taskconnect-5b8a8.firebaseapp.com',
