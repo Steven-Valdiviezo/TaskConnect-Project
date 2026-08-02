@@ -27,6 +27,7 @@ export class Login implements OnInit {
   correoEnviado = signal(false);
   mostrarFormulario = signal(false);
   loginPruebaCargando = signal(false);
+  verContrasena = signal(false);
 
   cuentasGuardadas = this.auth.cuentasGuardadas;
   loginPruebaDisponible = this.auth.loginPruebaDisponible;

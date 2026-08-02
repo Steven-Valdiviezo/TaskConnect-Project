@@ -24,6 +24,9 @@ export class Registro implements OnInit {
   error = signal<string | null>(null);
   exito = signal(false);
 
+  verContrasena = signal(false);
+  verConfirmar = signal(false);
+
   form = this.fb.group({
     rol: ['cliente' as 'cliente' | 'freelancer', Validators.required],
     nombre: ['', Validators.required],

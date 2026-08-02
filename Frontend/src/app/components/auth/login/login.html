@@ -48,11 +48,25 @@
                   <small class="text-danger">Ingresa un correo válido.</small>
                 }
               </div>
+              
+              <!-- Actualizada para mostrar la contraseña con un boton-->
               <div class="mb-3">
                 <label class="form-label small">Contraseña</label>
-                <input type="password" class="form-control" formControlName="contrasena" placeholder="••••••••">
+                <div class="input-group">
+                  <input 
+                    [type]="verContrasena() ? 'text' : 'password'" 
+                    class="form-control border-end-0" 
+                    formControlName="contrasena" 
+                    placeholder="••••••••">
+                  <span 
+                    class="input-group-text bg-transparent border-start-0" 
+                    style="cursor: pointer;" 
+                    (click)="verContrasena.set(!verContrasena())">
+                    <i [class]="verContrasena() ? 'fa-solid fa-eye-slash text-secondary' : 'fa-solid fa-eye text-secondary'"></i>
+                  </span>
+                </div>
                 @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
-                  <small class="text-danger">La contraseña es obligatoria.</small>
+                  <small class="text-danger d-block mt-1">La contraseña es obligatoria.</small>
                 }
               </div>
 
