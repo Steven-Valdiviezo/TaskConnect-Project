@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ViewChild, ElementRef, effect } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { MensajeService } from '../../../core/services/mensaje.service';
@@ -30,6 +30,8 @@ export class MensajesCliente implements OnInit {
   private auth = inject(AuthService);
   private dialogo = inject(DialogoService);
 
+  @ViewChild('contenedorMensajes') contenedorMensajes?: ElementRef<HTMLDivElement>;
+
   contratosActivos = signal<Contrato[]>([]);
   idContraparteSeleccionado = signal<number | null>(null);
   mensajes = signal<Mensaje[]>([]);
@@ -37,6 +39,17 @@ export class MensajesCliente implements OnInit {
 
   miIdUsuario = computed(() => this.auth.usuario()?.id_usuario ?? 0);
 
+  constructor() {
+    // Cada vez que cambia la lista de mensajes (nueva conversación seleccionada,
+    // mensaje enviado o recibido), se baja el scroll al final.
+    effect(() => {
+      this.mensajes();
+      requestAnimationFrame(() => {
+        const el = this.contenedorMensajes?.nativeElement;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    });
+  }
   /** Agrupa los contratos activos por persona, para no duplicar la misma
    *  conversación una vez por cada proyecto que compartas con ese freelancer. */
   conversaciones = computed<ConversacionAgrupada[]>(() => {
