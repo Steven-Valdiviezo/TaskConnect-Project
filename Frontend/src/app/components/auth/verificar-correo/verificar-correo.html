@@ -7,13 +7,6 @@
           <div class="spinner-border mb-3" style="color:#0F6E56;"></div>
           <p class="small text-secondary">Verificando tu identidad...</p>
         }
-        @case ('pidiendo-correo') {
-        <p class="small text-secondary mb-3">Confirma el correo con el que iniciaste sesión:</p>
-        <form [formGroup]="form" (ngSubmit)="confirmarConCorreoManual()">
-            <input type="email" class="form-control mb-3" formControlName="correoManual" placeholder="usuario@correo.com">
-            <button type="submit" class="btn w-100" style="background-color:#0F6E56;color:#E1F5EE;">Confirmar</button>
-        </form>
-        }
         @case ('error') {
           <i class="fa-solid fa-circle-exclamation fa-2x mb-3 text-danger"></i>
           <p class="small text-secondary">{{ error() }}</p>

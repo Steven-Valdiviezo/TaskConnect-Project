@@ -1,79 +1,42 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { FirebaseAuthService } from '../../../core/services/firebase-auth.service';
 
 @Component({
   selector: 'app-verificar-correo',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink],
   templateUrl: './verificar-correo.html'
 })
 export class VerificarCorreo implements OnInit {
   private auth = inject(AuthService);
-  private firebaseAuth = inject(FirebaseAuthService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private fb = inject(FormBuilder);
 
-  estado = signal<'validando' | 'pidiendo-correo' | 'error' | 'listo'>('validando');
+  estado = signal<'validando' | 'error' | 'listo'>('validando');
   error = signal<string | null>(null);
 
-  form = this.fb.group({
-    correoManual: ['', [Validators.required, Validators.email]]
-  });
-
   ngOnInit(): void {
-    const url = window.location.href;
+    const token = this.route.snapshot.queryParamMap.get('token');
 
-    if (!this.firebaseAuth.esEnlaceDeVerificacion(url)) {
+    if (!token) {
       this.estado.set('error');
-      this.error.set('El enlace no es válido o ya expiró. Vuelve a iniciar sesión.');
+      this.error.set('El enlace no es válido. Vuelve a iniciar sesión.');
       return;
     }
 
-    const correo = this.firebaseAuth.correoPendiente();
-    if (!correo) {
-      this.estado.set('pidiendo-correo');
-      return;
-    }
-    this.confirmar(correo);
-  }
+    // quita el token de la barra de direcciones y del historial
+    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
 
-  confirmarConCorreoManual(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    this.confirmar(this.form.getRawValue().correoManual!);
-  }
-
-  private confirmar(correo: string): void {
-    const preAuthToken = localStorage.getItem('tc_pre_auth');
-    if (!preAuthToken) {
-      this.estado.set('error');
-      this.error.set('Tu sesión de inicio expiró. Vuelve a iniciar sesión.');
-      return;
-    }
-
-    this.firebaseAuth.confirmarEnlace(correo, window.location.href)
-      .then(idToken => {
-        this.auth.confirmarLogin2FA(preAuthToken, idToken).subscribe({
-          next: () => {
-            localStorage.removeItem('tc_pre_auth');
-            this.firebaseAuth.limpiarCorreoPendiente();
-            this.estado.set('listo');
-            this.router.navigateByUrl(this.auth.rutaHomeSegunRol());
-          },
-          error: (err: any) => {
-            this.estado.set('error');
-            this.error.set(err?.error?.mensaje ?? 'No se pudo completar el inicio de sesión.');
-          }
-        });
-      })
-      .catch(() => {
+    this.auth.confirmarLogin2FA(token).subscribe({
+      next: () => {
+        this.estado.set('listo');
+        this.router.navigateByUrl(this.auth.rutaHomeSegunRol());
+      },
+      error: (err: any) => {
         this.estado.set('error');
-        this.error.set('El enlace no es válido o ya fue utilizado.');
-      });
+        this.error.set(err?.error?.mensaje ?? 'No se pudo completar el inicio de sesión.');
+      }
+    });
   }
 }

@@ -82,12 +82,12 @@ export class AuthService {
     return this.http.post<LoginPaso1Respuesta>(`${this.baseUrl}/login`, { correo, contrasena });
   }
 
-  confirmarLogin2FA(preAuthToken: string, firebaseIdToken: string): Observable<LoginConfirmadoRespuesta> {
-    return this.http.post<LoginConfirmadoRespuesta>(`${this.baseUrl}/login/verificar-2fa`, { preAuthToken, firebaseIdToken })
+  confirmarLogin2FA(token: string): Observable<LoginConfirmadoRespuesta> {
+    return this.http.post<LoginConfirmadoRespuesta>(`${this.baseUrl}/login/verificar-2fa`, { token })
       .pipe(tap(respuesta => this.guardarSesion(respuesta.token, respuesta.usuario)));
   }
 
-  /** SOLO DESARROLLO: inicio de sesión directo, sin pasar por Firebase 2FA */
+  /** SOLO DESARROLLO: inicio de sesión directo, sin pasar por 2FA */
   loginPrueba(correo: string, contrasena: string): Observable<LoginConfirmadoRespuesta> {
     return this.http.post<LoginConfirmadoRespuesta>(`${this.baseUrl}/login-prueba`, { correo, contrasena })
       .pipe(tap(respuesta => this.guardarSesion(respuesta.token, respuesta.usuario)));
@@ -131,8 +131,6 @@ export class AuthService {
 
     localStorage.removeItem(CLAVE_TOKEN);
     localStorage.removeItem(CLAVE_USUARIO);
-    localStorage.removeItem('tc_pre_auth');
-    localStorage.removeItem('tc_correo_2fa');
     this._token.set(null);
     this._usuario.set(null);
   }

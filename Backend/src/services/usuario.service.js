@@ -12,9 +12,12 @@ import {
     obtenerPerfilFreelancerConContactoRepository,
     existeContratoEntreClienteYFreelancerRepository
 } from '../repositories/usuario.repository.js';
+
 import { hashPassword, compararPassword } from '../utils/password.util.js';
-import { generarToken, generarPreAuthToken, verificarPreAuthToken } from '../utils/jwt.util.js';
-import { verificarIdTokenFirebase } from '../utils/firebaseAdmin.util.js';
+import crypto from 'crypto';
+import { generarToken } from '../utils/jwt.util.js';
+import { enviarCorreoBrevo } from '../utils/brevo.util.js';
+import { crearToken2FARepository, consumirToken2FARepository } from '../repositories/token2fa.repository.js';
 
 export const registrarUsuarioService = async(datos) => {
     const { nombre, correo, contrasena, telefono, rol, perfil } = datos;
@@ -58,7 +61,7 @@ export const registrarUsuarioService = async(datos) => {
     return { usuario, perfil: perfilCreado };
 };
 
-// Paso 1: solo credenciales
+// Paso 1: credenciales + envío del magic link
 export const loginUsuarioService = async ({ correo, contrasena }) => {
     const usuario = await buscarUsuarioPorCorreoRepository(correo);
 
@@ -81,40 +84,48 @@ export const loginUsuarioService = async ({ correo, contrasena }) => {
         throw error;
     }
 
-    const preAuthToken = generarPreAuthToken({
-        id_usuario: usuario.id_usuario,
-        correo: usuario.correo
+    // Token aleatorio: al correo va el token, a la BD solo su hash
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const minutos = Number(process.env.MAGIC_LINK_EXPIRES_MIN) || 10;
+
+    await crearToken2FARepository({ id_usuario: usuario.id_usuario, token_hash: tokenHash, minutos });
+
+    // antes: /verificar-2fa?token=
+    const enlace = `${process.env.FRONTEND_URL}/login/verificar-correo?token=${token}`;
+
+    await enviarCorreoBrevo({
+        para: usuario.correo,
+        nombrePara: usuario.nombre,
+        asunto: 'Verifica tu inicio de sesión en TaskConnect',
+        html: `
+            <p>Hola ${usuario.nombre},</p>
+            <p>Haz clic en el botón para completar tu inicio de sesión. El enlace expira en ${minutos} minutos y solo puede usarse una vez.</p>
+            <p><a href="${enlace}" style="background:#0d6efd;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;">Verificar inicio de sesión</a></p>
+            <p>Si no fuiste tú, ignora este mensaje.</p>`
     });
 
-    return { requiere2fa: true, preAuthToken, correo: usuario.correo };
+    return { requiere2fa: true, correo: usuario.correo };
 };
 
-// Paso 2: Confirma el segundo factor y recién ahí emite el JWT real
-export const confirmarLogin2FAService = async ({ preAuthToken, firebaseIdToken }) => {
-    if (!preAuthToken || !firebaseIdToken) {
-        const error = new Error('preAuthToken y firebaseIdToken son obligatorios');
+// Paso 2: consume el magic link y emite el JWT real
+export const confirmarLogin2FAService = async ({ token }) => {
+    if (!token) {
+        const error = new Error('El token de verificación es obligatorio');
         error.status = 400;
         throw error;
     }
 
-    const payloadPre = verificarPreAuthToken(preAuthToken);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const registro = await consumirToken2FARepository(tokenHash);
 
-    let payloadFirebase;
-    try {
-        payloadFirebase = await verificarIdTokenFirebase(firebaseIdToken);
-    } catch {
-        const error = new Error('No se pudo verificar el segundo factor (correo)');
+    if (!registro) {
+        const error = new Error('El enlace es inválido, expiró o ya fue utilizado');
         error.status = 401;
         throw error;
     }
 
-    if (payloadFirebase.email?.toLowerCase() !== payloadPre.correo.toLowerCase()) {
-        const error = new Error('El correo verificado no coincide con el de la sesión');
-        error.status = 401;
-        throw error;
-    }
-
-    const usuario = await buscarUsuarioPorIdRepository(payloadPre.id_usuario);
+    const usuario = await buscarUsuarioPorIdRepository(registro.id_usuario);
     if (!usuario || usuario.estado !== 'activo') {
         const error = new Error('Usuario no válido');
         error.status = 401;
@@ -123,9 +134,9 @@ export const confirmarLogin2FAService = async ({ preAuthToken, firebaseIdToken }
 
     const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
     const payload = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, rol: usuario.rol, ...(idsPerfil ?? {}) };
-    const token = generarToken(payload);
+    const tokenJwt = generarToken(payload);
 
-    return { token, usuario: payload };
+    return { token: tokenJwt, usuario: payload };
 };
 
 // Actualizado para que muestre por rol y no solo el usuario

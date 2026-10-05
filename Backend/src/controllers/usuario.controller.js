@@ -49,8 +49,8 @@ export const perfilActual = async (req, res, next) => {
 
 export const confirmarLogin2FA = async (req, res, next) => {
   try {
-    const { preAuthToken, firebaseIdToken } = req.body;
-    const resultado = await confirmarLogin2FAService({ preAuthToken, firebaseIdToken });
+    const { token } = req.body;
+    const resultado = await confirmarLogin2FAService({ token });
     res.json({ mensaje: 'Inicio de sesión exitoso', ...resultado });
   } catch (error) {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
