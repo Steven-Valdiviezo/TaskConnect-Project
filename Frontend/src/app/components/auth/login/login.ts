@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { FirebaseAuthService } from '../../../core/services/firebase-auth.service';
+//import { FirebaseAuthService } from '../../../core/services/firebase-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +14,7 @@ import { FirebaseAuthService } from '../../../core/services/firebase-auth.servic
 export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
-  private firebaseAuth = inject(FirebaseAuthService);
+  // private firebaseAuth = inject(FirebaseAuthService);
   private router = inject(Router);
 
   form = this.fb.group({
@@ -55,26 +55,20 @@ export class Login implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-
+  
     this.error.set(null);
     this.cargando.set(true);
     const { correo, contrasena } = this.form.getRawValue();
-
+  
     this.auth.loginPaso1(correo!, contrasena!).subscribe({
-      next: async (respuesta) => {
-        localStorage.setItem('tc_pre_auth', respuesta.preAuthToken);
-        try {
-          await this.firebaseAuth.enviarEnlaceVerificacion(respuesta.correo);
-          this.correoEnviado.set(true);
-        } catch {
-          this.error.set('No se pudo enviar el correo de verificación. Intenta de nuevo.');
-        } finally {
-          this.cargando.set(false);
-        }
+      next: () => {
+        // el backend ya envió el magic link por Brevo
+        this.cargando.set(false);
+        this.correoEnviado.set(true);
       },
       error: (err: any) => {
         this.cargando.set(false);
-        this.error.set(err?.error?.mensaje ?? 'Correo o contraseña incorrectos');
+        this.error.set(err?.error?.mensaje ?? 'No se pudo iniciar sesión. Intenta de nuevo.');
       }
     });
   }

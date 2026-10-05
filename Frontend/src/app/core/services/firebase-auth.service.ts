@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/**import { Injectable } from '@angular/core';
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import {
   getAuth, Auth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, ActionCodeSettings
@@ -42,4 +42,4 @@ export class FirebaseAuthService {
     const credencial = await signInWithEmailLink(this.auth, correo, url);
     return await credencial.user.getIdToken();
   }
-}
+}**/
