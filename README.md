@@ -15,7 +15,7 @@ Este repositorio contiene el código fuente de una aplicación Full-Stack, estru
 - [Instalación y configuración local](#instalación-y-configuración-local)
 - [Variables de entorno](#variables-de-entorno)
 - [Base de datos](#base-de-datos)
-- [Autenticación con Firebase (2FA)](#autenticación-con-firebase-2fa)
+- [Autenticación (2FA)](#autenticación-2fa)
 - [Ejecución en desarrollo](#ejecución-en-desarrollo)
 - [Despliegue](#despliegue)
 - [Flujo de trabajo y colaboración](#flujo-de-trabajo-y-colaboración)
@@ -143,6 +143,13 @@ JWT_EXPIRES_IN=1d
 
 # Solo para desarrollo: habilita /login-prueba, que evita el paso de 2FA
 PERMITIR_LOGIN_PRUEBA=true
+
+# Variables para Brevo (2FA)
+BREVO_API_KEY=xkeysib-...
+BREVO_SENDER_EMAIL=tu_gmail_verificado@gmail.com
+BREVO_SENDER_NAME=TaskConnect
+FRONTEND_URL=https://tu-app.vercel.app   # en local: http://localhost:4200
+MAGIC_LINK_EXPIRES_MIN=10
 ```
 
 > En producción, `DB_HOST`, `DB_PASSWORD`, etc. corresponden a los datos de conexión que te da Supabase, y `PERMITIR_LOGIN_PRUEBA` debería quedar en `false` o eliminarse.
@@ -154,16 +161,20 @@ Los scripts SQL se encuentran documentados en el proyecto y deben ejecutarse **e
 1. `taskconnect_schema.sql` — crea todas las tablas, restricciones (`PRIMARY KEY`, `FOREIGN KEY`, `CHECK`, `UNIQUE`) y el trigger de cálculo de comisión.
 2. `TASKCONNECT_SQL_FUNCIONES_Y_TRIGGERS.sql` — agrega el resto de funciones y triggers de negocio (validaciones de estado, cascadas, auditoría, reputación, etc.), incluida la tabla `auditoria`.
 
-<!-- revisar: si tienes un tercer script o migraciones adicionales (por ejemplo, columnas agregadas después como fecha_entrega o monto), agrégalas aquí en orden -->
 
-## Autenticación con Firebase (2FA)
+## Autenticación (2FA)
 
-El inicio de sesión es de dos pasos:
-
+El inicio de sesión se realizaron con dos servicios de envio de correo.
+Para Firbase (Deprecated) es de dos pasos:
 1. El usuario ingresa correo y contraseña (`POST /api/usuarios/login`). Si son válidos, el backend responde con un `preAuthToken` de corta duración (no una sesión completa).
-2. El frontend dispara el enlace de verificación por correo a través de Firebase Authentication. Al confirmarlo, el frontend envía el `preAuthToken` + el `idToken` de Firebase a `POST /api/usuarios/login/verificar-2fa`, y solo ahí el backend emite el JWT real de sesión.
+2. El frontend dispara el enlace de verificación por correo a través de Firebase Authentication. Al confirmarlo, el frontend envía el `preAuthToken` + el `id7Token` de Firebase a `POST /api/usuarios/login/verificar-2fa`, y solo ahí el backend emite el JWT real de sesión.
 
-La sesión en sí sigue siendo JWT normal (guardado en `localStorage` en el frontend); Firebase solo actúa como segundo factor, no reemplaza la gestión de sesión.
+Para Brevo es de forma similar, lo unico que cambia es que la peticion del envio se la realiza directamente en el backend siguiendo el siguiente flujo:
+1. `POST /login` valida correo y contraseña, genera un token aleatorio, guarda su hash en la BD y envía el link por Brevo.
+2. El usuario abre `FRONTEND_URL/verificar-2fa?token=....`
+3. Esa página de Angular hace `POST /login/verificar-2fa` con el token. El backend lo consume (un solo uso, 10 min) y devuelve el JWT.
+ 
+La sesión en sí sigue siendo JWT normal (guardado en `localStorage` en el frontend); Firebase/Brave solo actúa como segundo factor, no reemplaza la gestión de sesión.
 
 ## Ejecución en Desarrollo
 
