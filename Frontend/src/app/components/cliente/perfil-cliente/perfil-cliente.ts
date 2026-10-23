@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PerfilCliente as PerfilClienteModel } from '../../../models/usuario.model';
+import { sinSoloEspacios, nombreCompleto, telefonoEcuador, mensajeError, normalizar } from '../../../core/validators/validadores';
+
 
 @Component({
   selector: 'app-perfil-cliente',
@@ -23,12 +25,14 @@ export class PerfilCliente implements OnInit {
   usuario = this.auth.usuario;
 
   form = this.fb.group({
-    nombre: ['', Validators.required],
+    nombre: ['', [Validators.required, sinSoloEspacios, nombreCompleto, Validators.maxLength(100)]],
     correo: [{ value: '', disabled: true }],
-    telefono: [''],
-    empresa: [''],
-    direccion: ['']
+    telefono: ['', [telefonoEcuador]],
+    empresa: ['', [Validators.maxLength(30)]],
+    direccion: ['', [Validators.maxLength(100)]]
   });
+
+   msg = mensajeError;
 
   ngOnInit(): void {
     this.usuarioSrv.obtenerPerfil().subscribe(r => {
@@ -48,7 +52,7 @@ export class PerfilCliente implements OnInit {
   cancelarEdicion(): void { this.editando.set(false); }
 
   guardar(): void {
-    if (this.form.controls.nombre.invalid) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
@@ -57,7 +61,7 @@ export class PerfilCliente implements OnInit {
     const v = this.form.getRawValue();
 
     this.usuarioSrv.actualizarPerfil({
-      nombre: v.nombre!, telefono: v.telefono || undefined, empresa: v.empresa || undefined, direccion: v.direccion || undefined
+     nombre: normalizar(v.nombre), telefono: (v.telefono ?? '').replace(/[\s-]/g, '') || undefined, empresa: v.empresa || undefined, direccion: v.direccion || undefined
     }).subscribe({
       next: () => { this.guardando.set(false); this.editando.set(false); },
       error: (err: any) => {

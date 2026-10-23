@@ -7,9 +7,10 @@
   <form [formGroup]="form" (ngSubmit)="enviar()" class="row g-3 animate__animated animate__fadeIn" style="max-width:760px;">
     <div class="col-md-6">
       <label class="form-label small" style="color:#6e9e85;">Título del proyecto *</label>
-      <input type="text" class="form-control" formControlName="titulo" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="Ej. Diseño de logo corporativo">
+      <input type="text" class="form-control" formControlName="titulo" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="Ej. Diseño de logo corporativo" maxlength="150">
       @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
-        <small class="text-danger">Este campo es obligatorio.</small>
+        <small class="text-danger">{{ msg(form.controls.titulo) }}</small>
+        <
       }
     </div>
     <div class="col-md-6">
@@ -28,24 +29,30 @@
       <label class="form-label small" style="color:#6e9e85;">Presupuesto (USD) *</label>
       <div class="input-group">
         <span class="input-group-text" style="background-color:#1c3c2d;border-color:#1c3c2d;color:#6e9e85;">$</span>
-        <input type="number" class="form-control" formControlName="presupuesto" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="0.00">
+        <input type="number" class="form-control" formControlName="presupuesto" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="0.00" min="1" max="1000000" step="0.01">
       </div>
       @if (form.controls.presupuesto.touched && form.controls.presupuesto.invalid) {
-        <small class="text-danger">Ingresa un presupuesto válido.</small>
+        <small class="text-danger">{{ msg(form.controls.presupuesto) }}</small>
       }
     </div>
     
     <div class="col-md-6">
       <label class="form-label small" style="color:#6e9e85;">Fecha de entrega</label>
-      <input type="date" class="form-control" formControlName="fecha_entrega" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;">
+      <input type="date" class="form-control" formControlName="fecha_entrega" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" [min]="hoy">
+      @if (form.controls.fecha_entrega.touched && form.controls.fecha_entrega.invalid) {
+        <small class="text-danger">{{ msg(form.controls.fecha_entrega) }}</small>
+      }
     </div>
 
     <div class="col-12">
       <label class="form-label small" style="color:#6e9e85;">Descripción *</label>
-      <textarea class="form-control" rows="4" formControlName="descripcion" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="Describe los requisitos, entregables y plazos..."></textarea>
-      @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
-        <small class="text-danger">Este campo es obligatorio.</small>
-      }
+      <textarea class="form-control" rows="4" formControlName="descripcion" style="background-color:#142b21;border-color:#1c3c2d;color:#cce8d8;" placeholder="Describe los requisitos, entregables y plazos..." maxlength="2000"></textarea>
+            <div class="d-flex justify-content-between">
+        @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+          <small class="text-danger">{{ msg(form.controls.descripcion) }}</small>
+        } @else { <span></span> }
+        <small style="color:#6e9e85;">{{ (form.controls.descripcion.value ?? '').length }}/2000</small>
+      </div>
     </div>
 
     @if (error()) {

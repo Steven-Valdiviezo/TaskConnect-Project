@@ -8,6 +8,7 @@ import {
   listarProyectosPorClienteRepository,
   eliminarProyectoRepository
 } from '../repositories/proyecto.repository.js';
+import { validarTexto, validarMonto, lanzarError400 } from '../utils/validaciones.util.js';
 
 export const listarProyectosService = async (filtros) => {
   return await listarProyectosRepository(filtros);
@@ -30,6 +31,22 @@ export const crearProyectoService = async (id_cliente, datos) => {
     const error = new Error('El presupuesto debe ser mayor a 0');
     error.status = 400;
     throw error;
+  }
+    // Validaciones de contenido (mismas del frontend)
+  const errorCampos = validarTexto(titulo, 'El título', 5, 150)
+    || validarTexto(descripcion, 'La descripción', 20, 2000)
+    || validarMonto(presupuesto, 'El presupuesto', 1000000);
+  if (errorCampos) lanzarError400(errorCampos);
+
+  // La fecha de entrega no puede estar en el pasado.
+  // Render corre en UTC: se acepta desde "ayer UTC" para no rechazar el "hoy" de Ecuador (UTC-5).
+  if (fecha_entrega) {
+    const limite = new Date();
+    limite.setUTCDate(limite.getUTCDate() - 1);
+    limite.setUTCHours(0, 0, 0, 0);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha_entrega) || new Date(`${fecha_entrega}T00:00:00Z`) < limite) {
+      lanzarError400('La fecha de entrega no es válida o ya pasó');
+    }
   }
 
   return await crearProyectoRepository({

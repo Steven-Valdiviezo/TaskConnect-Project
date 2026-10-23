@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { Categoria } from '../../../models/catalogo.model';
+import { sinSoloEspacios, maxDosDecimales, fechaNoPasada, mensajeError } from '../../../core/validators/validadores';
+
 
 @Component({
   selector: 'app-publicar-proyecto',
@@ -23,12 +25,19 @@ export class PublicarProyecto implements OnInit {
   error = signal<string | null>(null);
 
   form = this.fb.group({
-    titulo: ['', Validators.required],
+    titulo: ['', [Validators.required, sinSoloEspacios, Validators.minLength(5), Validators.maxLength(150)]],
     id_categoria: [null as number | null, Validators.required],
-    presupuesto: [null as number | null, [Validators.required, Validators.min(1)]],
-    descripcion: ['', Validators.required],
-    fecha_entrega: ['']
+    presupuesto: [null as number | null, [Validators.required, Validators.min(1), Validators.max(1000000), maxDosDecimales]],
+    descripcion: ['', [Validators.required, sinSoloEspacios, Validators.minLength(20), Validators.maxLength(2000)]],
+    fecha_entrega: ['', [fechaNoPasada]]
   });
+
+   msg = mensajeError;
+
+    hoy = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
 
   ngOnInit(): void {
     this.catalogo.listarCategorias().subscribe(r => this.categorias.set(r.categorias));
@@ -44,7 +53,7 @@ export class PublicarProyecto implements OnInit {
     const v = this.form.getRawValue();
 
     this.proyectoSrv.crear({
-      titulo: v.titulo!, descripcion: v.descripcion!, presupuesto: v.presupuesto!, 
+      titulo: v.titulo!.trim(), descripcion: v.descripcion!.trim(), presupuesto: v.presupuesto!,
       id_categoria: v.id_categoria!, fecha_entrega: v.fecha_entrega || undefined
     }).subscribe({
       next: () => this.router.navigateByUrl('/cliente/mis-proyectos'),

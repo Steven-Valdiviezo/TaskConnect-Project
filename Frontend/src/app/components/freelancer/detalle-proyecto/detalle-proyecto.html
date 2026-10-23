@@ -33,6 +33,7 @@
         <div class="mb-3">
           <label class="form-label small" style="color:#6e8fa8;">Tu mensaje al cliente *</label>
           <textarea 
+            maxlength="1000"
             class="form-control" 
             rows="4" 
             formControlName="mensaje" 
@@ -40,6 +41,12 @@
             style="background-color:#162234; border-color:#1c2d3c; color:#cde0f0;" 
             placeholder="Describe tu experiencia y por qué eres el candidato ideal...">
           </textarea>
+          <div class="d-flex justify-content-between">
+            @if (form.controls.mensaje.touched && form.controls.mensaje.invalid) {
+              <small class="text-danger">{{ msg(form.controls.mensaje) }}</small>
+            } @else { <span></span> }
+            <small style="color:#6e8fa8;">{{ (form.controls.mensaje.value ?? '').length }}/1000</small>
+          </div>
         </div>
 
         <div class="mb-3" style="max-width:280px;">
@@ -55,7 +62,9 @@
               style="background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" 
               placeholder="0.00">
           </div>
-
+            @if (form.controls.monto_propuesto.touched && (form.controls.monto_propuesto.hasError('min') || form.controls.monto_propuesto.hasError('decimales') || form.controls.monto_propuesto.hasError('required'))) {
+            <small class="text-danger d-block mt-1" style="font-size: 0.75rem;">{{ msg(form.controls.monto_propuesto) }}</small>
+          }
           @if (form.get('monto_propuesto')?.hasError('max') && form.get('monto_propuesto')?.touched) {
             <small class="text-danger d-block mt-1" style="font-size: 0.75rem;">
               No puede superar el presupuesto del proyecto (${{ p.presupuesto }}).

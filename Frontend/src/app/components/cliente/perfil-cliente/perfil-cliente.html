@@ -26,7 +26,10 @@
           <h6 class="mb-3">Información personal</h6>
           <div class="mb-3">
             <label class="form-label small">Nombre completo</label>
-            <input class="form-control bg-dark text-light border-secondary" formControlName="nombre" [readonly]="!editando()">
+            <input class="form-control bg-dark text-light border-secondary" formControlName="nombre" [readonly]="!editando()" maxlength="100">
+             @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+              <small class="text-danger">{{ msg(form.controls.nombre) }}</small>
+            }
           </div>
           <div class="mb-3">
             <label class="form-label small">Correo electrónico</label>
@@ -34,18 +37,21 @@
           </div>
           <div>
             <label class="form-label small">Teléfono</label>
-            <input class="form-control bg-dark text-light border-secondary" formControlName="telefono" [readonly]="!editando()">
+            <input class="form-control bg-dark text-light border-secondary" formControlName="telefono" [readonly]="!editando()" type="tel" maxlength="20">
+             @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
+              <small class="text-danger">{{ msg(form.controls.telefono) }}</small>
+            }
           </div>
         </div>
         <div class="col-lg-6">
           <h6 class="mb-3">Información de empresa</h6>
           <div class="mb-3">
             <label class="form-label small">Empresa</label>
-            <input class="form-control bg-dark text-light border-secondary" formControlName="empresa" [readonly]="!editando()">
+            <input class="form-control bg-dark text-light border-secondary" formControlName="empresa" [readonly]="!editando()" maxlength="30">
           </div>
           <div class="mb-3">
             <label class="form-label small">Dirección</label>
-            <input class="form-control bg-dark text-light border-secondary" formControlName="direccion" [readonly]="!editando()">
+            <input class="form-control bg-dark text-light border-secondary" formControlName="direccion" [readonly]="!editando()" maxlength="100">
           </div>
           <div>
             <label class="form-label small">Contraseña</label>
