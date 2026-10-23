@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 //import { FirebaseAuthService } from '../../../core/services/firebase-auth.service';
+import { correoValido } from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-login',
@@ -18,8 +19,8 @@ export class Login implements OnInit {
   private router = inject(Router);
 
   form = this.fb.group({
-    correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', [Validators.required]]
+    correo: ['', [Validators.required, correoValido]],
+    contrasena: ['', [Validators.required, Validators.maxLength(64)]]
   });
 
   cargando = signal(false);
@@ -60,7 +61,7 @@ export class Login implements OnInit {
     this.cargando.set(true);
     const { correo, contrasena } = this.form.getRawValue();
   
-    this.auth.loginPaso1(correo!, contrasena!).subscribe({
+    this.auth.loginPaso1(correo!.trim(), contrasena!).subscribe({  
       next: () => {
         // el backend ya envió el magic link por Brevo
         this.cargando.set(false);

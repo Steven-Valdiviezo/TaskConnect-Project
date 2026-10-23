@@ -5,6 +5,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { Profesion } from '../../../models/catalogo.model';
 import { RegistroPayload } from '../../../models/usuario.model';
+import {
+  sinSoloEspacios, nombreCompleto, correoRegistro, telefonoEcuador, politicaContrasena,
+  contrasenasIguales, evaluarContrasena, fuerzaContrasena, mensajeError, normalizar
+} from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-registro',
@@ -29,20 +33,55 @@ export class Registro implements OnInit {
 
   form = this.fb.group({
     rol: ['cliente' as 'cliente' | 'freelancer', Validators.required],
-    nombre: ['', Validators.required],
-    correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', [Validators.required, Validators.minLength(8)]],
+    nombre: ['', [Validators.required, sinSoloEspacios, nombreCompleto, Validators.maxLength(100)]],
+    correo: ['', [Validators.required, correoRegistro]],
+    contrasena: ['', [Validators.required, politicaContrasena]],
     confirmar: ['', Validators.required],
-    telefono: [''],
-    empresa: [''],
-    direccion: [''],
+    telefono: ['', [telefonoEcuador]],
+    empresa: ['', [Validators.maxLength(30)]],
+    direccion: ['', [Validators.maxLength(100)]],
     id_profesion: [null as number | null],
-    descripcion: [''],
-    experiencia: [0]
-  });
+    descripcion: ['', [Validators.maxLength(500)]],
+    experiencia: [0, [Validators.min(0), Validators.max(60), Validators.pattern(/^\d+$/)]]
+  }, { validators: contrasenasIguales });
+
+  // Para usarlo en la plantilla: {{ msg(form.controls.nombre) }}
+  msg = mensajeError;
+
+  // Lista de requisitos de la contraseña (se recalcula mientras escribe)
+  reglasContrasena() {
+    const v = this.form.getRawValue();
+    return evaluarContrasena(v.contrasena ?? '', v.correo ?? '', v.nombre ?? '');
+  }
+  
+  fuerza() {
+    const v = this.form.getRawValue();
+    return fuerzaContrasena(v.contrasena ?? '', v.correo ?? '', v.nombre ?? '');
+  }
 
   ngOnInit(): void {
     this.catalogo.listarProfesiones().subscribe(r => this.profesiones.set(r.profesiones));
+
+    // La contraseña no puede contener el nombre/correo: si cambian, se vuelve a validar
+    this.form.controls.correo.valueChanges.subscribe(() => this.form.controls.contrasena.updateValueAndValidity());
+    this.form.controls.nombre.valueChanges.subscribe(() => this.form.controls.contrasena.updateValueAndValidity());
+
+    // Profesión y descripción solo son obligatorias si el rol es freelancer
+    this.form.controls.rol.valueChanges.subscribe(() => this.ajustarValidadoresPorRol());
+    this.ajustarValidadoresPorRol();
+  }
+
+  private ajustarValidadoresPorRol(): void {
+    const { id_profesion, descripcion } = this.form.controls;
+    if (this.esFreelancer) {
+      id_profesion.setValidators([Validators.required]);
+      descripcion.setValidators([Validators.required, sinSoloEspacios, Validators.minLength(20), Validators.maxLength(500)]);
+    } else {
+      id_profesion.clearValidators();
+      descripcion.setValidators([Validators.maxLength(500)]);
+    }
+    id_profesion.updateValueAndValidity();
+    descripcion.updateValueAndValidity();
   }
 
   get esFreelancer(): boolean {
@@ -51,24 +90,17 @@ export class Registro implements OnInit {
 
   enviar(): void {
     this.form.markAllAsTouched();
-    if (this.form.controls.nombre.invalid || this.form.controls.correo.invalid ||
-        this.form.controls.contrasena.invalid || this.form.controls.confirmar.invalid) {
-      this.error.set('Completa todos los campos obligatorios.');
+    if (this.form.invalid) {
+      this.error.set('Revisa los campos marcados en rojo.');
       return;
     }
-  
+
+    // Se limpian los datos antes de enviarlos
     const v = this.form.getRawValue();
-  
-    if (v.contrasena !== v.confirmar) {
-      this.error.set('Las contraseñas no coinciden.');
-      return;
-    }
-  
-    if (v.rol === 'freelancer' && (!v.id_profesion || !v.descripcion?.trim())) {
-      this.error.set('Selecciona tu profesión y agrega una breve descripción.');
-      return;
-    }
-    
+    v.nombre = normalizar(v.nombre);
+    v.correo = (v.correo ?? '').trim().toLowerCase();
+    v.telefono = (v.telefono ?? '').replace(/[\s-]/g, '');
+
     const payload: RegistroPayload = v.rol === 'cliente'
       ? { nombre: v.nombre!, correo: v.correo!, contrasena: v.contrasena!, telefono: v.telefono || undefined,
           rol: 'cliente', perfil: { empresa: v.empresa || undefined, direccion: v.direccion || undefined } }

@@ -28,63 +28,84 @@
 
         <div class="mb-3">
           <label class="form-label small">Nombre completo</label>
-          <input type="text" class="form-control" formControlName="nombre" placeholder="Tu nombre completo">
+                    <input type="text" class="form-control" formControlName="nombre" maxlength="100" autocomplete="name"
+                 placeholder="Ej. Juan Carlos Pérez Mora">
+          <small class="text-secondary">2 nombres y 2 apellidos.</small>
           @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-            <small class="text-danger">Este campo es obligatorio.</small>
+            <small class="text-danger d-block">{{ msg(form.controls.nombre) }}</small>
           }
         </div>
 
         <div class="mb-3">
           <label class="form-label small">Correo electrónico</label>
-          <input type="email" class="form-control" formControlName="correo" placeholder="usuario@correo.com">
+          <input type="email" class="form-control" formControlName="correo" maxlength="100" autocomplete="email"
+                 placeholder="usuario@correo.com">
           @if (form.controls.correo.touched && form.controls.correo.invalid) {
-            <small class="text-danger">Ingresa un correo válido.</small>
+            <small class="text-danger">{{ msg(form.controls.correo) }}</small>
           }
         </div>
         
         <div class="mb-3">
           <label class="form-label small">Teléfono</label>
-          <input type="text" class="form-control" formControlName="telefono" placeholder="+593 9...">
+                    <input type="tel" inputmode="tel" class="form-control" formControlName="telefono" maxlength="20"
+                 autocomplete="tel" placeholder="0991234567 o +593991234567">
+          @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
+            <small class="text-danger">{{ msg(form.controls.telefono) }}</small>
+          }
         </div>
 
         @if (esFreelancer) {
           <div class="mb-3">
             <label class="form-label small">Profesión</label>
             <select class="form-select" formControlName="id_profesion">
+              @if (form.controls.id_profesion.touched && form.controls.id_profesion.invalid) {
+              <small class="text-danger">Selecciona tu profesión.</small>
+            }
               <option [ngValue]="null" disabled>Seleccionar...</option>
               @for (p of profesiones(); track p.id_profesion) {
                 <option [ngValue]="p.id_profesion">{{ p.nombre }}</option>
               }
+              
             </select>
           </div>
           <div class="mb-3">
             <label class="form-label small">Descripción profesional</label>
-            <textarea class="form-control" rows="2" formControlName="descripcion" placeholder="Cuéntanos sobre tu experiencia..."></textarea>
+            <textarea class="form-control" rows="2" formControlName="descripcion" maxlength="500" 
+            placeholder="Cuéntanos sobre tu experiencia (mínimo 20 caracteres)..."></textarea>
+            <div class="d-flex justify-content-between">
+              @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+                <small class="text-danger">{{ msg(form.controls.descripcion) }}</small>
+              } @else { <span></span> }
+              <small class="text-secondary">{{ (form.controls.descripcion.value ?? '').length }}/500</small>
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label small">Años de experiencia</label>
-            <input type="number" min="0" max="60" class="form-control" formControlName="experiencia">
+            <input type="number" min="0" max="60" step="1" class="form-control" formControlName="experiencia">
+            @if (form.controls.experiencia.touched && form.controls.experiencia.invalid) {
+              <small class="text-danger">Ingresa un número entero entre 0 y 60.</small>
+            }
           </div>
         } @else {
           <div class="mb-3">
             <label class="form-label small">Empresa (opcional)</label>
-            <input type="text" class="form-control" formControlName="empresa" placeholder="Nombre de tu empresa">
+            <input type="text" class="form-control" formControlName="empresa" placeholder="Nombre de tu empresa" maxlength="30">
           </div>
           <div class="mb-3">
             <label class="form-label small">Dirección (opcional)</label>
-            <input type="text" class="form-control" formControlName="direccion" placeholder="Ciudad, dirección">
+            <input type="text" class="form-control" formControlName="direccion" placeholder="Ciudad, dirección" maxlength="100">
           </div>
         }
         <!-- Actualizada para mostrar las contraseñas -->
         <div class="row">
-          <div class="col-6 mb-3">
+          <div class="col-12 col-sm-6 mb-3">
             <label class="form-label small">Contraseña</label>
             <div class="input-group">
               <input 
                 [type]="verContrasena() ? 'text' : 'password'" 
                 class="form-control border-end-0" 
-                formControlName="contrasena" 
-                placeholder="Mínimo 8 caracteres">
+                formControlName="contrasena" maxlength="64" autocomplete="new-password"
+                placeholder="Tu contraseña">
               <span 
                 class="input-group-text bg-transparent border-start-0" 
                 style="cursor: pointer;" 
@@ -92,18 +113,15 @@
                 <i [class]="verContrasena() ? 'fa-solid fa-eye-slash text-secondary' : 'fa-solid fa-eye text-secondary'"></i>
               </span>
             </div>
-            @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
-              <small class="text-danger d-block mt-1">Mínimo 8 caracteres.</small>
-            }
           </div>
 
-          <div class="col-6 mb-3">
+          <div class="col-12 col-sm-6 mb-3">
             <label class="form-label small">Confirmar</label>
             <div class="input-group">
               <input 
                 [type]="verConfirmar() ? 'text' : 'password'" 
                 class="form-control border-end-0" 
-                formControlName="confirmar" 
+                formControlName="confirmar" maxlength="64" autocomplete="new-password"
                 placeholder="••••••••">
               <span 
                 class="input-group-text bg-transparent border-start-0" 
@@ -112,12 +130,34 @@
                 <i [class]="verConfirmar() ? 'fa-solid fa-eye-slash text-secondary' : 'fa-solid fa-eye text-secondary'"></i>
               </span>
             </div>
-            @if (form.controls.confirmar.touched && form.controls.confirmar.invalid) {
+            @if (form.controls.confirmar.touched && form.controls.confirmar.hasError('required')) {
               <small class="text-danger d-block mt-1">Confirma tu contraseña.</small>
+            } @else if (form.controls.confirmar.touched && form.hasError('noCoinciden')) {
+              <small class="text-danger d-block mt-1">Las contraseñas no coinciden.</small>
             }
           </div>
         </div>
 
+                 <!-- Barra de fortaleza -->
+        @if (form.controls.contrasena.value) {
+          <div class="mb-2">
+            <div class="progress" style="height:6px;">
+              <div [class]="'progress-bar ' + fuerza().clase" [style.width.%]="fuerza().nivel * 25"></div>
+            </div>
+            <small class="text-secondary">Fortaleza: <strong>{{ fuerza().etiqueta }}</strong></small>
+          </div>
+        }
+
+        <!-- Requisitos de la contraseña: chips que se marcan solos mientras escribe -->
+        <div class="d-flex flex-wrap gap-1 mb-3">
+          @for (r of reglasContrasena(); track r.texto) {
+            <span [class]="'badge rounded-pill fw-normal ' + (r.ok ? 'text-bg-success' : 'bg-light text-secondary border')"
+                  [title]="r.detalle">
+              <i [class]="r.ok ? 'fa-solid fa-check me-1' : 'fa-regular fa-circle me-1'"></i>{{ r.texto }}
+            </span>
+          }
+        </div>
+        
         @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
         @if (exito()) { <div class="alert alert-success small py-2">Cuenta creada. Redirigiendo al login...</div> }
 

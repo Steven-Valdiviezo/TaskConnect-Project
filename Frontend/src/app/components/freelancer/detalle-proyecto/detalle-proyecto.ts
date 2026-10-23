@@ -6,6 +6,8 @@ import { ProyectoService } from '../../../core/services/proyecto.service';
 import { PropuestaService } from '../../../core/services/propuesta.service';
 import { DialogoService } from '../../../core/services/dialogo.service';
 import { Proyecto } from '../../../models/proyecto.model';
+import { sinSoloEspacios, maxDosDecimales, mensajeError } from '../../../core/validators/validadores';
+
 
 @Component({
   selector: 'app-detalle-proyecto',
@@ -29,9 +31,11 @@ export class DetalleProyecto implements OnInit {
   error = signal<string | null>(null);
 
   form = this.fb.group({
-    mensaje: ['', Validators.required],
-    monto_propuesto: [null as number | null, [Validators.required, Validators.min(1)]]
+    mensaje: ['', [Validators.required, sinSoloEspacios, Validators.minLength(20), Validators.maxLength(1000)]],
+    monto_propuesto: [null as number | null, [Validators.required, Validators.min(1), maxDosDecimales]]
   });
+
+  msg = mensajeError;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -67,7 +71,7 @@ export class DetalleProyecto implements OnInit {
     this.enviando.set(true);
     const v = this.form.getRawValue();
 
-    this.propuestaSrv.enviar({ id_proyecto: p.id_proyecto, mensaje: v.mensaje!, monto_propuesto: v.monto_propuesto! }).subscribe({
+    this.propuestaSrv.enviar({ id_proyecto: p.id_proyecto, mensaje: v.mensaje!.trim(), monto_propuesto: v.monto_propuesto! }).subscribe({
       next: async () => {
         this.enviando.set(false);
         await this.dialogo.avisar('Tu propuesta fue enviada correctamente.', 'Propuesta enviada');

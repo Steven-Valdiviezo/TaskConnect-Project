@@ -8,6 +8,8 @@ import { PagoService } from '../../../core/services/pago.service';
 import { CalificacionService } from '../../../core/services/calificacion.service';
 import { PerfilFreelancer as PerfilFreelancerModel } from '../../../models/usuario.model';
 import { Profesion } from '../../../models/catalogo.model';
+import { sinSoloEspacios, nombreCompleto, telefonoEcuador, mensajeError, normalizar } from '../../../core/validators/validadores';
+
 
 @Component({
   selector: 'app-perfil-freelancer',
@@ -36,13 +38,15 @@ export class PerfilFreelancer implements OnInit {
   ingresosTotales = signal(0);
 
   form = this.fb.group({
-    nombre: ['', Validators.required],
+    nombre: ['', [Validators.required, sinSoloEspacios, nombreCompleto, Validators.maxLength(100)]],
     correo: [{ value: '', disabled: true }],
-    telefono: [''],
+    telefono: ['', [telefonoEcuador]],
     id_profesion: [null as number | null, Validators.required],
-    experiencia: [0, [Validators.required, Validators.min(0), Validators.max(60)]],
-    descripcion: ['', Validators.required]
+    experiencia: [0, [Validators.required, Validators.min(0), Validators.max(60), Validators.pattern(/^\d+$/)]],
+    descripcion: ['', [Validators.required, sinSoloEspacios, Validators.minLength(20), Validators.maxLength(500)]]
   });
+
+  msg = mensajeError;
 
   ngOnInit(): void {
     this.catalogo.listarProfesiones().subscribe(r => this.profesiones.set(r.profesiones));
@@ -89,8 +93,8 @@ export class PerfilFreelancer implements OnInit {
     const v = this.form.getRawValue();
 
     this.usuarioSrv.actualizarPerfil({
-      nombre: v.nombre!, telefono: v.telefono || undefined,
-      id_profesion: v.id_profesion!, experiencia: v.experiencia!, descripcion: v.descripcion!
+      nombre: normalizar(v.nombre), telefono: (v.telefono ?? '').replace(/[\s-]/g, '') || undefined,
+      id_profesion: v.id_profesion!, experiencia: v.experiencia!, descripcion: v.descripcion!.trim()
     }).subscribe({
       next: () => { this.guardando.set(false); this.editando.set(false); },
       error: (err: any) => {

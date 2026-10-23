@@ -2,7 +2,7 @@ import { pool } from '../database/connection.js';
 
 export const buscarUsuarioPorCorreoRepository = async(correo) => {
     const resultado = await pool.query(
-        'SELECT * FROM usuario WHERE correo = $1', [correo]
+        'SELECT * FROM usuario WHERE LOWER(correo) = LOWER($1)', [correo]
     );
     return resultado.rows[0];
 };

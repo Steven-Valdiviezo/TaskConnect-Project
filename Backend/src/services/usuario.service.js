@@ -12,33 +12,55 @@ import {
     obtenerPerfilFreelancerConContactoRepository,
     existeContratoEntreClienteYFreelancerRepository
 } from '../repositories/usuario.repository.js';
-
+import {
+    normalizarEspacios, normalizarTelefono, lanzarError400, validarNombreCompleto,
+    validarCorreo, validarTelefono, validarContrasena, validarTexto, validarCorreoReal
+} from '../utils/validaciones.util.js';
 import { hashPassword, compararPassword } from '../utils/password.util.js';
 import crypto from 'crypto';
 import { generarToken } from '../utils/jwt.util.js';
 import { enviarCorreoBrevo } from '../utils/brevo.util.js';
 import { crearToken2FARepository, consumirToken2FARepository } from '../repositories/token2fa.repository.js';
 
-export const registrarUsuarioService = async(datos) => {
-    const { nombre, correo, contrasena, telefono, rol, perfil } = datos;
-
-    if (!nombre || !correo || !contrasena || !rol) {
-        const error = new Error('nombre, correo, contrasena y rol son obligatorios');
-        error.status = 400;
-        throw error;
+const validarPerfilPorRol = (rol, perfil = {}) => {
+    if (rol === 'cliente') {
+        if ((perfil.empresa ?? '').length > 30) lanzarError400('La empresa no puede superar los 30 caracteres');
+        if ((perfil.direccion ?? '').length > 100) lanzarError400('La dirección no puede superar los 100 caracteres');
     }
+    if (rol === 'freelancer') {
+        if (!perfil.id_profesion) lanzarError400('La profesión es obligatoria');
+        const errorDesc = validarTexto(perfil.descripcion, 'La descripción', 20, 500);
+        if (errorDesc) lanzarError400(errorDesc);
+        const exp = Number(perfil.experiencia ?? 0);
+        if (!Number.isInteger(exp) || exp < 0 || exp > 60) lanzarError400('Los años de experiencia deben ser un entero entre 0 y 60');
+    }
+};
 
-    if (contrasena.length < 8) {
-        const error = new Error('La contraseña debe tener al menos 8 caracteres');
-        error.status = 400;
-        throw error;
+export const registrarUsuarioService = async(datos) => {
+    const { contrasena, rol, perfil } = datos;
+
+    if (!datos.nombre || !datos.correo || !contrasena || !rol) {
+        lanzarError400('nombre, correo, contrasena y rol son obligatorios');
     }
 
     if (!['cliente', 'freelancer'].includes(rol)) {
-        const error = new Error('El rol de registro público solo puede ser cliente o freelancer');
-        error.status = 400;
-        throw error;
+        lanzarError400('El rol de registro público solo puede ser cliente o freelancer');
     }
+
+    // Datos limpios (mismas reglas que el frontend)
+    const nombre = normalizarEspacios(datos.nombre);
+    const correo = String(datos.correo).trim().toLowerCase();
+    const telefono = normalizarTelefono(datos.telefono);
+
+    const errorBasico = validarNombreCompleto(nombre) || validarCorreo(correo) || validarTelefono(telefono);
+    if (errorBasico) lanzarError400(errorBasico);
+
+    const fallas = validarContrasena(contrasena, { correo, nombre });
+    if (fallas.length) lanzarError400(`Contraseña no válida: ${fallas.join('; ')}.`);
+        // Dominio real: lista de dominios de prueba + consulta DNS (MX)
+    const errorDominio = await validarCorreoReal(correo);
+    if (errorDominio) lanzarError400(errorDominio);
+    validarPerfilPorRol(rol, perfil);
 
     const existente = await buscarUsuarioPorCorreoRepository(correo);
     if (existente) {
@@ -153,21 +175,21 @@ export const obtenerPerfilService = async (id_usuario) => {
 
 // Servicio para actualizar el perfil del usuario
 export const actualizarPerfilService = async (usuarioActual, datos) => {
-    const { nombre, telefono, empresa, direccion, id_profesion, descripcion, experiencia } = datos;
+        const { telefono, empresa, direccion, id_profesion, descripcion, experiencia } = datos;
+    const nombre = normalizarEspacios(datos.nombre);
 
-    if (!nombre || !nombre.trim()) {
-        const error = new Error('El nombre es obligatorio');
-        error.status = 400;
-        throw error;
-    }
+    // El administrador conserva su nombre libre; clientes y freelancers: 2 nombres y 2 apellidos
+    const errorNombre = usuarioActual.rol === 'administrador'
+        ? (!nombre ? 'El nombre es obligatorio' : null)
+        : validarNombreCompleto(nombre);
+    if (errorNombre) lanzarError400(errorNombre);
 
-    if (usuarioActual.rol === 'freelancer' && (!id_profesion || !descripcion || !descripcion.trim())) {
-        const error = new Error('La profesión y la descripción son obligatorias');
-        error.status = 400;
-        throw error;
-    }
+    const errorTel = validarTelefono(telefono);
+    if (errorTel) lanzarError400(errorTel);
 
-    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, { nombre, telefono: telefono ?? null });
+    validarPerfilPorRol(usuarioActual.rol, { empresa, direccion, id_profesion, descripcion, experiencia });
+
+    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, { nombre, telefono: normalizarTelefono(telefono) });
 
     let perfil = null;
     if (usuarioActual.rol === 'cliente') {

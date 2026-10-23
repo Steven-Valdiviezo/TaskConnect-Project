@@ -6,6 +6,7 @@ import {
   listarPropuestasPorFreelancerRepository,
   rechazarPropuestaRepository
 } from '../repositories/propuesta.repository.js';
+import { validarTexto, validarMonto, lanzarError400 } from '../utils/validaciones.util.js';
 
 import { obtenerProyectoPorIdRepository } from '../repositories/proyecto.repository.js';
 
@@ -35,6 +36,9 @@ export const crearPropuestaService = async (id_freelancer, datos) => {
     error.status = 400;
     throw error;
   }
+    const errorCampos = validarTexto(mensaje, 'El mensaje', 20, 1000)
+    || validarMonto(monto_propuesto, 'El monto propuesto', 1000000);
+  if (errorCampos) lanzarError400(errorCampos);
   // Validacion de presupesto del proyecto
   // --- VALIDACIÓN DE PRESUPUESTO DEL PROYECTO ---
   const proyecto = await obtenerProyectoPorIdRepository(id_proyecto);
