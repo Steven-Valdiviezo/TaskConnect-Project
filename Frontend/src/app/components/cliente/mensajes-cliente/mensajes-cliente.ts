@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Mensaje } from '../../../models/mensaje.model';
 import { DialogoService } from '../../../core/services/dialogo.service';
+import { sinSoloEspacios } from '../../../core/validators/validadores';
 
 /** Una fila de "Conversaciones" = una persona, sin importar cuántos contratos/proyectos
  *  tengas en común con ella (antes se repetía una fila por cada contrato). */
@@ -36,7 +37,7 @@ export class MensajesCliente implements OnInit {
   idContraparteSeleccionado = signal<number | null>(null);
   mensajes = signal<Mensaje[]>([]);
   cargandoMensajes = signal(false);
-
+  verChat = signal(false);   // en celular: false = lista de conversaciones, true = chat abierto
   miIdUsuario = computed(() => this.auth.usuario()?.id_usuario ?? 0);
 
   constructor() {
@@ -79,7 +80,7 @@ export class MensajesCliente implements OnInit {
   );
 
   formMensaje = this.fb.group({
-    texto: ['', Validators.required]
+    texto: ['', [Validators.required, sinSoloEspacios, Validators.maxLength(1000)]]
   });
 
   ngOnInit(): void {

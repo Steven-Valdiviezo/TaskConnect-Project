@@ -5,6 +5,7 @@ import {
   obtenerPagoPorContratoRepository,
   marcarPagoComoPagadoRepository
 } from '../repositories/pago.repository.js';
+import { validarMonto, lanzarError400 } from '../utils/validaciones.util.js';
 
 export const registrarPagoService = async (id_cliente, datos) => {
   const { id_contrato, id_metodo_pago, monto } = datos;
@@ -19,6 +20,14 @@ export const registrarPagoService = async (id_cliente, datos) => {
     const error = new Error('El monto debe ser mayor a 0');
     error.status = 400;
     throw error;
+  }
+
+  // Máximo 2 decimales y tope coherente con el presupuesto máximo de un proyecto
+  const errorMonto = validarMonto(monto, 'El monto', 1000000);
+  if (errorMonto) lanzarError400(errorMonto);
+
+  if (!Number.isInteger(Number(id_contrato)) || !Number.isInteger(Number(id_metodo_pago))) {
+    lanzarError400('id_contrato e id_metodo_pago deben ser números enteros');
   }
 
   const contrato = await obtenerContratoConClienteRepository(id_contrato);

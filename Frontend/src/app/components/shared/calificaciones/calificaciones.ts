@@ -6,6 +6,7 @@ import { CalificacionService } from '../../../core/services/calificacion.service
 import { Contrato } from '../../../models/contrato.model';
 import { Calificacion } from '../../../models/calificacion.model';
 import { DialogoService } from '../../../core/services/dialogo.service';
+import { mensajeError } from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-calificaciones',
@@ -26,6 +27,9 @@ export class Calificaciones implements OnInit {
 
   formsPorContrato: Record<number, FormGroup> = {};
 
+  // Para mostrar el mensaje de error en la plantilla
+  msg = mensajeError;
+
   pendientes = computed(() => {
     const idsCalificados = new Set(this.emitidas().map(c => c.id_contrato));
     return this.contratosCompletados().filter(c => !idsCalificados.has(c.id_contrato));
@@ -43,7 +47,7 @@ export class Calificaciones implements OnInit {
       completados.forEach(c => {
         this.formsPorContrato[c.id_contrato] = this.fb.group({
           puntuacion: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
-          comentario: ['']
+          comentario: ['', [Validators.maxLength(500)]]
         });
       });
     });
@@ -55,17 +59,23 @@ export class Calificaciones implements OnInit {
   }
 
   async calificar(c: Contrato): Promise<void> {
-  const form = this.formsPorContrato[c.id_contrato];
-  if (form.invalid || !form.value.puntuacion) {
-    await this.dialogo.avisar('Selecciona una puntuación entre 1 y 5.', 'Falta la puntuación');
-    return;
-  }
+    const form = this.formsPorContrato[c.id_contrato];
+    
+    if (!form.value.puntuacion) {
+      await this.dialogo.avisar('Selecciona una puntuación entre 1 y 5.', 'Falta la puntuación');
+      return;
+    }
+    
+    if (form.invalid) { 
+      form.markAllAsTouched(); 
+      return; 
+    }
 
-  this.enviando.set(c.id_contrato);
+    this.enviando.set(c.id_contrato);
     this.calificacionSrv.registrar({
       id_contrato: c.id_contrato,
       puntuacion: form.value.puntuacion,
-      comentario: form.value.comentario || undefined
+      comentario: (form.value.comentario ?? '').trim() || undefined
     }).subscribe({
       next: (r) => {
         this.emitidas.update(lista => [...lista, r.calificacion]);

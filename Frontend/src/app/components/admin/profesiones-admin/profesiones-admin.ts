@@ -5,6 +5,7 @@ import { CatalogoService } from '../../../core/services/catalogo.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { DialogoService } from '../../../core/services/dialogo.service';
 import { Profesion } from '../../../models/catalogo.model';
+import { sinSoloEspacios, mensajeError } from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-profesiones-admin',
@@ -26,7 +27,12 @@ export class ProfesionesAdmin implements OnInit {
   error = signal<string | null>(null);
   editando = signal<number | null>(null);
 
-  form = this.fb.group({ nombre: ['', Validators.required], descripcion: ['', Validators.required] });
+  form = this.fb.group({ 
+    nombre: ['', [Validators.required, sinSoloEspacios, Validators.minLength(3), Validators.maxLength(30)]], 
+    descripcion: ['', [Validators.required, sinSoloEspacios, Validators.minLength(10), Validators.maxLength(100)]] 
+  });
+
+  msg = mensajeError;
 
   ngOnInit(): void {
     this.cargar();
@@ -58,8 +64,8 @@ export class ProfesionesAdmin implements OnInit {
     const v = this.form.getRawValue();
     const id = this.editando();
 
-    const peticion = id ? this.catalogo.actualizarProfesion(id, { nombre: v.nombre!, descripcion: v.descripcion! })
-                         : this.catalogo.crearProfesion({ nombre: v.nombre!, descripcion: v.descripcion! });
+    const peticion = id ? this.catalogo.actualizarProfesion(id, { nombre: v.nombre!.trim(), descripcion: v.descripcion!.trim() })
+                         : this.catalogo.crearProfesion({ nombre: v.nombre!.trim(), descripcion: v.descripcion!.trim() });
     peticion.subscribe({
       next: () => { this.guardando.set(false); this.cargar(); this.nuevo(); },
       error: (err: any) => { this.guardando.set(false); this.error.set(err?.error?.mensaje ?? 'No se pudo guardar la profesión.'); }

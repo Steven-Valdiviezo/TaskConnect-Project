@@ -30,6 +30,7 @@ export class FreelancerShell implements OnInit {
   notificaciones = signal<Notificacion[]>([]);
   mostrarNotificaciones = signal(false);
   hayMensajesNuevos = signal(false);
+  menuAbierto = signal(false);   // menú lateral en pantallas pequeñas
 
   ngOnInit(): void {
     this.cargarNotificaciones();

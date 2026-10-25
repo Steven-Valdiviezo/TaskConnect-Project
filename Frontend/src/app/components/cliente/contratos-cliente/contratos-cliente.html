@@ -53,10 +53,10 @@
           <!-- Reparte la comision en 5% para cada uno de los roles -->
           @if (f.pago) {
             <div class="small text-end mt-1" style="color:#6e9e85;">
-              <span class="d-block">Monto dado: ${{ f.pago!.monto }}</span>
-              <span class="d-block" style="color:#EF9F27;">Tu comisión (5%): -${{ (f.pago!.comision / 2).toFixed(2) }}</span>
-              <span class="d-block fw-medium" style="color:#cce8d8;">Total pagado por ti: ${{ (f.pago!.monto + f.pago!.comision / 2).toFixed(2) }}</span>
-              <span class="d-block fw-medium" style="color:#5DCAA5;">Freelancer recibe: ${{ (f.pago!.monto - f.pago!.comision / 2).toFixed(2) }}</span>
+              Monto a pagar: ${{ montoAPagar.toFixed(2) }} · IVA ({{ porcentajeIva }}%): ${{ ivaEstimado.toFixed(2) }} · Tu comisión (5%): ${{ comisionEstimadaMitad.toFixed(2) }} ·
+              <span class="d-block">IVA ({{ pct(f.pago!.tarifa_iva) }}%): +${{ f.pago!.iva.toFixed(2) }}</span>
+              <span class="d-block" style="color:#EF9F27;">Tu comision (5%): +${{ (f.pago!.comision / 2).toFixed(2) }}</span>
+              <span class="d-block fw-medium" style="color:#cce8d8;">Total pagado por ti: ${{ totalPago(f.pago!).toFixed(2) }}</span><span class="d-block fw-medium" style="color:#5DCAA5;">Freelancer recibe: ${{ (f.pago!.monto - f.pago!.comision / 2).toFixed(2) }}</span>
             </div>
           }
           
@@ -74,7 +74,10 @@
 
           <div>
             <input type="number" class="form-control form-control-sm" style="max-width:200px;background-color:#091410;border-color:#1c3c2d;color:#cce8d8;"
-                  placeholder="Pago adicional (opcional)" formControlName="adicional" min="0" [max]="margenDisponible">
+                   placeholder="Pago adicional (opcional)" formControlName="adicional" min="0" [max]="margenDisponible" step="0.01">
+            @if (formPago.controls.adicional.invalid) {
+              <small class="text-danger d-block">{{ msg(formPago.controls.adicional) }}</small>
+            }
             <small class="d-block" style="color:#6e9e85;"><b>Ya acordado: </b>${{ f.contrato.monto_propuesto }} · <b>Margen extra disponible: </b>${{ margenDisponible.toFixed(2) }}</small>
           </div>
 

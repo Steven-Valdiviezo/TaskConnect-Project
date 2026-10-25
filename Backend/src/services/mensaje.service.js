@@ -4,15 +4,15 @@ import {
   marcarMensajeLeidoRepository,
   contarMensajesNoLeidosRepository
 } from '../repositories/mensaje.repository.js';
+import { validarTexto, lanzarError400 } from '../utils/validaciones.util.js';
 
 export const enviarMensajeService = async (remitente, datos) => {
   const { destinatario, contenido } = datos;
 
-  if (!destinatario || !contenido) {
-    const error = new Error('destinatario y contenido son obligatorios');
-    error.status = 400;
-    throw error;
-  }
+  const errorContenido = validarTexto(contenido, 'El mensaje', 1, 1000);
+  if (errorContenido) lanzarError400(errorContenido);
+
+  if (!Number.isInteger(Number(destinatario))) lanzarError400('El destinatario no es válido');
 
   if (Number(destinatario) === Number(remitente)) {
     const error = new Error('No puedes enviarte mensajes a ti mismo');
@@ -21,7 +21,7 @@ export const enviarMensajeService = async (remitente, datos) => {
   }
 
   // trg_validar_mensaje_contrato exige un contrato activo entre ambos usuarios
-  return await crearMensajeRepository({ remitente, destinatario, contenido });
+  return await crearMensajeRepository({ remitente, destinatario, contenido: String(contenido).trim() });
 };
 
 export const obtenerConversacionService = async (usuarioActual, otroUsuario) => {

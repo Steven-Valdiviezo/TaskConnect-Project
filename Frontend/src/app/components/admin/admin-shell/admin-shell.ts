@@ -25,6 +25,7 @@ export class AdminShell implements OnInit {
 
   notificaciones = signal<Notificacion[]>([]);
   mostrarNotificaciones = signal(false);
+  menuAbierto = signal(false);   // menú lateral en pantallas pequeñas
 
   ngOnInit(): void {
     this.adminSrv.listarUsuarios().subscribe(r => {

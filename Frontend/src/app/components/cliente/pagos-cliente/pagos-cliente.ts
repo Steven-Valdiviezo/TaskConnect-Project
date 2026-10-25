@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { PagoService, FilaPagoContrato } from '../../../core/services/pago.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { MetodoPago } from '../../../models/catalogo.model';
+import { totalCliente } from '../../../core/utils/montos';
 
 @Component({
   selector: 'app-pagos-cliente',
@@ -23,19 +24,21 @@ export class PagosCliente implements OnInit {
   registrados = computed(() => this.filas().filter(f => !!f.pago));
   
   // Agregado del 5% de comision para cada rol
-  totalGastado = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0));
+  totalGastado = computed(() => this.pagadas().reduce((a, f) => a + totalCliente(f.pago!), 0));
   totalEsteMes = computed(() => {
     const ahora = new Date();
     return this.pagadas()
       .filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear())
-      .reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0);
+      .reduce((a, f) => a + totalCliente(f.pago!), 0);
   });
   pagosEsteMesCantidad = computed(() => {
     const ahora = new Date();
     return this.pagadas().filter(f => f.pago!.fecha_pago && new Date(f.pago!.fecha_pago!).getMonth() === ahora.getMonth() && new Date(f.pago!.fecha_pago!).getFullYear() === ahora.getFullYear()).length;
   });
-  totalPendiente = computed(() => this.filas().filter(f => f.pago?.estado === 'pendiente').reduce((a, f) => a + Number(f.pago!.monto) + Number(f.pago!.comision) / 2, 0));
-  
+  totalPendiente = computed(() => this.filas().filter(f => f.pago?.estado === 'pendiente').reduce((a, f) => a + totalCliente(f.pago!), 0));
+  totalIva = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.iva), 0));
+  totalCliente = totalCliente;
+  pct = (t: number) => +(Number(t) * 100).toFixed(2);
   //Comision agregada por el sistema (el total del 10% no cambia, sigue siendo lo que recauda la plataforma)
   totalComision = computed(() => this.pagadas().reduce((a, f) => a + Number(f.pago!.comision), 0));
   totalNetoFreelancers = computed(() => this.pagadas().reduce((a, f) => a + (Number(f.pago!.monto) - Number(f.pago!.comision) / 2), 0));

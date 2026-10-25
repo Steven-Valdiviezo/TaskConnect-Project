@@ -3,6 +3,16 @@
 export const manejarErrores = (error, req, res, next) => {
     console.error(error);
 
+    // Errores con status propio (los lanzan los services con error.status): se respetan tal cual
+    if (error.status) {
+        return res.status(error.status).json({ mensaje: error.message });
+    }
+
+    // Formato inválido para el tipo (ej. "abc" donde va un número), texto demasiado largo o número fuera de rango
+    if (['22P02', '22001', '22003'].includes(error.code)) {
+        return res.status(400).json({ mensaje: 'Datos inválidos: revisa los formatos y las longitudes permitidas' });
+    }
+
     // Errores lanzados por RAISE EXCEPTION en triggers/funciones
     if (error.code === 'P0001') {
         return res.status(400).json({ mensaje: error.message });

@@ -25,4 +25,7 @@ export class CatalogoService {
   crearMetodoPago(datos: { nombre: string; descripcion: string }) { return this.http.post<{ metodo: MetodoPago }>(`${this.baseUrl}/metodos-pago`, datos); }
   actualizarMetodoPago(id: number, datos: { nombre: string; descripcion: string }) { return this.http.put<{ metodo: MetodoPago }>(`${this.baseUrl}/metodos-pago/${id}`, datos); }
   eliminarMetodoPago(id: number) { return this.http.delete(`${this.baseUrl}/metodos-pago/${id}`); }
+  
+  // ---- Configuración pública (tarifa de IVA vigente) ----
+  obtenerConfiguracion() { return this.http.get<{ tarifa_iva: number }>(`${this.baseUrl}/configuracion`); }
 }

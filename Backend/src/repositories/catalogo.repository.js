@@ -21,6 +21,12 @@ export const obtenerCategoriaPorNombreRepository = async (nombre_categoria) => {
   return r.rows[0];
 };
 
+// =========== Configuración (tarifa del IVA) ===========
+export const obtenerTarifaIvaRepository = async () => {
+  const r = await pool.query("SELECT valor FROM configuracion WHERE clave = 'tarifa_iva'");
+  return r.rows[0]?.valor; // ya llega como número (setTypeParser 1700 en connection.js)
+};
+
 export const crearCategoriaRepository = async (nombre_categoria) => {
   const r = await pool.query(
     'INSERT INTO categoria (nombre_categoria) VALUES ($1) RETURNING *',

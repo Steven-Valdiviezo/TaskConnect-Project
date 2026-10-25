@@ -1,11 +1,12 @@
 import { Component, OnInit, computed, inject, signal, ViewChild, ElementRef, effect } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { MensajeService } from '../../../core/services/mensaje.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DialogoService } from '../../../core/services/dialogo.service';
 import { Contrato } from '../../../models/contrato.model';
 import { Mensaje } from '../../../models/mensaje.model';
+import { sinSoloEspacios } from '../../../core/validators/validadores';
 
 interface ConversacionAgrupada {
   idUsuarioContraparte: number;
@@ -34,6 +35,7 @@ export class MensajesFreelancer implements OnInit {
   idContraparteSeleccionado = signal<number | null>(null);
   mensajes = signal<Mensaje[]>([]);
   cargandoMensajes = signal(false);
+  verChat = signal(false);   // en celular: false = lista de conversaciones, true = chat abierto
 
   miIdUsuario = computed(() => this.auth.usuario()?.id_usuario ?? 0);
 
@@ -75,7 +77,7 @@ export class MensajesFreelancer implements OnInit {
     this.conversaciones().find(c => c.idUsuarioContraparte === this.idContraparteSeleccionado()) ?? null
   );
 
-  formMensaje = this.fb.group({ texto: [''] });
+  formMensaje = this.fb.group({ texto: ['', [Validators.maxLength(1000), sinSoloEspacios]] });
 
   ngOnInit(): void {
     this.contratoSrv.listarMios().subscribe(r => {

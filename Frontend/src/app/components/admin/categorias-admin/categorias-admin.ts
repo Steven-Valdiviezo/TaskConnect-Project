@@ -4,6 +4,7 @@ import { CatalogoService } from '../../../core/services/catalogo.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { DialogoService } from '../../../core/services/dialogo.service';
 import { Categoria } from '../../../models/catalogo.model';
+import { sinSoloEspacios, mensajeError } from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-categorias-admin',
@@ -25,7 +26,12 @@ export class CategoriasAdmin implements OnInit {
   error = signal<string | null>(null);
   editando = signal<number | null>(null);
 
-  form = this.fb.group({ nombre_categoria: ['', Validators.required] });
+  form = this.fb.group({ 
+    nombre_categoria: ['', [Validators.required, sinSoloEspacios, Validators.minLength(3), Validators.maxLength(100)]] 
+  });
+
+  // Para mostrar el mensaje de error en la plantilla
+  msg = mensajeError;
 
   ngOnInit(): void {
     this.cargar();
@@ -54,7 +60,7 @@ export class CategoriasAdmin implements OnInit {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.error.set(null);
     this.guardando.set(true);
-    const nombre = this.form.getRawValue().nombre_categoria!;
+    const nombre = this.form.getRawValue().nombre_categoria!.trim();
     const id = this.editando();
 
     const peticion = id ? this.catalogo.actualizarCategoria(id, nombre) : this.catalogo.crearCategoria(nombre);

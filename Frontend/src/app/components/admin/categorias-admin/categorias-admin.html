@@ -36,7 +36,10 @@
             <form [formGroup]="form" (ngSubmit)="guardar()">
                 <div class="mb-3">
                     <label class="form-label small" style="color:#8e89c4;">Nombre *</label>
-                    <input type="text" class="form-control" formControlName="nombre_categoria" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Consultoría empresarial">
+                    <input type="text" class="form-control" formControlName="nombre_categoria" maxlength="100" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Consultoría empresarial">
+                    @if (form.controls.nombre_categoria.touched && form.controls.nombre_categoria.invalid) {
+                        <small class="text-danger">{{ msg(form.controls.nombre_categoria) }}</small>
+                    }
                 </div>
                 @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
                 <div class="d-flex gap-2 justify-content-end">

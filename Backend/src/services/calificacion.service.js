@@ -5,6 +5,7 @@ import {
   obtenerReputacionFreelancerRepository,
   listarCalificacionesEmitidasPorUsuarioRepository
 } from '../repositories/calificacion.repository.js';
+import { lanzarError400 } from '../utils/validaciones.util.js';
 
 export const registrarCalificacionService = async (usuarioActual, datos) => {
   const { id_contrato, puntuacion, comentario } = datos;
@@ -21,11 +22,13 @@ export const registrarCalificacionService = async (usuarioActual, datos) => {
     throw error;
   }
 
-  if (puntuacion < 1 || puntuacion > 5) {
-    const error = new Error('La puntuación debe estar entre 1 y 5');
-    error.status = 400;
-    throw error;
+  if (!Number.isInteger(Number(puntuacion)) || puntuacion < 1 || puntuacion > 5) {
+    lanzarError400('La puntuación debe ser un número entero entre 1 y 5');
   }
+  
+  // El comentario es opcional, pero con máximo 500 caracteres
+  const comentarioLimpio = String(comentario ?? '').trim();
+  if (comentarioLimpio.length > 500) lanzarError400('El comentario no puede superar los 500 caracteres');
 
   const contrato = await obtenerContratoParaCalificarRepository(id_contrato);
 
@@ -47,8 +50,8 @@ export const registrarCalificacionService = async (usuarioActual, datos) => {
     id_contrato,
     id_calificador: usuarioActual.id_usuario,
     id_calificado: contrato.id_usuario_freelancer,
-    puntuacion,
-    comentario: comentario ?? null
+    puntuacion: Number(puntuacion),
+    comentario: comentarioLimpio || null
   });
 };
 

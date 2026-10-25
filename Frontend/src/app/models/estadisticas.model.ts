@@ -19,4 +19,5 @@ export interface EstadisticasAdmin {
   contratos: { total: number; total_activos: number; total_completados: number };
   monto_total_pagado: number;
   comision_total: number;
+  iva_total: number;
 }

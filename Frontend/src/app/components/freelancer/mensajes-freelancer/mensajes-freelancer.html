@@ -2,7 +2,7 @@
   <h1 class="h5 fw-medium mb-3" style="color:#cde0f0;">Mensajes</h1>
 
   <div class="d-flex flex-grow-1 rounded-3 overflow-hidden" style="border:1px solid #1c2d3c;min-height:0;">
-    <div class="d-flex flex-column flex-shrink-0" style="width:260px;background-color:#09121e;border-right:1px solid #1c2d3c;overflow-y:auto;">
+      <div class="flex-column flex-shrink-0 lista-conv d-md-flex" [class.d-none]="verChat()" [class.d-flex]="!verChat()" style="background-color:#09121e;border-right:1px solid #1c2d3c;overflow-y:auto;">
       <p class="small fw-medium px-3 pt-3 mb-2" style="color:#6e8fa8;">Conversaciones</p>
 
       @if (!conversaciones().length) {
@@ -13,7 +13,7 @@
         <div class="d-flex align-items-start gap-2 p-2 px-3" style="cursor:pointer;"
              [style.background-color]="idContraparteSeleccionado() === conv.idUsuarioContraparte ? '#0f1e30' : 'transparent'"
              [style.border-left]="idContraparteSeleccionado() === conv.idUsuarioContraparte ? '3px solid #60b4e8' : '3px solid transparent'"
-             (click)="seleccionar(conv)">
+             (click)="seleccionar(conv); verChat.set(true)">
           <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c2d3c;color:#60b4e8;">
             {{ iniciales(conv.nombreContraparte) }}
           </div>
@@ -25,9 +25,13 @@
       }
     </div>
 
-    <div class="d-flex flex-column flex-grow-1" style="background-color:#162234;min-width:0;">
+    <div class="flex-column flex-grow-1 d-md-flex" [class.d-flex]="verChat()" [class.d-none]="!verChat()">
       @if (conversacionSeleccionada(); as conv) {
         <div class="d-flex align-items-center gap-2 p-3 flex-shrink-0" style="border-bottom:1px solid #1c2d3c;">
+          <button type="button" class="btn btn-sm btn-outline-secondary d-md-none flex-shrink-0" aria-label="Volver a las conversaciones" (click)="verChat.set(false)">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          
           <div class="rounded-circle d-flex align-items-center justify-content-center small fw-medium flex-shrink-0" style="width:32px;height:32px;background-color:#1c2d3c;color:#60b4e8;">
             {{ iniciales(conv.nombreContraparte) }}
           </div>
@@ -45,7 +49,7 @@
             @if (m.remitente === miIdUsuario()) {
               <div class="d-flex justify-content-end mb-2">
                 <div class="text-end">
-                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#1c2d3c;color:#60b4e8;max-width:320px;word-break:break-word;">{{ m.contenido }}</div>
+                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#1c2d3c;color:#60b4e8;max-width:min(320px,85%);word-break:break-word;">{{ m.contenido }}</div>
                   <div class="small mt-1" style="color:#6e8fa8;">
                     {{ horaDe(m.fecha_envio) }}
                     <i class="fa-solid ms-1" [class.fa-check]="!m.leido" [class.fa-check-double]="m.leido" [style.color]="m.leido ? '#60b4e8' : '#6e8fa8'"></i>
@@ -55,7 +59,7 @@
             } @else {
               <div class="d-flex mb-2">
                 <div>
-                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#0f1e30;color:#cde0f0;max-width:320px;word-break:break-word;">{{ m.contenido }}</div>
+                  <div class="p-2 rounded-3 small d-inline-block" style="background-color:#0f1e30;color:#cde0f0;max-width:min(320px,85%);word-break:break-word;">{{ m.contenido }}</div>
                   <div class="small mt-1" style="color:#6e8fa8;">{{ horaDe(m.fecha_envio) }}</div>
                 </div>
               </div>
@@ -64,7 +68,7 @@
         </div>
 
         <form [formGroup]="formMensaje" (ngSubmit)="enviar()" class="d-flex gap-2 p-3 flex-shrink-0" style="border-top:1px solid #1c2d3c;">
-          <input type="text" class="form-control" style="background-color:#09121e;border-color:#1c2d3c;color:#cde0f0;" placeholder="Escribe un mensaje..." formControlName="texto">
+          <input type="text" class="form-control" style="background-color:#09121e;border-color:#1c2d3c;color:#cde0f0;" placeholder="Escribe un mensaje..." formControlName="texto" maxlength="1000" autocomplete="off">
           <button type="submit" class="btn flex-shrink-0" style="background-color:#185FA5;color:#E6F1FB;"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
       } @else {
@@ -75,3 +79,9 @@
     </div>
   </div>
 </div>
+
+<style>
+    /* En celular la lista ocupa todo el ancho; desde 768px vuelve a ser la columna de 260px */
+    .lista-conv { width: 100%; }
+    @media (min-width: 768px) { .lista-conv { width: 260px; } }
+</style>

@@ -2,7 +2,8 @@
     <h1 class="h5 fw-medium mb-4" style="color:#cde0f0;">Buscar Proyectos Disponibles</h1>
 
     <form [formGroup]="form" class="d-flex gap-2 mb-4">
-        <input type="text" class="form-control" formControlName="texto" placeholder="Buscar por título o descripción..." style="background-color:#cfe2ff;border-color:#b6d4fe;color:#084298;">
+        <!-- Se agregó maxlength="100" -->
+        <input type="text" class="form-control" formControlName="texto" maxlength="100" placeholder="Buscar por título o descripción..." style="background-color:#cfe2ff;border-color:#b6d4fe;color:#084298;">
         <select class="form-select" style="max-width:220px;background-color:#162234;border-color:#1c2d3c;color:#cde0f0;" formControlName="id_categoria">
             <option [ngValue]="null">Todas las categorías</option>
             @for (c of categorias(); track c.id_categoria) {

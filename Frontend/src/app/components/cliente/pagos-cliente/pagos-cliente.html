@@ -22,6 +22,14 @@
         <div class="fs-4 fw-medium" style="color:#cce8d8;">${{ totalPendiente().toFixed(2) }}</div>
       </div>
     </div>
+        <div class="col-md-4">
+      <!-- IVA pagado (solo informativo: va al SRI a través del freelancer) -->
+      <div class="p-3 rounded-3 h-100" style="background-color:#142b21;border:1px solid #1c3c2d;">
+        <small style="color:#6e9e85;">IVA pagado</small>
+        <div class="fs-4 fw-medium" style="color:#cce8d8;">${{ totalIva().toFixed(2) }}</div>
+        <small style="color:#6e9e85;">sobre el monto de los servicios (pagos confirmados)</small>
+      </div>
+    </div>
     <div class="col-md-4">
     <!-- Comision agregada por el sistema -->
       <div class="p-3 rounded-3 h-100" style="background-color:#142b21;border:1px solid #1c3c2d;">
@@ -41,6 +49,7 @@
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Método</th>
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Fecha</th>
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Monto acordado</th>
+          <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">IVA</th>
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Comisión total (10%)</th>
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Total pagado por ti</th>
           <th class="small fw-medium" style="color:#6e9e85;border-color:#1c3c2d;">Recibe el freelancer</th>
@@ -49,7 +58,7 @@
       </thead>
       <tbody class="small">
         @if (!cargando() && !registrados().length) {
-          <tr><td colspan="8" style="color:#6e9e85;">Aún no tienes pagos registrados.</td></tr>
+          <tr><td colspan="9" style="color:#6e9e85;">Aún no tienes pagos registrados.</td></tr>
         }
         @for (f of registrados(); track f.pago!.id_pago) {
           <tr style="border-color:#1c3c2d;">
@@ -60,9 +69,11 @@
             <td style="color:#6e9e85;">{{ nombreMetodo(f.pago!.id_metodo_pago) }}</td>
             <td style="color:#6e9e85;">{{ f.pago!.fecha_pago ? (f.pago!.fecha_pago | date:'dd MMM yyyy') : 'Pendiente' }}</td>
             <td style="color:#cce8d8;">${{ f.pago!.monto }}</td>
+            <td style="color:#cce8d8;" [title]="'Tarifa aplicada: ' + pct(f.pago!.tarifa_iva) + '%'">${{ f.pago!.iva.toFixed(2) }}</td>
             <td style="color:#EF9F27;">-${{ f.pago!.comision }}</td>
             <td style="color:#cce8d8;">${{ (f.pago!.monto + f.pago!.comision / 2).toFixed(2) }}</td>
             <td style="color:#5DCAA5;">${{ (f.pago!.monto - f.pago!.comision / 2).toFixed(2) }}</td>
+            
             <td>
               @if (f.pago!.estado === 'pagado') {
                 <span class="badge rounded-pill" style="background-color:#EAF3DE;color:#27500A;">pagado</span>

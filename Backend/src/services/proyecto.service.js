@@ -10,7 +10,39 @@ import {
 } from '../repositories/proyecto.repository.js';
 import { validarTexto, validarMonto, lanzarError400 } from '../utils/validaciones.util.js';
 
+// Validaciones de contenido de un proyecto (se usan al crear y al editar; mismas reglas del frontend)
+const validarDatosProyecto = ({ titulo, descripcion, presupuesto, fecha_entrega }) => {
+  const errorCampos = validarTexto(titulo, 'El título', 5, 150)
+    || validarTexto(descripcion, 'La descripción', 20, 2000)
+    || validarMonto(presupuesto, 'El presupuesto', 1000000);
+  
+  if (errorCampos) lanzarError400(errorCampos);
+  
+  // La fecha de entrega no puede estar en el pasado.
+  // Render corre en UTC: se acepta desde "ayer UTC" para no rechazar el "hoy" de Ecuador (UTC-5).
+  if (fecha_entrega) {
+    const limite = new Date();
+    limite.setUTCDate(limite.getUTCDate() - 1);
+    limite.setUTCHours(0, 0, 0, 0);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha_entrega) || new Date(`${fecha_entrega}T00:00:00Z`) < limite) {
+      lanzarError400('La fecha de entrega no es válida o ya pasó');
+    }
+  }
+};
+
 export const listarProyectosService = async (filtros) => {
+  const { id_categoria, presupuesto_min, presupuesto_max } = filtros;
+  
+  if (id_categoria && !Number.isInteger(Number(id_categoria))) lanzarError400('id_categoria no es válido');
+  
+  for (const [nombre, valor] of [['presupuesto_min', presupuesto_min], ['presupuesto_max', presupuesto_max]]) {
+    if (valor && (!Number.isFinite(Number(valor)) || Number(valor) < 0)) lanzarError400(`${nombre} no es válido`);
+  }
+  
+  if (presupuesto_min && presupuesto_max && Number(presupuesto_min) > Number(presupuesto_max)) {
+    lanzarError400('El presupuesto mínimo no puede ser mayor al máximo');
+  }
+  
   return await listarProyectosRepository(filtros);
 };
 
@@ -32,22 +64,8 @@ export const crearProyectoService = async (id_cliente, datos) => {
     error.status = 400;
     throw error;
   }
-    // Validaciones de contenido (mismas del frontend)
-  const errorCampos = validarTexto(titulo, 'El título', 5, 150)
-    || validarTexto(descripcion, 'La descripción', 20, 2000)
-    || validarMonto(presupuesto, 'El presupuesto', 1000000);
-  if (errorCampos) lanzarError400(errorCampos);
-
-  // La fecha de entrega no puede estar en el pasado.
-  // Render corre en UTC: se acepta desde "ayer UTC" para no rechazar el "hoy" de Ecuador (UTC-5).
-  if (fecha_entrega) {
-    const limite = new Date();
-    limite.setUTCDate(limite.getUTCDate() - 1);
-    limite.setUTCHours(0, 0, 0, 0);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha_entrega) || new Date(`${fecha_entrega}T00:00:00Z`) < limite) {
-      lanzarError400('La fecha de entrega no es válida o ya pasó');
-    }
-  }
+  
+  validarDatosProyecto({ titulo, descripcion, presupuesto, fecha_entrega });
 
   return await crearProyectoRepository({
     id_cliente,
@@ -73,6 +91,9 @@ export const actualizarProyectoService = async (id_proyecto, id_cliente, datos) 
     error.status = 403;
     throw error;
   }
+
+  // Mismas validaciones de contenido que al publicar
+  validarDatosProyecto(datos);
 
   // El trigger trg_validar_modificacion_proyecto ya impide editar si no está "abierto"
   return await actualizarProyectoRepository(id_proyecto, datos);
