@@ -124,7 +124,8 @@ export const contarContratosRepository = async () => {
 
 export const sumarPagosRepository = async () => {
   const r = await pool.query(
-    `SELECT COALESCE(SUM(monto),0)::NUMERIC(12,2) AS total_pagado, COALESCE(SUM(comision),0)::NUMERIC(12,2) AS total_comision
+    `SELECT COALESCE(SUM(monto),0)::NUMERIC(12,2) AS total_pagado, COALESCE(SUM(comision),0)::NUMERIC(12,2) AS total_comision,
+            COALESCE(SUM(iva),0)::NUMERIC(12,2) AS total_iva
      FROM pago WHERE estado = 'pagado'`
   );
   return r.rows[0];

@@ -55,6 +55,7 @@ export const obtenerEstadisticasAdminService = async () => {
     contarPropuestasRepository(),
     contarContratosRepository(),
     sumarPagosRepository()
+
   ]);
 
   const totalClientes = usuariosDetalle.filter(u => u.rol === 'cliente').reduce((a, u) => a + u.total, 0);
@@ -70,6 +71,8 @@ export const obtenerEstadisticasAdminService = async () => {
     propuestas,
     contratos,
     monto_total_pagado: Number(pagos.total_pagado),
-    comision_total: Number(pagos.total_comision)
+    comision_total: Number(pagos.total_comision),
+    comision_total: Number(pagos.total_comision),
+    iva_total: Number(pagos.total_iva)
   };
 };

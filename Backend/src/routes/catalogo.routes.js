@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   listarCategorias, crearCategoria, actualizarCategoria, eliminarCategoria,
   listarProfesiones, crearProfesion, actualizarProfesion, eliminarProfesion,
-  listarMetodosPago, crearMetodoPago, actualizarMetodoPago, eliminarMetodoPago
+  listarMetodosPago, crearMetodoPago, actualizarMetodoPago, eliminarMetodoPago, obtenerConfiguracion
 } from '../controllers/catalogo.controller.js';
 import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
 
@@ -25,5 +25,6 @@ router.get('/metodos-pago', listarMetodosPago);
 router.post('/metodos-pago', autenticar, permitirRoles('administrador'), crearMetodoPago);
 router.put('/metodos-pago/:id', autenticar, permitirRoles('administrador'), actualizarMetodoPago);
 router.delete('/metodos-pago/:id', autenticar, permitirRoles('administrador'), eliminarMetodoPago);
-
+// ---- Configuración pública (tarifa del IVA) ----
+router.get('/configuracion', obtenerConfiguracion);
 export default router;

@@ -10,18 +10,20 @@ import {
   // Método de pago
   listarMetodosPagoRepository, obtenerMetodoPagoPorIdRepository, obtenerMetodoPagoPorNombreRepository,
   crearMetodoPagoRepository, actualizarMetodoPagoRepository, contarPagosPorMetodoRepository,
-  eliminarMetodoPagoRepository
+  eliminarMetodoPagoRepository, obtenerTarifaIvaRepository
 } from '../repositories/catalogo.repository.js';
+import { validarTexto, lanzarError400 } from '../utils/validaciones.util.js';
+
+// Largos máximos según las columnas de la BD: categoria 100; profesion 30 y 100; metodo_pago 50 y 100
+const validarNombreYDescripcion = (nombre, descripcion, etiqueta, maxNombre) =>
+  validarTexto(nombre, etiqueta, 3, maxNombre) || validarTexto(descripcion, 'La descripción', 10, 100);
 
 // ============ Categoría ============
 export const listarCategoriasService = async () => await listarCategoriasRepository();
 
 export const crearCategoriaService = async (nombre_categoria) => {
-  if (!nombre_categoria || !nombre_categoria.trim()) {
-    const error = new Error('nombre_categoria es obligatorio');
-    error.status = 400;
-    throw error;
-  }
+  const errorNombre = validarTexto(nombre_categoria, 'El nombre de la categoría', 3, 100);
+  if (errorNombre) lanzarError400(errorNombre);
 
   const duplicada = await obtenerCategoriaPorNombreRepository(nombre_categoria.trim());
   if (duplicada) {
@@ -32,13 +34,13 @@ export const crearCategoriaService = async (nombre_categoria) => {
 
   return await crearCategoriaRepository(nombre_categoria.trim());
 };
+// ============ Configuración ============
+// Tarifa vigente del IVA (tabla configuracion); 15% si por algún motivo no existe la fila
+export const obtenerTarifaIvaService = async () => (await obtenerTarifaIvaRepository()) ?? 0.15;
 
 export const actualizarCategoriaService = async (id_categoria, nombre_categoria) => {
-  if (!nombre_categoria || !nombre_categoria.trim()) {
-    const error = new Error('nombre_categoria es obligatorio');
-    error.status = 400;
-    throw error;
-  }
+  const errorNombre = validarTexto(nombre_categoria, 'El nombre de la categoría', 3, 100);
+  if (errorNombre) lanzarError400(errorNombre);
 
   const existente = await obtenerCategoriaPorIdRepository(id_categoria);
   if (!existente) {
@@ -79,11 +81,8 @@ export const eliminarCategoriaService = async (id_categoria) => {
 export const listarProfesionesService = async () => await listarProfesionesRepository();
 
 export const crearProfesionService = async ({ nombre, descripcion }) => {
-  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
-    const error = new Error('nombre y descripcion son obligatorios');
-    error.status = 400;
-    throw error;
-  }
+  const errorCampos = validarNombreYDescripcion(nombre, descripcion, 'El nombre de la profesión', 30);
+  if (errorCampos) lanzarError400(errorCampos);
 
   const duplicada = await obtenerProfesionPorNombreRepository(nombre.trim());
   if (duplicada) {
@@ -96,11 +95,8 @@ export const crearProfesionService = async ({ nombre, descripcion }) => {
 };
 
 export const actualizarProfesionService = async (id_profesion, { nombre, descripcion }) => {
-  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
-    const error = new Error('nombre y descripcion son obligatorios');
-    error.status = 400;
-    throw error;
-  }
+  const errorCampos = validarNombreYDescripcion(nombre, descripcion, 'El nombre de la profesión', 30);
+  if (errorCampos) lanzarError400(errorCampos);
 
   const existente = await obtenerProfesionPorIdRepository(id_profesion);
   if (!existente) {
@@ -141,11 +137,8 @@ export const eliminarProfesionService = async (id_profesion) => {
 export const listarMetodosPagoService = async () => await listarMetodosPagoRepository();
 
 export const crearMetodoPagoService = async ({ nombre, descripcion }) => {
-  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
-    const error = new Error('nombre y descripcion son obligatorios');
-    error.status = 400;
-    throw error;
-  }
+  const errorCampos = validarNombreYDescripcion(nombre, descripcion, 'El nombre del método de pago', 50);
+  if (errorCampos) lanzarError400(errorCampos);
 
   const duplicado = await obtenerMetodoPagoPorNombreRepository(nombre.trim());
   if (duplicado) {
@@ -158,11 +151,8 @@ export const crearMetodoPagoService = async ({ nombre, descripcion }) => {
 };
 
 export const actualizarMetodoPagoService = async (id_metodo_pago, { nombre, descripcion }) => {
-  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
-    const error = new Error('nombre y descripcion son obligatorios');
-    error.status = 400;
-    throw error;
-  }
+  const errorCampos = validarNombreYDescripcion(nombre, descripcion, 'El nombre del método de pago', 50);
+  if (errorCampos) lanzarError400(errorCampos);
 
   const existente = await obtenerMetodoPagoPorIdRepository(id_metodo_pago);
   if (!existente) {

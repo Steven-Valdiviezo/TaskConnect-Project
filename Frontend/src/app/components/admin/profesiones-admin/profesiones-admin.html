@@ -36,11 +36,17 @@
             <form [formGroup]="form" (ngSubmit)="guardar()">
                 <div class="mb-3">
                     <label class="form-label small" style="color:#8e89c4;">Nombre *</label>
-                    <input type="text" class="form-control" formControlName="nombre" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Analista de datos">
+                    <input type="text" class="form-control" formControlName="nombre" maxlength="30" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Ej. Analista de datos">
+                    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+                        <small class="text-danger">{{ msg(form.controls.nombre) }}</small>
+                    }
                 </div>
                 <div class="mb-3">
                     <label class="form-label small" style="color:#8e89c4;">Descripción *</label>
-                    <textarea class="form-control" rows="2" formControlName="descripcion" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Breve descripción del rol..."></textarea>
+                    <textarea class="form-control" rows="2" formControlName="descripcion" maxlength="100" style="background-color:#12102a;border-color:#2a2550;color:#d8d5f5;" placeholder="Breve descripción del rol..."></textarea>
+                    @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+                        <small class="text-danger">{{ msg(form.controls.descripcion) }}</small>
+                    }
                 </div>
                 @if (error()) { <div class="alert alert-danger small py-2">{{ error() }}</div> }
                 <div class="d-flex gap-2 justify-content-end">

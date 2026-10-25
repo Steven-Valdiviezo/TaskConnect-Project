@@ -39,6 +39,7 @@
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Método</th>
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Fecha</th>
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Monto</th>
+          <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;" title="Lo cobras al cliente y lo declaras al SRI; no es ingreso tuyo">IVA cobrado</th>
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Tu comisión (5%)</th>
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Recibiste</th>
           <th class="small fw-medium" style="color:#6e8fa8;border-color:#1c2d3c;">Estado</th>
@@ -46,7 +47,7 @@
       </thead>
       <tbody class="small">
         @if (!cargando() && !registrados().length) {
-          <tr><td colspan="7" style="color:#6e8fa8;">Aún no tienes pagos registrados.</td></tr>
+          <tr><td colspan="8" style="color:#6e8fa8;">Aún no tienes pagos registrados.</td></tr>
         }
         @for (f of registrados(); track f.pago!.id_pago) {
           <tr style="border-color:#1c2d3c;">
@@ -57,6 +58,7 @@
             <td style="color:#6e8fa8;">{{ nombreMetodo(f.pago!.id_metodo_pago) }}</td>
             <td style="color:#6e8fa8;">{{ f.pago!.fecha_pago ? (f.pago!.fecha_pago | date:'dd MMM yyyy') : 'Pendiente' }}</td>
             <td style="color:#cde0f0;">${{ f.pago!.monto }}</td>
+            <td style="color:#6e8fa8;">+${{ f.pago!.iva.toFixed(2) }}</td>
             <td style="color:#EF9F27;">-${{ (f.pago!.comision / 2).toFixed(2) }}</td>
             <td style="color:#60b4e8;">${{ (f.pago!.monto - f.pago!.comision / 2).toFixed(2) }}</td>
             <td>
@@ -70,5 +72,6 @@
         }
       </tbody>
     </table>
+      <small style="color:#6e8fa8;">El IVA lo cobras al cliente y lo declaras al SRI: no forma parte de tu ingreso neto.</small>
   </div>
 </div>

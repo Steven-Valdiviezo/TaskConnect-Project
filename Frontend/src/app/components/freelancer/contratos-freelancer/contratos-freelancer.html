@@ -24,6 +24,9 @@
       @if (f.pago) {
         <div class="small text-end mt-2 pt-2" style="color:#6e8fa8;border-top:1px solid #1c2d3c;">
           <span class="d-block">Monto dado: ${{ f.pago.monto }}</span>
+          <span class="d-block">IVA cobrado al cliente (por declarar): +${{ f.pago.iva.toFixed(2) }}</span>
+          ...
+            {{ f.pago.estado === 'pagado' ? 'Recibiste' : 'Recibirás' }} (ingreso neto): ${{ (f.pago.monto - f.pago.comision / 2).toFixed(2) }}
           <span class="d-block" style="color:#EF9F27;">Tu comisión (5%): -${{ (f.pago.comision / 2).toFixed(2) }}</span>
           <span class="d-block fw-medium" style="color:#60b4e8;">
             {{ f.pago.estado === 'pagado' ? 'Recibiste' : 'Recibirás' }}: ${{ (f.pago.monto - f.pago.comision / 2).toFixed(2) }}

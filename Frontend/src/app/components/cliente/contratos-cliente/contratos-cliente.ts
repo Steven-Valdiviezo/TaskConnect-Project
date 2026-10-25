@@ -12,6 +12,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { CalificacionService } from '../../../core/services/calificacion.service';
 import { PerfilPublicoFreelancer } from '../../../models/usuario.model';
+import { calcularIva, totalCliente } from '../../../core/utils/montos';
+import { maxDosDecimales, mensajeError } from '../../../core/validators/validadores';
 
 @Component({
   selector: 'app-contratos-cliente',
@@ -41,14 +43,18 @@ export class ContratosCliente implements OnInit {
   ratingSeleccionado = signal(0);
 
   contratoEnPago = signal<Contrato | null>(null);
-
+  tarifaIva = signal(0.15);
+  totalPago = totalCliente;
+  msg = mensajeError;
+  pct = (t: number) => +(Number(t) * 100).toFixed(2);
   formPago = this.fb.group({
     id_metodo_pago: [null as number | null, Validators.required],
-    adicional: [0, [Validators.min(0)]]
+    adicional: [0, [Validators.min(0), maxDosDecimales]]
   });
 
   ngOnInit(): void {
     this.catalogo.listarMetodosPago().subscribe(r => this.metodos.set(r.metodos));
+    this.catalogo.obtenerConfiguracion().subscribe(c => this.tarifaIva.set(c.tarifa_iva));
     this.cargar();
   }
 
@@ -90,6 +96,10 @@ export class ContratosCliente implements OnInit {
   }
 
   async registrarPago(c: Contrato): Promise<void> {
+    if (this.formPago.get('adicional')!.invalid) {
+      this.formPago.markAllAsTouched();
+      return;
+    }
     if (this.formPago.get('id_metodo_pago')!.invalid) {
       this.formPago.markAllAsTouched();
       return;
@@ -107,7 +117,7 @@ export class ContratosCliente implements OnInit {
       return;
     }
   
-    const v = this.formPago.getRawValue();
+   const v = this.formPago.getRawValue();
     this.pagoSrv.registrar({ id_contrato: c.id_contrato, id_metodo_pago: v.id_metodo_pago!, monto: montoFinal }).subscribe({
       next: () => { this.formPagoAbiertoPara.set(null); this.contratoEnPago.set(null); this.cargar(); },
       error: async (err: any) => this.dialogo.avisar(err?.error?.mensaje ?? 'No se pudo registrar el pago.', 'Error')
@@ -187,11 +197,17 @@ export class ContratosCliente implements OnInit {
     return Math.round(this.montoAPagar * 0.05 * 100) / 100;
   }
   
-  get totalClienteEstimado(): number {
-    return Math.round((this.montoAPagar + this.comisionEstimadaMitad) * 100) / 100;
-  }
-  
   get freelancerRecibiraEstimado(): number {
     return Math.round((this.montoAPagar - this.comisionEstimadaMitad) * 100) / 100;
+  }
+  get porcentajeIva(): number { return this.pct(this.tarifaIva()); }
+  get ivaEstimado(): number {
+    return calcularIva(this.montoAPagar, this.tarifaIva());
+  }
+
+// y totalClienteEstimado pasa a incluir el IVA:
+  get totalClienteEstimado(): number {
+    return Math.round((this.montoAPagar + this.ivaEstimado + this.comisionEstimadaMitad) * 100) / 100;
+    
   }
 }

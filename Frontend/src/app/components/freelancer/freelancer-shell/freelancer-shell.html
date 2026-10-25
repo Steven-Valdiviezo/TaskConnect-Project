@@ -1,10 +1,17 @@
 <div class="d-flex flex-column min-vh-100" style="background-color:#0d1420;">
-    <nav class="navbar px-3 flex-shrink-0" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
+    <nav class="navbar px-3 flex-shrink-0 flex-nowrap" style="background-color:#04342C;height:56px;" data-bs-theme="dark">
+        <!-- Botón del menú (solo en pantallas menores a 992px) -->
+        <button type="button" class="btn btn-sm btn-outline-light d-lg-none me-2" aria-label="Abrir o cerrar el menú"
+                (click)="menuAbierto.set(!menuAbierto())">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
         <a routerLink="/" class="navbar-brand mb-0 text-decoration-none" style="color:#9FE1CB;cursor:pointer;">
             <i class="fa-solid fa-briefcase me-2" style="color:#5DCAA5;"></i>TaskConnect
         </a>
-        <div class="ms-auto d-flex align-items-center gap-3">
-            <span class="badge rounded-pill" style="background-color:#E6F1FB;color:#0C447C;">Freelancer</span>
+
+        <div class="ms-auto d-flex align-items-center gap-2 gap-sm-3">
+            <span class="badge rounded-pill d-none d-sm-inline-block" style="background-color:#E6F1FB;color:#0C447C;">Freelancer</span>
 
             <div class="position-relative">
                 <i class="fa-solid fa-bell text-white position-relative" style="cursor:pointer;"
@@ -15,7 +22,7 @@
                 </i>
 
                 @if (mostrarNotificaciones()) {
-                    <div class="position-absolute rounded-3 shadow-lg animate__animated animate__fadeIn animate__faster"
+                    <div class="position-absolute rounded-3 shadow-lg animate__animated animate__fadeIn animate__faster notif-panel"
                          style="top:32px;right:0;width:300px;background-color:#162234;border:1px solid #1c2d3c;z-index:1050;max-height:360px;overflow-y:auto;">
                         <p class="small fw-medium px-3 pt-3 mb-2" style="color:#cde0f0;">Notificaciones</p>
                         @if (!notificaciones().length) {
@@ -39,7 +46,11 @@
     </nav>
 
     <div class="d-flex flex-grow-1">
-        <aside class="p-3 flex-shrink-0" style="width:210px;background-color:#09121e;border-right:1px solid #1c2d3c;">
+        @if (menuAbierto()) {
+            <div class="backdrop-menu d-lg-none" (click)="menuAbierto.set(false)"></div>
+        }
+        
+        <aside class="sidebar p-3 flex-shrink-0" [class.abierto]="menuAbierto()" (click)="menuAbierto.set(false)" style="background-color:#09121e;border-right:1px solid #1c2d3c;">
             <a routerLink="/freelancer/dashboard" routerLinkActive="side-active-f" [routerLinkActiveOptions]="{exact:true}" class="side-link-f d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-table-columns"></i> Dashboard
             </a>
@@ -56,7 +67,7 @@
             <a routerLink="/freelancer/mensajes" routerLinkActive="side-active-f" class="side-link-f d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
                 <i class="fa-solid fa-message"></i> Mensajes
                 @if (hayMensajesNuevos()) {
-                <span class="rounded-circle ms-auto" style="width:8px;height:8px;background-color:#EF9F27;flex-shrink:0;"></span>
+                    <span class="rounded-circle ms-auto" style="width:8px;height:8px;background-color:#EF9F27;flex-shrink:0;"></span>
                 }
             </a>
             <a routerLink="/freelancer/pagos" routerLinkActive="side-active-f" class="side-link-f d-flex align-items-center gap-2 p-2 rounded mb-1 text-decoration-none">
@@ -68,14 +79,27 @@
             </a>
         </aside>
 
-        <main class="flex-grow-1 p-4" style="background-color:#0d1420;color:#cde0f0;overflow-y:auto;">
+        <main class="flex-grow-1 p-3 p-lg-4" style="min-width:0;background-color:#0d1420;color:#cde0f0;overflow-y:auto;">
             <router-outlet></router-outlet>
         </main>
     </div>
 </div>
 
 <style>
+    /* Estilos de botones de selección idénticos al original */
     .side-link-f { color:#6e8fa8; font-size:.875rem; transition:.15s; }
     .side-link-f:hover { color:#cde0f0; background-color:#0f1e30 !important; }
     .side-active-f { color:#60b4e8 !important; background-color:#0f1e30 !important; font-weight:600; border-left:3px solid #60b4e8; }
+
+    /* Responsivo: en pantallas menores a 992px el menú lateral se oculta y se abre con el botón */
+    .sidebar { width: 210px; }
+    .backdrop-menu { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); z-index: 1030; }
+    @media (max-width: 991.98px) {
+        .sidebar { position: fixed; top: 56px; bottom: 0; left: 0; z-index: 1040; overflow-y: auto;
+                   transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility .2s; }
+        .sidebar.abierto { transform: translateX(0); visibility: visible; }
+    }
+    @media (max-width: 575.98px) {
+        .notif-panel { position: fixed !important; top: 56px !important; left: 8px !important; right: 8px !important; width: auto !important; }
+    }
 </style>

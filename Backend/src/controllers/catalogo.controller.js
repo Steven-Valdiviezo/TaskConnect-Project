@@ -3,7 +3,7 @@ import {
 
   listarProfesionesService, crearProfesionService, actualizarProfesionService, eliminarProfesionService,
   
-  listarMetodosPagoService, crearMetodoPagoService, actualizarMetodoPagoService, eliminarMetodoPagoService
+  listarMetodosPagoService, crearMetodoPagoService, actualizarMetodoPagoService, eliminarMetodoPagoService, obtenerTarifaIvaService
 } from '../services/catalogo.service.js';
 
 // ---- Categoría ----
@@ -22,6 +22,13 @@ export const crearCategoria = async (req, res, next) => {
     if (error.status) return res.status(error.status).json({ mensaje: error.message });
     next(error);
   }
+};
+// ---- Configuración pública (tarifa del IVA) ----
+export const obtenerConfiguracion = async (req, res, next) => {
+  try {
+    const tarifa_iva = await obtenerTarifaIvaService();
+    res.json({ mensaje: 'Configuración pública', tarifa_iva });
+  } catch (error) { next(error); }
 };
 
 export const actualizarCategoria = async (req, res, next) => {

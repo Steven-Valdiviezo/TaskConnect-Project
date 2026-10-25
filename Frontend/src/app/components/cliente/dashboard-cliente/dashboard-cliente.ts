@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ProyectoService } from '../../../core/services/proyecto.service';
 import { PagoService } from '../../../core/services/pago.service';
 import { Proyecto } from '../../../models/proyecto.model';
+import { totalCliente } from '../../../core/utils/montos';
 
 @Component({
   selector: 'app-dashboard-cliente',
@@ -30,7 +31,7 @@ export class DashboardCliente implements OnInit {
     });
 
     this.pagoSrv.listarDeMisContratos().subscribe(lista => {
-      const total = lista.reduce((acc, item) => acc + (item.pago?.estado === 'pagado' ? Number(item.pago.monto) : 0), 0);
+      const total = lista.reduce((acc, item) => acc + (item.pago?.estado === 'pagado' ? totalCliente(item.pago) : 0), 0);
       this.totalPagado.set(total);
     });
   }
