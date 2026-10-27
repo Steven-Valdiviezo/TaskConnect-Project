@@ -106,10 +106,9 @@
           </div>
           <div class="mb-3">
             <label class="form-label small">Años de experiencia</label>
-            <!-- experiencia: agrega min/max/step y el mensaje debajo -->
             <input
               type="number"
-              ...
+              class="form-control bg-dark text-light border-secondary"
               formControlName="experiencia"
               min="0"
               max="60"
@@ -120,17 +119,22 @@
               <small class="text-danger">Ingresa un número entero entre 0 y 60.</small>
             }
           </div>
-          <div>
+        </div>
+      </div>
+
+      <!-- Fila de ancho completo para la Descripción (igual que los otros inputs) -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="mb-3">
             <label class="form-label small">Descripción</label>
-            <!-- descripción: maxlength y contador -->
             <textarea
               rows="3"
-              ...
+              class="form-control bg-dark text-light border-secondary"
               formControlName="descripcion"
               maxlength="500"
               [readonly]="!editando()"
             ></textarea>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-1">
               @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
                 <small class="text-danger">{{ msg(form.controls.descripcion) }}</small>
               } @else {
