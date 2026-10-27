@@ -1,0 +1,3208 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+src/
+  controllers/
+    admin.controller.js
+    calificacion.controller.js
+    catalogo.controller.js
+    contrato.controller.js
+    estadisticas.controller.js
+    mensaje.controller.js
+    pago.controller.js
+    propuesta.controller.js
+    proyecto.controller.js
+    usuario.controller.js
+  database/
+    connection.js
+  middlewares/
+    auth.middleware.js
+    error.middleware.js
+  repositories/
+    admin.repository.js
+    calificacion.repository.js
+    catalogo.repository.js
+    contrato.repository.js
+    estadisticas.repository.js
+    mensaje.repository.js
+    pago.repository.js
+    propuesta.repository.js
+    proyecto.repository.js
+    token2fa.repository.js
+    usuario.repository.js
+  routes/
+    admin.routes.js
+    calificacion.routes.js
+    catalogo.routes.js
+    contrato.routes.js
+    estadisticas.routes.js
+    mensaje.routes.js
+    pago.routes.js
+    propuesta.routes.js
+    proyecto.routes.js
+    usuario.routes.js
+  services/
+    admin.service.js
+    calificacion.service.js
+    catalogo.service.js
+    contrato.service.js
+    estadisticas.service.js
+    mensaje.service.js
+    pago.service.js
+    propuesta.service.js
+    proyecto.service.js
+    usuario.service.js
+  utils/
+    brevo.util.js
+    firebaseAdmin.util.js
+    jwt.util.js
+    password.util.js
+  app.js
+.gitignore
+package.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/controllers/admin.controller.js">
+import {
+  listarUsuariosService,
+  desactivarUsuarioService,
+  reactivarUsuarioService,
+  listarAuditoriaService,
+  obtenerEstadisticasAdminService
+} from '../services/admin.service.js';
+
+export const listarUsuarios = async (req, res, next) => {
+  try {
+    const { rol, estado } = req.query;
+    const usuarios = await listarUsuariosService({ rol, estado });
+    res.json({ mensaje: 'Listado de usuarios', total: usuarios.length, usuarios });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const desactivarUsuario = async (req, res, next) => {
+  try {
+    const usuario = await desactivarUsuarioService(req.usuario, Number(req.params.id));
+    res.json({ mensaje: 'Usuario desactivado correctamente', usuario });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const reactivarUsuario = async (req, res, next) => {
+  try {
+    const usuario = await reactivarUsuarioService(Number(req.params.id));
+    res.json({ mensaje: 'Usuario reactivado correctamente', usuario });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const listarAuditoria = async (req, res, next) => {
+  try {
+    const { tabla, limite } = req.query;
+    const registros = await listarAuditoriaService({ tabla, limite: Number(limite) || undefined });
+    res.json({ mensaje: 'Registros de auditoría', total: registros.length, registros });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const obtenerEstadisticasAdmin = async (req, res, next) => {
+  try {
+    const estadisticas = await obtenerEstadisticasAdminService();
+    res.json({ mensaje: 'Estadísticas administrativas', estadisticas });
+  } catch (error) { next(error); }
+};
+</file>
+
+<file path="src/controllers/calificacion.controller.js">
+import {
+  registrarCalificacionService,
+  listarCalificacionesRecibidasService,
+  obtenerReputacionService,
+  listarCalificacionesEmitidasService
+} from '../services/calificacion.service.js';
+
+export const registrarCalificacion = async (req, res, next) => {
+  try {
+    const calificacion = await registrarCalificacionService(req.usuario, req.body);
+    res.status(201).json({ mensaje: 'Calificación registrada correctamente', calificacion });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const listarCalificacionesRecibidas = async (req, res, next) => {
+  try {
+    const calificaciones = await listarCalificacionesRecibidasService(Number(req.params.idUsuario));
+    res.json({ mensaje: 'Calificaciones recibidas', total: calificaciones.length, calificaciones });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const obtenerReputacion = async (req, res, next) => {
+  try {
+    const reputacion = await obtenerReputacionService(Number(req.params.idFreelancer));
+    res.json({ mensaje: 'Reputación del freelancer', reputacion });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const listarCalificacionesEmitidas = async (req, res, next) => {
+  try {
+    const calificaciones = await listarCalificacionesEmitidasService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Calificaciones emitidas', total: calificaciones.length, calificaciones });
+  } catch (error) { next(error); }
+};
+</file>
+
+<file path="src/controllers/catalogo.controller.js">
+import {
+  listarCategoriasService, crearCategoriaService, actualizarCategoriaService, eliminarCategoriaService,
+
+  listarProfesionesService, crearProfesionService, actualizarProfesionService, eliminarProfesionService,
+  
+  listarMetodosPagoService, crearMetodoPagoService, actualizarMetodoPagoService, eliminarMetodoPagoService
+} from '../services/catalogo.service.js';
+
+// ---- Categoría ----
+export const listarCategorias = async (req, res, next) => {
+  try {
+    const categorias = await listarCategoriasService();
+    res.json({ mensaje: 'Listado de categorías', categorias });
+  } catch (error) { next(error); }
+};
+
+export const crearCategoria = async (req, res, next) => {
+  try {
+    const categoria = await crearCategoriaService(req.body.nombre_categoria);
+    res.status(201).json({ mensaje: 'Categoría creada correctamente', categoria });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const actualizarCategoria = async (req, res, next) => {
+  try {
+    const categoria = await actualizarCategoriaService(Number(req.params.id), req.body.nombre_categoria);
+    res.json({ mensaje: 'Categoría actualizada correctamente', categoria });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const eliminarCategoria = async (req, res, next) => {
+  try {
+    const categoria = await eliminarCategoriaService(Number(req.params.id));
+    res.json({ mensaje: 'Categoría eliminada correctamente', categoria });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// ---- Profesión ----
+export const listarProfesiones = async (req, res, next) => {
+  try {
+    const profesiones = await listarProfesionesService();
+    res.json({ mensaje: 'Listado de profesiones', profesiones });
+  } catch (error) { next(error); }
+};
+
+export const crearProfesion = async (req, res, next) => {
+  try {
+    const profesion = await crearProfesionService(req.body);
+    res.status(201).json({ mensaje: 'Profesión creada correctamente', profesion });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const actualizarProfesion = async (req, res, next) => {
+  try {
+    const profesion = await actualizarProfesionService(Number(req.params.id), req.body);
+    res.json({ mensaje: 'Profesión actualizada correctamente', profesion });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const eliminarProfesion = async (req, res, next) => {
+  try {
+    const profesion = await eliminarProfesionService(Number(req.params.id));
+    res.json({ mensaje: 'Profesión eliminada correctamente', profesion });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// ---- Método de pago ----
+export const listarMetodosPago = async (req, res, next) => {
+  try {
+    const metodos = await listarMetodosPagoService();
+    res.json({ mensaje: 'Listado de métodos de pago', metodos });
+  } catch (error) { next(error); }
+};
+
+export const crearMetodoPago = async (req, res, next) => {
+  try {
+    const metodo = await crearMetodoPagoService(req.body);
+    res.status(201).json({ mensaje: 'Método de pago creado correctamente', metodo });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const actualizarMetodoPago = async (req, res, next) => {
+  try {
+    const metodo = await actualizarMetodoPagoService(Number(req.params.id), req.body);
+    res.json({ mensaje: 'Método de pago actualizado correctamente', metodo });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const eliminarMetodoPago = async (req, res, next) => {
+  try {
+    const metodo = await eliminarMetodoPagoService(Number(req.params.id));
+    res.json({ mensaje: 'Método de pago eliminado correctamente', metodo });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/contrato.controller.js">
+import {
+  aceptarPropuestaYCrearContratoService,
+  listarMisContratosService,
+  completarContratoService,
+  cancelarContratoService
+} from '../services/contrato.service.js';
+
+export const aceptarPropuesta = async (req, res, next) => {
+  try {
+    const contrato = await aceptarPropuestaYCrearContratoService(
+      req.usuario.id_cliente,
+      Number(req.params.idPropuesta)
+    );
+    res.status(201).json({ mensaje: 'Contrato generado correctamente', contrato });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const listarMisContratos = async (req, res, next) => {
+  try {
+    const contratos = await listarMisContratosService(req.usuario.id_usuario, req.usuario.rol);
+    res.json({ mensaje: 'Contratos del usuario', total: contratos.length, contratos });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const completarContrato = async (req, res, next) => {
+  try {
+    const contrato = await completarContratoService(Number(req.params.id));
+    res.json({ mensaje: 'Contrato marcado como completado', contrato });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const cancelarContrato = async (req, res, next) => {
+  try {
+    const contrato = await cancelarContratoService(Number(req.params.id));
+    res.json({ mensaje: 'Contrato cancelado', contrato });
+  } catch (error) {
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/estadisticas.controller.js">
+import { obtenerEstadisticasPublicasService } from '../services/estadisticas.service.js';
+
+export const obtenerEstadisticasPublicas = async (req, res, next) => {
+  try {
+    const estadisticas = await obtenerEstadisticasPublicasService();
+    res.json({ mensaje: 'Estadísticas públicas de la plataforma', estadisticas });
+  } catch (error) {
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/mensaje.controller.js">
+import { enviarMensajeService, obtenerConversacionService, 
+  marcarLeidoService, contarNoLeidosService
+ } from '../services/mensaje.service.js';
+
+export const enviarMensaje = async (req, res, next) => {
+  try {
+    const mensaje = await enviarMensajeService(req.usuario.id_usuario, req.body);
+    res.status(201).json({ mensaje: 'Mensaje enviado', datos: mensaje });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const obtenerConversacion = async (req, res, next) => {
+  try {
+    const conversacion = await obtenerConversacionService(req.usuario.id_usuario, Number(req.params.idUsuario));
+    res.json({ mensaje: 'Conversación', total: conversacion.length, conversacion });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const marcarLeido = async (req, res, next) => {
+  try {
+    const mensaje = await marcarLeidoService(Number(req.params.id), req.usuario.id_usuario);
+    res.json({ mensaje: 'Mensaje marcado como leído', datos: mensaje });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const contarNoLeidos = async (req, res, next) => {
+  try {
+    const total = await contarNoLeidosService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Mensajes no leídos', total });
+  } catch (error) {
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/pago.controller.js">
+import {
+  registrarPagoService,
+  marcarPagoPagadoService,
+  obtenerPagoDeContratoService
+} from '../services/pago.service.js';
+
+export const registrarPago = async (req, res, next) => {
+  try {
+    const pago = await registrarPagoService(req.usuario.id_cliente, req.body);
+    res.status(201).json({ mensaje: 'Pago registrado correctamente', pago });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const marcarPagoPagado = async (req, res, next) => {
+  try {
+    const pago = await marcarPagoPagadoService(req.usuario.id_cliente, Number(req.params.id));
+    res.json({ mensaje: 'Pago confirmado como pagado', pago });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const obtenerPagoDeContrato = async (req, res, next) => {
+  try {
+    const pago = await obtenerPagoDeContratoService(Number(req.params.idContrato));
+    if (!pago) return res.status(404).json({ mensaje: 'Este contrato aún no tiene pago registrado' });
+    res.json({ mensaje: 'Pago del contrato', pago });
+  } catch (error) {
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/propuesta.controller.js">
+import { 
+  listarPropuestasService, listarPropuestasDelClienteService, listarPropuestasDelFreelancerService,
+  crearPropuestaService, retirarPropuestaService, rechazarPropuestaService } 
+from '../services/propuesta.service.js';
+
+export const listarPropuestasDeProyecto = async (req, res, next) => {
+  try {
+    const propuestas = await listarPropuestasService(Number(req.params.idProyecto));
+    res.json({ mensaje: 'Propuestas del proyecto', total: propuestas.length, propuestas });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const listarPropuestasDelCliente = async (req, res, next) => {
+  try {
+    const propuestas = await listarPropuestasDelClienteService(req.usuario.id_cliente);
+    res.json({ mensaje: 'Propuestas recibidas en todos tus proyectos', total: propuestas.length, propuestas });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const enviarPropuesta = async (req, res, next) => {
+  try {
+    const propuesta = await crearPropuestaService(req.usuario.id_freelancer, req.body);
+    res.status(201).json({ mensaje: 'Propuesta enviada correctamente', propuesta });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const retirarPropuesta = async (req, res, next) => {
+  try {
+    const propuesta = await retirarPropuestaService(req.usuario.id_freelancer, Number(req.params.id));
+    res.json({ mensaje: 'Propuesta retirada correctamente', propuesta });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Agregado para rechazar propuestas
+export const rechazarPropuesta = async (req, res, next) => {
+  try {
+    const propuesta = await rechazarPropuestaService(req.usuario.id_cliente, Number(req.params.id));
+    res.json({ mensaje: 'Propuesta rechazada correctamente', propuesta });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const listarMisPropuestasEnviadas = async (req, res, next) => {
+  try {
+    const propuestas = await listarPropuestasDelFreelancerService(req.usuario.id_freelancer);
+    res.json({ mensaje: 'Mis propuestas enviadas', total: propuestas.length, propuestas });
+  } catch (error) { next(error); }
+};
+</file>
+
+<file path="src/controllers/proyecto.controller.js">
+import {
+  listarProyectosService,
+  obtenerProyectoService,
+  crearProyectoService,
+  actualizarProyectoService,
+  cancelarProyectoService,
+  listarMisProyectosService,
+  eliminarProyectoService
+} from '../services/proyecto.service.js';
+
+export const listarProyectos = async (req, res, next) => {
+  try {
+    const { id_categoria, presupuesto_min, presupuesto_max } = req.query;
+    const proyectos = await listarProyectosService({ id_categoria, presupuesto_min, presupuesto_max });
+    res.json({ mensaje: 'Listado de proyectos', total: proyectos.length, proyectos });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const obtenerProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await obtenerProyectoService(Number(req.params.id));
+    if (!proyecto) return res.status(404).json({ mensaje: 'Proyecto no encontrado' });
+    res.json({ mensaje: 'Proyecto encontrado', proyecto });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const crearProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await crearProyectoService(req.usuario.id_cliente, req.body);
+    res.status(201).json({ mensaje: 'Proyecto publicado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const editarProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await actualizarProyectoService(Number(req.params.id), req.usuario.id_cliente, req.body);
+    res.json({ mensaje: 'Proyecto actualizado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const cancelarProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await cancelarProyectoService(Number(req.params.id), req.usuario.id_cliente);
+    res.json({ mensaje: 'Proyecto cancelado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const listarMisProyectos = async (req, res, next) => {
+  try {
+    const proyectos = await listarMisProyectosService(req.usuario.id_cliente);
+    res.json({ mensaje: 'Mis proyectos', total: proyectos.length, proyectos });
+  } catch (error) { next(error); }
+};
+
+export const eliminarProyecto = async (req, res, next) => {
+  try {
+    const proyecto = await eliminarProyectoService(Number(req.params.id));
+    res.json({ mensaje: 'Proyecto eliminado correctamente', proyecto });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/usuario.controller.js">
+import {
+  registrarUsuarioService,
+  loginUsuarioService,
+  obtenerPerfilService,
+  confirmarLogin2FAService,
+  actualizarPerfilService,
+  loginPruebaService,
+  obtenerPerfilPublicoFreelancerService,
+  obtenerPerfilConContactoFreelancerService
+} from '../services/usuario.service.js';
+
+export const registrarUsuario = async (req, res, next) => {
+  try {
+    const resultado = await registrarUsuarioService(req.body);
+    res.status(201).json({
+      mensaje: 'Usuario registrado correctamente',
+      ...resultado
+    });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const loginUsuario = async (req, res, next) => {
+  try {
+    const { correo, contrasena } = req.body;
+
+    if (!correo || !contrasena) {
+      return res.status(400).json({ mensaje: 'correo y contrasena son obligatorios' });
+    }
+
+    const resultado = await loginUsuarioService({ correo, contrasena });
+    res.json({ mensaje: 'Inicio de sesión exitoso', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const perfilActual = async (req, res, next) => {
+  try {
+    const resultado = await obtenerPerfilService(req.usuario.id_usuario);
+    res.json({ mensaje: 'Perfil del usuario autenticado', ...resultado });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const confirmarLogin2FA = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    const resultado = await confirmarLogin2FAService({ token });
+    res.json({ mensaje: 'Inicio de sesión exitoso', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+export const actualizarPerfil = async (req, res, next) => {
+  try {
+    const resultado = await actualizarPerfilService(req.usuario, req.body);
+    res.json({ mensaje: 'Perfil actualizado correctamente', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// login prueba sin 2FA, para pruebas de desarrollo
+export const loginPrueba = async (req, res, next) => {
+  try {
+    const { correo, contrasena } = req.body;
+    if (!correo || !contrasena) {
+      return res.status(400).json({ mensaje: 'correo y contrasena son obligatorios' });
+    }
+    const resultado = await loginPruebaService({ correo, contrasena });
+    res.json({ mensaje: 'Inicio de sesión de prueba exitoso (sin 2FA)', ...resultado });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Obtener perfil público de un freelancer por su ID
+export const perfilPublicoFreelancer = async (req, res, next) => {
+  try {
+    const perfil = await obtenerPerfilPublicoFreelancerService(Number(req.params.id));
+    res.json({ mensaje: 'Perfil público del freelancer', perfil });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+
+// Obtener perfil de un freelancer con información de contacto si hay contrato con el cliente
+export const perfilFreelancerConContacto = async (req, res, next) => {
+  try {
+    const perfil = await obtenerPerfilConContactoFreelancerService(req.usuario, Number(req.params.id));
+    res.json({ mensaje: 'Perfil del freelancer con datos de contacto', perfil });
+  } catch (error) {
+    if (error.status) return res.status(error.status).json({ mensaje: error.message });
+    next(error);
+  }
+};
+</file>
+
+<file path="src/database/connection.js">
+import pg from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const { Pool, types } = pg;
+
+types.setTypeParser(1700, (value) => (value === null ? null : parseFloat(value)));
+
+export const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT),
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+});
+
+export const verificarConexion = async() => {
+    try {
+        await pool.query('SELECT NOW()');
+        console.log('Conectado a PostgreSQL (taskconnect)');
+    } catch (error) {
+        console.error('Error al conectar con PostgreSQL:', error.message);
+    }
+};
+</file>
+
+<file path="src/middlewares/auth.middleware.js">
+import { verificarToken } from '../utils/jwt.util.js';
+
+export const autenticar = (req, res, next) => {
+    const header = req.headers.authorization;
+
+    if (!header || !header.startsWith('Bearer ')) {
+        return res.status(401).json({ mensaje: 'Token no proporcionado' });
+    }
+
+    const token = header.split(' ')[1];
+
+    try {
+        const payload = verificarToken(token);
+        req.usuario = payload; // { id_usuario, rol, id_cliente?, id_freelancer? }
+        next();
+    } catch (error) {
+        return res.status(401).json({ mensaje: 'Token inválido o expirado' });
+    }
+};
+
+export const permitirRoles = (...rolesPermitidos) => {
+    return (req, res, next) => {
+        if (!req.usuario || !rolesPermitidos.includes(req.usuario.rol)) {
+            return res.status(403).json({ mensaje: 'No tienes permisos para esta acción' });
+        }
+        next();
+    };
+};
+</file>
+
+<file path="src/middlewares/error.middleware.js">
+// traduce los RAISE EXCEPTION de Postgres (código P0001) en respuestas HTTP legibles
+// En vez de un 500 genérico
+export const manejarErrores = (error, req, res, next) => {
+    console.error(error);
+
+    // Errores lanzados por RAISE EXCEPTION en triggers/funciones
+    if (error.code === 'P0001') {
+        return res.status(400).json({ mensaje: error.message });
+    }
+
+    // Violación de restricción UNIQUE
+    if (error.code === '23505') {
+        return res.status(409).json({ mensaje: 'El registro ya existe (violación de unicidad)' });
+    }
+
+    // Violación de CHECK constraint
+    if (error.code === '23514') {
+        return res.status(400).json({ mensaje: 'Datos inválidos según las reglas de la base de datos' });
+    }
+
+    // Violación de FOREIGN KEY constraint
+    if (error.code === '23503') {
+        return res.status(409).json({ mensaje: 'No se puede eliminar: el registro está referenciado por otros datos' });
+    }
+    
+    return res.status(500).json({ mensaje: 'Error interno del servidor', error: error.message });
+};
+</file>
+
+<file path="src/repositories/admin.repository.js">
+import { pool } from '../database/connection.js';
+
+export const listarUsuariosRepository = async ({ rol, estado }) => {
+  const condiciones = [];
+  const valores = [];
+
+  if (rol) {
+    valores.push(rol);
+    condiciones.push(`rol = $${valores.length}`);
+  }
+  if (estado) {
+    valores.push(estado);
+    condiciones.push(`estado = $${valores.length}`);
+  }
+
+  const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+  const resultado = await pool.query(
+    `SELECT id_usuario, nombre, correo, telefono, rol, estado, fecha_registro
+     FROM usuario
+     ${where}
+     ORDER BY fecha_registro DESC`,
+    valores
+  );
+  return resultado.rows;
+};
+
+export const desactivarUsuarioRepository = async (id_usuario) => {
+  const resultado = await pool.query(
+    `UPDATE usuario SET estado = 'inactivo'
+     WHERE id_usuario = $1 AND estado = 'activo'
+     RETURNING id_usuario, nombre, correo, rol, estado`,
+    [id_usuario]
+  );
+  return resultado.rows[0];
+};
+
+export const reactivarUsuarioRepository = async (id_usuario) => {
+  const resultado = await pool.query(
+    `UPDATE usuario SET estado = 'activo'
+     WHERE id_usuario = $1 AND estado = 'inactivo'
+     RETURNING id_usuario, nombre, correo, rol, estado`,
+    [id_usuario]
+  );
+  return resultado.rows[0];
+};
+
+export const listarAuditoriaRepository = async ({ tabla, limite }) => {
+  const condiciones = [];
+  const valores = [];
+
+  if (tabla) {
+    valores.push(tabla);
+    condiciones.push(`tabla = $${valores.length}`);
+  }
+
+  valores.push(limite || 100);
+  const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+  const resultado = await pool.query(
+    `SELECT * FROM auditoria
+     ${where}
+     ORDER BY fecha DESC
+     LIMIT $${valores.length}`,
+    valores
+  );
+  return resultado.rows;
+};
+
+// Consultas adicionales Actualizadas para que el admin tenga acceso a información detallada de la plataforma
+export const contarUsuariosDetalladoRepository = async () => {
+  const r = await pool.query(`SELECT rol, estado, COUNT(*)::INT AS total FROM usuario GROUP BY rol, estado`);
+  return r.rows;
+};
+
+export const contarProyectosDetalladoRepository = async () => {
+  const r = await pool.query(
+    `SELECT
+       COUNT(*)::INT AS total,
+       COUNT(*) FILTER (WHERE estado = 'abierto')::INT AS total_abiertos,
+       COUNT(*) FILTER (WHERE estado = 'ejecucion')::INT AS total_ejecucion,
+       COUNT(*) FILTER (WHERE estado = 'finalizado')::INT AS total_finalizados,
+       COUNT(*) FILTER (WHERE estado = 'cancelado')::INT AS total_cancelados
+     FROM proyecto`
+  );
+  return r.rows[0];
+};
+
+export const proyectosPorCategoriaRepository = async () => {
+  const r = await pool.query(
+    `SELECT c.id_categoria, c.nombre_categoria, COUNT(p.id_proyecto)::INT AS total
+     FROM categoria c LEFT JOIN proyecto p ON p.id_categoria = c.id_categoria
+     GROUP BY c.id_categoria, c.nombre_categoria
+     ORDER BY total DESC`
+  );
+  return r.rows;
+};
+
+export const freelancersPorProfesionRepository = async () => {
+  const r = await pool.query(
+    `SELECT p.id_profesion, p.nombre, COUNT(f.id_freelancer)::INT AS total
+     FROM profesion p LEFT JOIN freelancer f ON f.id_profesion = p.id_profesion
+     GROUP BY p.id_profesion, p.nombre
+     ORDER BY total DESC`
+  );
+  return r.rows;
+};
+
+export const contarPropuestasRepository = async () => {
+  const r = await pool.query(
+    `SELECT COUNT(*)::INT AS total, COUNT(*) FILTER (WHERE estado = 'aceptada')::INT AS total_aceptadas FROM propuesta`
+  );
+  return r.rows[0];
+};
+
+export const contarContratosRepository = async () => {
+  const r = await pool.query(
+    `SELECT COUNT(*)::INT AS total, COUNT(*) FILTER (WHERE estado = 'activo')::INT AS total_activos,
+            COUNT(*) FILTER (WHERE estado = 'completado')::INT AS total_completados
+     FROM contrato`
+  );
+  return r.rows[0];
+};
+
+export const sumarPagosRepository = async () => {
+  const r = await pool.query(
+    `SELECT COALESCE(SUM(monto),0)::NUMERIC(12,2) AS total_pagado, COALESCE(SUM(comision),0)::NUMERIC(12,2) AS total_comision
+     FROM pago WHERE estado = 'pagado'`
+  );
+  return r.rows[0];
+};
+</file>
+
+<file path="src/repositories/calificacion.repository.js">
+import { pool } from '../database/connection.js';
+
+export const obtenerContratoParaCalificarRepository = async (id_contrato) => {
+  const resultado = await pool.query(
+    `SELECT c.id_contrato, c.estado AS estado_contrato,
+            cl.id_usuario AS id_usuario_cliente,
+            fl.id_usuario AS id_usuario_freelancer
+     FROM contrato c
+     JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+     JOIN cliente cl ON cl.id_cliente = p.id_cliente
+     JOIN freelancer fl ON fl.id_freelancer = c.id_freelancer
+     WHERE c.id_contrato = $1`,
+    [id_contrato]
+  );
+  return resultado.rows[0];
+};
+
+export const crearCalificacionRepository = async ({ id_contrato, id_calificador, id_calificado, puntuacion, comentario }) => {
+  const resultado = await pool.query(
+    `INSERT INTO calificacion (id_contrato, id_calificador, id_calificado, puntuacion, comentario)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+    [id_contrato, id_calificador, id_calificado, puntuacion, comentario]
+  );
+  return resultado.rows[0];
+};
+
+export const listarCalificacionesDeUsuarioRepository = async (id_usuario_calificado) => {
+  const resultado = await pool.query(
+    `SELECT cal.*, u.nombre AS nombre_calificador
+     FROM calificacion cal
+     JOIN usuario u ON u.id_usuario = cal.id_calificador
+     WHERE cal.id_calificado = $1
+     ORDER BY cal.fecha DESC`,
+    [id_usuario_calificado]
+  );
+  return resultado.rows;
+};
+
+export const obtenerReputacionFreelancerRepository = async (id_freelancer) => {
+  const resultado = await pool.query('SELECT fn_calcular_reputacion($1) AS reputacion', [id_freelancer]);
+  return resultado.rows[0].reputacion;
+};
+
+// Actualizado para mostrar "quién" calificó a cada usuario
+export const listarCalificacionesEmitidasPorUsuarioRepository = async (id_calificador) => {
+  const resultado = await pool.query('SELECT * FROM calificacion WHERE id_calificador = $1', [id_calificador]);
+  return resultado.rows;
+};
+</file>
+
+<file path="src/repositories/catalogo.repository.js">
+import { pool } from '../database/connection.js';
+// Estos tres son simples y muy parecidos entre sí, así que los agrupé 
+// en un solo módulo para no repetir cuatro archivos casi idénticos tres veces.
+
+// =========== Categoría ===========
+export const listarCategoriasRepository = async () => {
+  const r = await pool.query('SELECT * FROM categoria ORDER BY nombre_categoria ASC');
+  return r.rows;
+};
+
+export const obtenerCategoriaPorIdRepository = async (id_categoria) => {
+  const r = await pool.query('SELECT * FROM categoria WHERE id_categoria = $1', [id_categoria]);
+  return r.rows[0];
+};
+
+export const obtenerCategoriaPorNombreRepository = async (nombre_categoria) => {
+  const r = await pool.query(
+    'SELECT * FROM categoria WHERE LOWER(nombre_categoria) = LOWER($1)',
+    [nombre_categoria]
+  );
+  return r.rows[0];
+};
+
+export const crearCategoriaRepository = async (nombre_categoria) => {
+  const r = await pool.query(
+    'INSERT INTO categoria (nombre_categoria) VALUES ($1) RETURNING *',
+    [nombre_categoria]
+  );
+  return r.rows[0];
+};
+
+export const actualizarCategoriaRepository = async (id_categoria, nombre_categoria) => {
+  const r = await pool.query(
+    'UPDATE categoria SET nombre_categoria = $1 WHERE id_categoria = $2 RETURNING *',
+    [nombre_categoria, id_categoria]
+  );
+  return r.rows[0];
+};
+
+export const contarProyectosPorCategoriaRepository = async (id_categoria) => {
+  const r = await pool.query(
+    'SELECT COUNT(*)::INT AS total FROM proyecto WHERE id_categoria = $1',
+    [id_categoria]
+  );
+  return r.rows[0].total;
+};
+
+export const eliminarCategoriaRepository = async (id_categoria) => {
+  const r = await pool.query(
+    'DELETE FROM categoria WHERE id_categoria = $1 RETURNING *',
+    [id_categoria]
+  );
+  return r.rows[0];
+};
+
+// =========== Profesión ===========
+export const listarProfesionesRepository = async () => {
+  const r = await pool.query('SELECT * FROM profesion ORDER BY nombre ASC');
+  return r.rows;
+};
+
+export const obtenerProfesionPorIdRepository = async (id_profesion) => {
+  const r = await pool.query('SELECT * FROM profesion WHERE id_profesion = $1', [id_profesion]);
+  return r.rows[0];
+};
+
+export const obtenerProfesionPorNombreRepository = async (nombre) => {
+  const r = await pool.query(
+    'SELECT * FROM profesion WHERE LOWER(nombre) = LOWER($1)',
+    [nombre]
+  );
+  return r.rows[0];
+};
+
+export const crearProfesionRepository = async ({ nombre, descripcion }) => {
+  const r = await pool.query(
+    'INSERT INTO profesion (nombre, descripcion) VALUES ($1, $2) RETURNING *',
+    [nombre, descripcion]
+  );
+  return r.rows[0];
+};
+
+export const actualizarProfesionRepository = async (id_profesion, { nombre, descripcion }) => {
+  const r = await pool.query(
+    'UPDATE profesion SET nombre = $1, descripcion = $2 WHERE id_profesion = $3 RETURNING *',
+    [nombre, descripcion, id_profesion]
+  );
+  return r.rows[0];
+};
+
+export const contarFreelancersPorProfesionRepository = async (id_profesion) => {
+  const r = await pool.query(
+    'SELECT COUNT(*)::INT AS total FROM freelancer WHERE id_profesion = $1',
+    [id_profesion]
+  );
+  return r.rows[0].total;
+};
+
+export const eliminarProfesionRepository = async (id_profesion) => {
+  const r = await pool.query(
+    'DELETE FROM profesion WHERE id_profesion = $1 RETURNING *',
+    [id_profesion]
+  );
+  return r.rows[0];
+};
+
+// =========== Método de pago ===========
+export const listarMetodosPagoRepository = async () => {
+  const r = await pool.query('SELECT * FROM metodo_pago ORDER BY nombre ASC');
+  return r.rows;
+};
+
+export const obtenerMetodoPagoPorIdRepository = async (id_metodo_pago) => {
+  const r = await pool.query('SELECT * FROM metodo_pago WHERE id_metodo_pago = $1', [id_metodo_pago]);
+  return r.rows[0];
+};
+
+export const obtenerMetodoPagoPorNombreRepository = async (nombre) => {
+  const r = await pool.query(
+    'SELECT * FROM metodo_pago WHERE LOWER(nombre) = LOWER($1)',
+    [nombre]
+  );
+  return r.rows[0];
+};
+
+export const crearMetodoPagoRepository = async ({ nombre, descripcion }) => {
+  const r = await pool.query(
+    'INSERT INTO metodo_pago (nombre, descripcion) VALUES ($1, $2) RETURNING *',
+    [nombre, descripcion]
+  );
+  return r.rows[0];
+};
+
+export const actualizarMetodoPagoRepository = async (id_metodo_pago, { nombre, descripcion }) => {
+  const r = await pool.query(
+    'UPDATE metodo_pago SET nombre = $1, descripcion = $2 WHERE id_metodo_pago = $3 RETURNING *',
+    [nombre, descripcion, id_metodo_pago]
+  );
+  return r.rows[0];
+};
+
+export const contarPagosPorMetodoRepository = async (id_metodo_pago) => {
+  const r = await pool.query(
+    'SELECT COUNT(*)::INT AS total FROM pago WHERE id_metodo_pago = $1',
+    [id_metodo_pago]
+  );
+  return r.rows[0].total;
+};
+
+export const eliminarMetodoPagoRepository = async (id_metodo_pago) => {
+  const r = await pool.query(
+    'DELETE FROM metodo_pago WHERE id_metodo_pago = $1 RETURNING *',
+    [id_metodo_pago]
+  );
+  return r.rows[0];
+};
+</file>
+
+<file path="src/repositories/contrato.repository.js">
+import { pool } from '../database/connection.js';
+
+export const obtenerPropuestaConProyectoRepository = async (id_propuesta) => {
+  const resultado = await pool.query(
+    `SELECT pr.id_propuesta, pr.id_proyecto, pr.id_freelancer, pr.estado,
+            py.id_cliente,
+            u.nombre AS nombre_freelancer, u.estado AS estado_freelancer
+     FROM propuesta pr
+     JOIN proyecto py ON py.id_proyecto = pr.id_proyecto
+     JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
+     JOIN usuario u ON u.id_usuario = f.id_usuario
+     WHERE pr.id_propuesta = $1`,
+    [id_propuesta]
+  );
+  return resultado.rows[0];
+};
+
+export const crearContratoRepository = async ({ id_proyecto, id_freelancer, fecha_inicio }) => {
+  const resultado = await pool.query(
+    `INSERT INTO contrato (id_proyecto, id_freelancer, fecha_inicio)
+     VALUES ($1, $2, $3)
+     RETURNING *`,
+    [id_proyecto, id_freelancer, fecha_inicio]
+  );
+  return resultado.rows[0];
+};
+
+// Actualizado para mostrar "con quién" es cada contrato
+export const listarContratosPorUsuarioRepository = async (id_usuario, rol) => {
+  if (rol === 'cliente') {
+    const r = await pool.query(
+      `SELECT c.*, p.titulo AS titulo_proyecto, p.presupuesto,
+              fu.id_usuario AS id_usuario_contraparte, fu.nombre AS nombre_contraparte, fu.estado AS estado_contraparte,
+              pr.monto_propuesto
+      FROM contrato c
+      JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+      JOIN cliente cl ON cl.id_cliente = p.id_cliente
+      JOIN freelancer f ON f.id_freelancer = c.id_freelancer
+      JOIN usuario fu ON fu.id_usuario = f.id_usuario
+      LEFT JOIN propuesta pr ON pr.id_proyecto = c.id_proyecto AND pr.id_freelancer = c.id_freelancer AND pr.estado = 'aceptada'
+      WHERE cl.id_usuario = $1
+      ORDER BY c.fecha_inicio DESC`,
+      [id_usuario]
+    );
+    return r.rows;
+  }
+
+  // Si el rol es 'freelancer'
+  const r = await pool.query(
+    `SELECT c.*, p.titulo AS titulo_proyecto, p.presupuesto,
+            cu.id_usuario AS id_usuario_contraparte, cu.nombre AS nombre_contraparte,
+            pr.monto_propuesto
+    FROM contrato c
+    JOIN freelancer f ON f.id_freelancer = c.id_freelancer
+    JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+    JOIN cliente cl ON cl.id_cliente = p.id_cliente
+    JOIN usuario cu ON cu.id_usuario = cl.id_usuario
+    LEFT JOIN propuesta pr ON pr.id_proyecto = c.id_proyecto AND pr.id_freelancer = c.id_freelancer AND pr.estado = 'aceptada'
+    WHERE f.id_usuario = $1
+    ORDER BY c.fecha_inicio DESC`,
+    [id_usuario]
+  );
+  return r.rows;
+};
+
+export const actualizarEstadoContratoRepository = async (id_contrato, estado, fecha_fin) => {
+  const resultado = await pool.query(
+    `UPDATE contrato SET estado = $1, fecha_fin = COALESCE($2, fecha_fin)
+     WHERE id_contrato = $3
+     RETURNING *`,
+    [estado, fecha_fin, id_contrato]
+  );
+  return resultado.rows[0];
+};
+
+export const obtenerContratoConFreelancerRepository = async (id_contrato) => {
+  const resultado = await pool.query(
+    `SELECT c.id_contrato, c.estado AS estado_contrato,
+            u.nombre AS nombre_freelancer, u.estado AS estado_freelancer
+     FROM contrato c
+     JOIN freelancer f ON f.id_freelancer = c.id_freelancer
+     JOIN usuario u ON u.id_usuario = f.id_usuario
+     WHERE c.id_contrato = $1`,
+    [id_contrato]
+  );
+  return resultado.rows[0];
+};
+</file>
+
+<file path="src/repositories/estadisticas.repository.js">
+// Apartado especializado para estadisticas publicas presentadas en la pagina principal
+import { pool } from '../database/connection.js';
+
+export const contarUsuariosPorRolRepository = async () => {
+    const resultado = await pool.query(
+        `SELECT rol, COUNT(*)::int AS total
+         FROM usuario
+         WHERE estado = 'activo'
+         GROUP BY rol`
+    );
+    return resultado.rows; // [{ rol: 'cliente', total: N }, { rol: 'freelancer', total: N }, ...]
+};
+
+export const contarProyectosRepository = async () => {
+    const resultado = await pool.query(
+        `SELECT
+           COUNT(*)::int AS total,
+           COUNT(*) FILTER (WHERE estado = 'abierto')::int AS total_abiertos,
+           COUNT(*) FILTER (WHERE estado = 'finalizado')::int AS total_finalizados
+         FROM proyecto`
+    );
+    return resultado.rows[0];
+};
+
+export const contarCategoriasRepository = async () => {
+    const resultado = await pool.query('SELECT COUNT(*)::int AS total FROM categoria');
+    return resultado.rows[0].total;
+};
+</file>
+
+<file path="src/repositories/mensaje.repository.js">
+import { pool } from '../database/connection.js';
+
+export const crearMensajeRepository = async ({ remitente, destinatario, contenido }) => {
+  const resultado = await pool.query(
+    `INSERT INTO mensaje (remitente, destinatario, contenido)
+     VALUES ($1, $2, $3)
+     RETURNING *`,
+    [remitente, destinatario, contenido]
+  );
+  return resultado.rows[0];
+};
+
+export const obtenerConversacionRepository = async (usuarioA, usuarioB) => {
+  const resultado = await pool.query(
+    `SELECT * FROM mensaje
+     WHERE (remitente = $1 AND destinatario = $2)
+        OR (remitente = $2 AND destinatario = $1)
+     ORDER BY fecha_envio ASC`,
+    [usuarioA, usuarioB]
+  );
+  return resultado.rows;
+};
+
+export const marcarMensajeLeidoRepository = async (id_mensaje, destinatario) => {
+  const resultado = await pool.query(
+    `UPDATE mensaje SET leido = TRUE
+     WHERE id_mensaje = $1 AND destinatario = $2
+     RETURNING *`,
+    [id_mensaje, destinatario]
+  );
+  return resultado.rows[0];
+};
+
+export const contarMensajesNoLeidosRepository = async (id_usuario) => {
+  const resultado = await pool.query(
+    `SELECT COUNT(*)::int AS total FROM mensaje WHERE destinatario = $1 AND leido = FALSE`,
+    [id_usuario]
+  );
+  return resultado.rows[0].total;
+};
+</file>
+
+<file path="src/repositories/pago.repository.js">
+import { pool } from '../database/connection.js';
+
+export const obtenerContratoConClienteRepository = async (id_contrato) => {
+  const resultado = await pool.query(
+    `SELECT c.id_contrato, c.estado AS estado_contrato, p.id_cliente, p.presupuesto
+     FROM contrato c
+     JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+     WHERE c.id_contrato = $1`,
+    [id_contrato]
+  );
+  return resultado.rows[0];
+};
+
+export const crearPagoRepository = async ({ id_contrato, id_metodo_pago, monto }) => {
+  const resultado = await pool.query(
+    `INSERT INTO pago (id_contrato, id_metodo_pago, monto)
+     VALUES ($1, $2, $3)
+     RETURNING *`,
+    [id_contrato, id_metodo_pago, monto]
+  );
+  return resultado.rows[0];
+};
+
+export const obtenerPagoPorIdRepository = async (id_pago) => {
+  const resultado = await pool.query('SELECT * FROM pago WHERE id_pago = $1', [id_pago]);
+  return resultado.rows[0];
+};
+
+export const obtenerPagoPorContratoRepository = async (id_contrato) => {
+  const resultado = await pool.query('SELECT * FROM pago WHERE id_contrato = $1', [id_contrato]);
+  return resultado.rows[0];
+};
+
+export const marcarPagoComoPagadoRepository = async (id_pago) => {
+  const resultado = await pool.query(
+    `UPDATE pago SET estado = 'pagado', fecha_pago = CURRENT_TIMESTAMP
+     WHERE id_pago = $1
+     RETURNING *`,
+    [id_pago]
+  );
+  return resultado.rows[0];
+};
+</file>
+
+<file path="src/repositories/propuesta.repository.js">
+import { pool } from '../database/connection.js';
+
+export const listarPropuestasPorProyectoRepository = async (id_proyecto) => {
+  const resultado = await pool.query(
+    `SELECT pr.*, u.nombre AS nombre_freelancer, u.estado AS estado_freelancer
+      FROM propuesta pr
+      JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
+      JOIN usuario u ON u.id_usuario = f.id_usuario
+      WHERE pr.id_proyecto = $1
+      ORDER BY pr.fecha_propuesta DESC`,
+    [id_proyecto]
+  );
+  return resultado.rows;
+};
+
+export const crearPropuestaRepository = async ({ id_proyecto, id_freelancer, mensaje, monto_propuesto }) => {
+  const resultado = await pool.query(
+    `INSERT INTO propuesta (id_proyecto, id_freelancer, mensaje, monto_propuesto)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+    [id_proyecto, id_freelancer, mensaje, monto_propuesto]
+  );
+  return resultado.rows[0];
+};
+
+export const obtenerPropuestaPorIdRepository = async (id) => {
+  const resultado = await pool.query('SELECT * FROM propuesta WHERE id_propuesta = $1', [id]);
+  return resultado.rows[0];
+};
+
+export const eliminarPropuestaRepository = async (id_propuesta, id_freelancer) => {
+  const resultado = await pool.query(
+    `DELETE FROM propuesta
+     WHERE id_propuesta = $1 AND id_freelancer = $2
+     RETURNING *`,
+    [id_propuesta, id_freelancer]
+  );
+  return resultado.rows[0];
+};
+// Agregado para mostrar las propuestas
+export const listarPropuestasPorClienteRepository = async (id_cliente) => {
+  const resultado = await pool.query(
+    `SELECT pr.*, u.nombre AS nombre_freelancer, u.estado AS estado_freelancer, p.titulo AS titulo_proyecto
+     FROM propuesta pr
+     JOIN proyecto p ON p.id_proyecto = pr.id_proyecto
+     JOIN freelancer f ON f.id_freelancer = pr.id_freelancer
+     JOIN usuario u ON u.id_usuario = f.id_usuario
+     WHERE p.id_cliente = $1
+     ORDER BY pr.fecha_propuesta DESC`,
+    [id_cliente]
+  );
+  return resultado.rows;
+};
+
+export const listarPropuestasPorFreelancerRepository = async (id_freelancer) => {
+  const resultado = await pool.query(
+    `SELECT pr.*, p.titulo AS titulo_proyecto, p.presupuesto AS presupuesto_proyecto
+     FROM propuesta pr
+     JOIN proyecto p ON p.id_proyecto = pr.id_proyecto
+     WHERE pr.id_freelancer = $1
+     ORDER BY pr.fecha_propuesta DESC`,
+    [id_freelancer]
+  );
+  return resultado.rows;
+};
+
+// Rechazar una propuesta (actualizar estado a 'retirada')
+export const rechazarPropuestaRepository = async (id_propuesta, id_cliente) => {
+  const resultado = await pool.query(
+    `UPDATE propuesta
+     SET estado = 'rechazada'
+     FROM proyecto
+     WHERE propuesta.id_propuesta = $1
+       AND propuesta.id_proyecto = proyecto.id_proyecto
+       AND proyecto.id_cliente = $2
+       AND propuesta.estado = 'pendiente'
+     RETURNING propuesta.*`,
+    [id_propuesta, id_cliente]
+  );
+  return resultado.rows[0];
+};
+</file>
+
+<file path="src/repositories/proyecto.repository.js">
+import { pool } from '../database/connection.js';
+
+export const listarProyectosRepository = async ({ id_categoria, presupuesto_min, presupuesto_max }) => {
+  const condiciones = [];
+  const valores = [];
+  if (id_categoria) { valores.push(id_categoria); condiciones.push(`p.id_categoria = $${valores.length}`); }
+  if (presupuesto_min) { valores.push(presupuesto_min); condiciones.push(`p.presupuesto >= $${valores.length}`); }
+  if (presupuesto_max) { valores.push(presupuesto_max); condiciones.push(`p.presupuesto <= $${valores.length}`); }
+  const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+  const resultado = await pool.query(
+    `SELECT p.*, c.nombre_categoria, u.nombre AS nombre_cliente
+     FROM proyecto p
+     JOIN categoria c ON c.id_categoria = p.id_categoria
+     JOIN cliente cl ON cl.id_cliente = p.id_cliente
+     JOIN usuario u ON u.id_usuario = cl.id_usuario
+     ${where}
+     ORDER BY p.fecha_publicacion DESC`,
+    valores
+  );
+  return resultado.rows;
+};
+
+export const obtenerProyectoPorIdRepository = async (id) => {
+  const resultado = await pool.query(
+    `SELECT p.*, c.nombre_categoria, u.nombre AS nombre_cliente
+     FROM proyecto p
+     JOIN categoria c ON c.id_categoria = p.id_categoria
+     JOIN cliente cl ON cl.id_cliente = p.id_cliente
+     JOIN usuario u ON u.id_usuario = cl.id_usuario
+     WHERE p.id_proyecto = $1`,
+    [id]
+  );
+  return resultado.rows[0];
+};
+
+export const crearProyectoRepository = async ({ id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega }) => {
+  const resultado = await pool.query(
+    `INSERT INTO proyecto (id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega, estado)
+     VALUES ($1, $2, $3, $4, $5, $6, 'abierto')
+     RETURNING *`,
+    [id_cliente, id_categoria, titulo, descripcion, presupuesto, fecha_entrega ?? null]
+  );
+  return resultado.rows[0];
+};
+
+export const actualizarProyectoRepository = async (id, { titulo, descripcion, presupuesto, id_categoria, fecha_entrega }) => {
+  const resultado = await pool.query(
+    `UPDATE proyecto SET titulo = $1, descripcion = $2, presupuesto = $3, id_categoria = $4, fecha_entrega = $5
+     WHERE id_proyecto = $6 RETURNING *`,
+    [titulo, descripcion, presupuesto, id_categoria, fecha_entrega ?? null, id]
+  );
+  return resultado.rows[0];
+};
+
+export const obtenerDueñoProyectoRepository = async (id_proyecto) => {
+  const resultado = await pool.query(
+    'SELECT id_cliente FROM proyecto WHERE id_proyecto = $1',
+    [id_proyecto]
+  );
+  return resultado.rows[0];
+};
+
+// El orden de los 3 UPDATE importa: primero proyecto, después contrato.
+// Si se lo hace  al revés, el trigger trg_contrato_reabrir_proyecto
+// intentaría reabrir el proyecto a 'abierto' antes de
+// que termines de cancelarlo, y quedaría en un estado inconsistente.
+export const cancelarProyectoRepository = async (id_proyecto) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const proyectoResultado = await client.query(
+      `UPDATE proyecto SET estado = 'cancelado'
+       WHERE id_proyecto = $1 AND estado IN ('abierto', 'ejecucion')
+       RETURNING *`,
+      [id_proyecto]
+    );
+
+    if (proyectoResultado.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+
+    await client.query(
+      `UPDATE contrato SET estado = 'cancelado'
+       WHERE id_proyecto = $1 AND estado = 'activo'`,
+      [id_proyecto]
+    );
+
+    await client.query(
+      `UPDATE propuesta SET estado = 'rechazada'
+       WHERE id_proyecto = $1 AND estado = 'pendiente'`,
+      [id_proyecto]
+    );
+
+    await client.query('COMMIT');
+    return proyectoResultado.rows[0];
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const listarProyectosPorClienteRepository = async (id_cliente) => {
+  const resultado = await pool.query(
+    `SELECT p.*, c.nombre_categoria,
+            (SELECT COUNT(*)::INT FROM propuesta pr WHERE pr.id_proyecto = p.id_proyecto) AS total_propuestas
+     FROM proyecto p
+     JOIN categoria c ON c.id_categoria = p.id_categoria
+     WHERE p.id_cliente = $1
+     ORDER BY p.fecha_publicacion DESC`,
+    [id_cliente]
+  );
+  return resultado.rows;
+};
+
+export const eliminarProyectoRepository = async (id_proyecto) => {
+  const r = await pool.query('DELETE FROM proyecto WHERE id_proyecto = $1 RETURNING *', [id_proyecto]);
+  return r.rows[0];
+};
+</file>
+
+<file path="src/repositories/token2fa.repository.js">
+import { pool } from '../database/connection.js';
+
+export const crearToken2FARepository = async ({ id_usuario, token_hash, minutos }) => {
+    // Invalida links anteriores pendientes del mismo usuario
+    await pool.query(
+        'UPDATE token_2fa SET usado = TRUE WHERE id_usuario = $1 AND usado = FALSE',
+        [id_usuario]
+    );
+
+    await pool.query(
+        `INSERT INTO token_2fa (id_usuario, token_hash, fecha_expiracion)
+         VALUES ($1, $2, CURRENT_TIMESTAMP + make_interval(mins => $3))`,
+        [id_usuario, token_hash, minutos]
+    );
+};
+
+// Consumo atómico: valida y marca como usado en una sola sentencia
+export const consumirToken2FARepository = async (token_hash) => {
+    const r = await pool.query(
+        `UPDATE token_2fa SET usado = TRUE
+         WHERE token_hash = $1 AND usado = FALSE AND fecha_expiracion > CURRENT_TIMESTAMP
+         RETURNING id_usuario`,
+        [token_hash]
+    );
+    return r.rows[0];
+};
+</file>
+
+<file path="src/repositories/usuario.repository.js">
+import { pool } from '../database/connection.js';
+
+export const buscarUsuarioPorCorreoRepository = async(correo) => {
+    const resultado = await pool.query(
+        'SELECT * FROM usuario WHERE correo = $1', [correo]
+    );
+    return resultado.rows[0];
+};
+
+export const buscarUsuarioPorIdRepository = async(id) => {
+    const resultado = await pool.query(
+        'SELECT id_usuario, nombre, correo, telefono, rol, estado, fecha_registro FROM usuario WHERE id_usuario = $1', [id]
+    );
+    return resultado.rows[0];
+};
+
+// Registro transaccional: usuario + (cliente | freelancer)
+export const registrarUsuarioRepository = async({ nombre, correo, contrasenaHash, telefono, rol, perfil }) => {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const usuarioResultado = await client.query(
+            `INSERT INTO usuario (nombre, correo, contrasena, telefono, rol)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id_usuario, nombre, correo, telefono, rol, estado, fecha_registro`, [nombre, correo, contrasenaHash, telefono, rol]
+        );
+
+        const usuario = usuarioResultado.rows[0];
+        let perfilCreado = null;
+
+        if (rol === 'cliente') {
+            const empresa = (perfil && perfil.empresa) ? perfil.empresa : null;
+            const direccion = (perfil && perfil.direccion) ? perfil.direccion : null;
+
+            const clienteResultado = await client.query(
+                `INSERT INTO cliente (id_usuario, empresa, direccion)
+         VALUES ($1, $2, $3)
+         RETURNING id_cliente, empresa, direccion`, [usuario.id_usuario, empresa, direccion]
+            );
+            perfilCreado = clienteResultado.rows[0];
+        }
+
+        if (rol === 'freelancer') {
+            const freelancerResultado = await client.query(
+                `INSERT INTO freelancer (id_usuario, id_profesion, descripcion, experiencia)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id_freelancer, id_profesion, descripcion, experiencia`, [usuario.id_usuario, perfil.id_profesion, perfil.descripcion, perfil.experiencia]
+            );
+            perfilCreado = freelancerResultado.rows[0];
+        }
+
+        await client.query('COMMIT');
+        return { usuario, perfil: perfilCreado };
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+};
+
+export const obtenerIdsPerfilRepository = async(id_usuario, rol) => {
+    if (rol === 'cliente') {
+        const r = await pool.query('SELECT id_cliente FROM cliente WHERE id_usuario = $1', [id_usuario]);
+        return r.rows[0]; // { id_cliente }
+    }
+    if (rol === 'freelancer') {
+        const r = await pool.query('SELECT id_freelancer FROM freelancer WHERE id_usuario = $1', [id_usuario]);
+        return r.rows[0]; // { id_freelancer }
+    }
+    return null;
+};
+
+export const obtenerDatosClienteRepository = async (id_usuario) => {
+    const r = await pool.query(
+        'SELECT id_cliente, empresa, direccion FROM cliente WHERE id_usuario = $1',
+        [id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const obtenerDatosFreelancerRepository = async (id_usuario) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, f.descripcion, f.experiencia, p.id_profesion, p.nombre AS profesion
+         FROM freelancer f JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_usuario = $1`,
+        [id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const actualizarPerfilUsuarioRepository = async (id_usuario, { nombre, telefono }) => {
+    const r = await pool.query(
+        `UPDATE usuario SET nombre = $1, telefono = $2 WHERE id_usuario = $3
+         RETURNING id_usuario, nombre, correo, telefono, rol, estado, fecha_registro`,
+        [nombre, telefono, id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const actualizarClienteRepository = async (id_usuario, { empresa, direccion }) => {
+    const r = await pool.query(
+        `UPDATE cliente SET empresa = $1, direccion = $2 WHERE id_usuario = $3
+         RETURNING id_cliente, empresa, direccion`,
+        [empresa, direccion, id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const actualizarFreelancerRepository = async (id_usuario, { id_profesion, descripcion, experiencia }) => {
+    const r = await pool.query(
+        `UPDATE freelancer SET id_profesion = $1, descripcion = $2, experiencia = $3
+         WHERE id_usuario = $4
+         RETURNING id_freelancer, id_profesion, descripcion, experiencia`,
+        [id_profesion, descripcion, experiencia, id_usuario]
+    );
+    return r.rows[0];
+};
+
+export const obtenerPerfilPublicoFreelancerRepository = async (id_freelancer) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, u.nombre, u.fecha_registro,
+                p.nombre AS profesion, f.descripcion, f.experiencia,
+                (SELECT COUNT(*) FROM contrato c
+                 WHERE c.id_freelancer = f.id_freelancer AND c.estado = 'completado')::int AS contratos_completados
+         FROM freelancer f
+         JOIN usuario u ON u.id_usuario = f.id_usuario
+         JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_freelancer = $1`,
+        [id_freelancer]
+    );
+    return r.rows[0];
+};
+// Obtiene perfil para contacto
+export const obtenerPerfilFreelancerConContactoRepository = async (id_freelancer) => {
+    const r = await pool.query(
+        `SELECT f.id_freelancer, u.nombre, u.correo, u.telefono, u.fecha_registro,
+                p.nombre AS profesion, f.descripcion, f.experiencia,
+                (SELECT COUNT(*) FROM contrato c
+                 WHERE c.id_freelancer = f.id_freelancer AND c.estado = 'completado')::int AS contratos_completados
+         FROM freelancer f
+         JOIN usuario u ON u.id_usuario = f.id_usuario
+         JOIN profesion p ON p.id_profesion = f.id_profesion
+         WHERE f.id_freelancer = $1`,
+        [id_freelancer]
+    );
+    return r.rows[0];
+};
+
+export const existeContratoEntreClienteYFreelancerRepository = async (id_cliente, id_freelancer) => {
+    const r = await pool.query(
+        `SELECT 1 FROM contrato c
+         JOIN proyecto p ON p.id_proyecto = c.id_proyecto
+         WHERE c.id_freelancer = $1 AND p.id_cliente = $2
+         LIMIT 1`,
+        [id_freelancer, id_cliente]
+    );
+    return r.rowCount > 0;
+};
+</file>
+
+<file path="src/routes/admin.routes.js">
+import { Router } from 'express';
+import { listarUsuarios, desactivarUsuario, 
+    reactivarUsuario, listarAuditoria, obtenerEstadisticasAdmin
+} from '../controllers/admin.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.use(autenticar, permitirRoles('administrador'));
+
+router.get('/usuarios', listarUsuarios);
+router.patch('/usuarios/:id/desactivar', desactivarUsuario);
+router.patch('/usuarios/:id/reactivar', reactivarUsuario);
+router.get('/auditoria', listarAuditoria);
+router.get('/estadisticas', obtenerEstadisticasAdmin);
+
+export default router;
+</file>
+
+<file path="src/routes/calificacion.routes.js">
+import { Router } from 'express';
+import { 
+    registrarCalificacion, listarCalificacionesRecibidas, 
+    obtenerReputacion, listarCalificacionesEmitidas 
+} from '../controllers/calificacion.controller.js';
+import { autenticar } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.post('/', autenticar, registrarCalificacion);
+router.get('/mias/emitidas', autenticar, listarCalificacionesEmitidas);
+router.get('/usuario/:idUsuario', listarCalificacionesRecibidas);
+router.get('/reputacion/:idFreelancer', obtenerReputacion);
+
+export default router;
+</file>
+
+<file path="src/routes/catalogo.routes.js">
+import { Router } from 'express';
+import {
+  listarCategorias, crearCategoria, actualizarCategoria, eliminarCategoria,
+  listarProfesiones, crearProfesion, actualizarProfesion, eliminarProfesion,
+  listarMetodosPago, crearMetodoPago, actualizarMetodoPago, eliminarMetodoPago
+} from '../controllers/catalogo.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+// ---- Categoría ----
+router.get('/categorias', listarCategorias);
+router.post('/categorias', autenticar, permitirRoles('administrador'), crearCategoria);
+router.put('/categorias/:id', autenticar, permitirRoles('administrador'), actualizarCategoria);
+router.delete('/categorias/:id', autenticar, permitirRoles('administrador'), eliminarCategoria);
+
+// ---- Profesión ----
+router.get('/profesiones', listarProfesiones);
+router.post('/profesiones', autenticar, permitirRoles('administrador'), crearProfesion);
+router.put('/profesiones/:id', autenticar, permitirRoles('administrador'), actualizarProfesion);
+router.delete('/profesiones/:id', autenticar, permitirRoles('administrador'), eliminarProfesion);
+
+// ---- Método de pago ----
+router.get('/metodos-pago', listarMetodosPago);
+router.post('/metodos-pago', autenticar, permitirRoles('administrador'), crearMetodoPago);
+router.put('/metodos-pago/:id', autenticar, permitirRoles('administrador'), actualizarMetodoPago);
+router.delete('/metodos-pago/:id', autenticar, permitirRoles('administrador'), eliminarMetodoPago);
+
+export default router;
+</file>
+
+<file path="src/routes/contrato.routes.js">
+import { Router } from 'express';
+import {
+  aceptarPropuesta,
+  listarMisContratos,
+  completarContrato,
+  cancelarContrato
+} from '../controllers/contrato.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.post('/aceptar/:idPropuesta', autenticar, permitirRoles('cliente'), aceptarPropuesta);
+router.get('/mios', autenticar, listarMisContratos);
+router.patch('/:id/completar', autenticar, permitirRoles('cliente'), completarContrato);
+router.patch('/:id/cancelar', autenticar, permitirRoles('cliente'), cancelarContrato);
+
+export default router;
+</file>
+
+<file path="src/routes/estadisticas.routes.js">
+import { Router } from 'express';
+import { obtenerEstadisticasPublicas } from '../controllers/estadisticas.controller.js';
+
+const router = Router();
+
+// Público, sin autenticación: solo devuelve conteos agregados, ningún dato sensible de usuarios
+router.get('/', obtenerEstadisticasPublicas);
+
+export default router;
+</file>
+
+<file path="src/routes/mensaje.routes.js">
+import { Router } from 'express';
+import { enviarMensaje, obtenerConversacion, marcarLeido, contarNoLeidos } from '../controllers/mensaje.controller.js';
+import { autenticar } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.get('/no-leidos', autenticar, contarNoLeidos);
+router.post('/', autenticar, enviarMensaje);
+router.get('/conversacion/:idUsuario', autenticar, obtenerConversacion);
+router.patch('/:id/leido', autenticar, marcarLeido);
+
+export default router;
+</file>
+
+<file path="src/routes/pago.routes.js">
+import { Router } from 'express';
+import { registrarPago, marcarPagoPagado, obtenerPagoDeContrato } from '../controllers/pago.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.post('/', autenticar, permitirRoles('cliente'), registrarPago);
+router.patch('/:id/marcar-pagado', autenticar, permitirRoles('cliente'), marcarPagoPagado);
+router.get('/contrato/:idContrato', autenticar, obtenerPagoDeContrato);
+
+export default router;
+</file>
+
+<file path="src/routes/propuesta.routes.js">
+import { Router } from 'express';
+import { 
+    listarPropuestasDeProyecto, listarPropuestasDelCliente, 
+    listarMisPropuestasEnviadas, enviarPropuesta, rechazarPropuesta } 
+from '../controllers/propuesta.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+import { retirarPropuesta } from '../controllers/propuesta.controller.js';
+
+const router = Router();
+
+router.get('/mias/recibidas', autenticar, permitirRoles('cliente'), listarPropuestasDelCliente);
+router.get('/mias/enviadas', autenticar, permitirRoles('freelancer'), listarMisPropuestasEnviadas);
+router.get('/proyecto/:idProyecto', autenticar, listarPropuestasDeProyecto);
+router.post('/', autenticar, permitirRoles('freelancer'), enviarPropuesta);
+router.patch('/:id/rechazar', autenticar, permitirRoles('cliente'), rechazarPropuesta);
+router.delete('/:id', autenticar, permitirRoles('freelancer'), retirarPropuesta);
+
+export default router;
+</file>
+
+<file path="src/routes/proyecto.routes.js">
+import { Router } from 'express';
+import {
+  listarProyectos, obtenerProyecto, crearProyecto, 
+  editarProyecto, cancelarProyecto, listarMisProyectos,
+  eliminarProyecto
+} from '../controllers/proyecto.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.get('/', listarProyectos);
+router.get('/mios', autenticar, permitirRoles('cliente'), listarMisProyectos);
+router.get('/:id', obtenerProyecto);
+router.post('/', autenticar, permitirRoles('cliente'), crearProyecto);
+router.put('/:id', autenticar, permitirRoles('cliente'), editarProyecto);
+router.patch('/:id/cancelar', autenticar, permitirRoles('cliente'), cancelarProyecto);
+router.delete('/:id', autenticar, permitirRoles('administrador'), eliminarProyecto);
+
+export default router;
+</file>
+
+<file path="src/routes/usuario.routes.js">
+import { Router } from 'express';
+import {
+  registrarUsuario, loginUsuario, perfilActual, 
+  confirmarLogin2FA, actualizarPerfil, loginPrueba,
+  perfilPublicoFreelancer, perfilFreelancerConContacto
+} from '../controllers/usuario.controller.js';
+import { autenticar, permitirRoles } from '../middlewares/auth.middleware.js';
+
+const router = Router();
+
+router.post('/registro', registrarUsuario);
+router.post('/login', loginUsuario);
+router.post('/login/verificar-2fa', confirmarLogin2FA);
+router.post('/login-prueba', loginPrueba);
+router.get('/perfil', autenticar, perfilActual);
+router.put('/perfil', autenticar, actualizarPerfil);
+router.get('/freelancer/:id', perfilPublicoFreelancer);
+router.get('/freelancer/:id/contacto', autenticar, permitirRoles('cliente'), perfilFreelancerConContacto);
+
+export default router;
+</file>
+
+<file path="src/services/admin.service.js">
+import {
+  listarUsuariosRepository,
+  desactivarUsuarioRepository,
+  reactivarUsuarioRepository,
+  listarAuditoriaRepository,
+  contarUsuariosDetalladoRepository, contarProyectosDetalladoRepository, proyectosPorCategoriaRepository,
+  freelancersPorProfesionRepository, contarPropuestasRepository, contarContratosRepository, sumarPagosRepository
+} from '../repositories/admin.repository.js';
+
+export const listarUsuariosService = async (filtros) => {
+  return await listarUsuariosRepository(filtros);
+};
+
+export const desactivarUsuarioService = async (adminActual, id_usuario) => {
+  if (adminActual.id_usuario === id_usuario) {
+    const error = new Error('No puedes desactivar tu propia cuenta de administrador');
+    error.status = 400;
+    throw error;
+  }
+
+  const usuario = await desactivarUsuarioRepository(id_usuario);
+
+  if (!usuario) {
+    const error = new Error('Usuario no encontrado o ya estaba inactivo');
+    error.status = 404;
+    throw error;
+  }
+
+  return usuario;
+};
+
+export const reactivarUsuarioService = async (id_usuario) => {
+  const usuario = await reactivarUsuarioRepository(id_usuario);
+
+  if (!usuario) {
+    const error = new Error('Usuario no encontrado o ya estaba activo');
+    error.status = 404;
+    throw error;
+  }
+
+  return usuario;
+};
+
+export const listarAuditoriaService = async (filtros) => {
+  return await listarAuditoriaRepository(filtros);
+};
+
+// Actualizado por lo nuevo de repostory 
+export const obtenerEstadisticasAdminService = async () => {
+  const [usuariosDetalle, proyectos, categorias, profesiones, propuestas, contratos, pagos] = await Promise.all([
+    contarUsuariosDetalladoRepository(),
+    contarProyectosDetalladoRepository(),
+    proyectosPorCategoriaRepository(),
+    freelancersPorProfesionRepository(),
+    contarPropuestasRepository(),
+    contarContratosRepository(),
+    sumarPagosRepository()
+  ]);
+
+  const totalClientes = usuariosDetalle.filter(u => u.rol === 'cliente').reduce((a, u) => a + u.total, 0);
+  const totalFreelancers = usuariosDetalle.filter(u => u.rol === 'freelancer').reduce((a, u) => a + u.total, 0);
+
+  return {
+    total_usuarios: totalClientes + totalFreelancers,
+    total_clientes: totalClientes,
+    total_freelancers: totalFreelancers,
+    proyectos,
+    proyectos_por_categoria: categorias,
+    freelancers_por_profesion: profesiones,
+    propuestas,
+    contratos,
+    monto_total_pagado: Number(pagos.total_pagado),
+    comision_total: Number(pagos.total_comision)
+  };
+};
+</file>
+
+<file path="src/services/calificacion.service.js">
+import {
+  obtenerContratoParaCalificarRepository,
+  crearCalificacionRepository,
+  listarCalificacionesDeUsuarioRepository,
+  obtenerReputacionFreelancerRepository,
+  listarCalificacionesEmitidasPorUsuarioRepository
+} from '../repositories/calificacion.repository.js';
+
+export const registrarCalificacionService = async (usuarioActual, datos) => {
+  const { id_contrato, puntuacion, comentario } = datos;
+
+  if (usuarioActual.rol !== 'cliente') {
+    const error = new Error('Solo los clientes pueden calificar. El sistema de reputación es unidireccional (cliente → freelancer)');
+    error.status = 403;
+    throw error;
+  }
+
+  if (!id_contrato || !puntuacion) {
+    const error = new Error('id_contrato y puntuacion son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (puntuacion < 1 || puntuacion > 5) {
+    const error = new Error('La puntuación debe estar entre 1 y 5');
+    error.status = 400;
+    throw error;
+  }
+
+  const contrato = await obtenerContratoParaCalificarRepository(id_contrato);
+
+  if (!contrato) {
+    const error = new Error('Contrato no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (contrato.id_usuario_cliente !== usuarioActual.id_usuario) {
+    const error = new Error('Solo el cliente dueño de este contrato puede calificarlo');
+    error.status = 403;
+    throw error;
+  }
+
+  // trg_validar_calificacion exige que el contrato esté 'completado'
+  // uq_calificacion impide repetir calificación del mismo contrato
+  return await crearCalificacionRepository({
+    id_contrato,
+    id_calificador: usuarioActual.id_usuario,
+    id_calificado: contrato.id_usuario_freelancer,
+    puntuacion,
+    comentario: comentario ?? null
+  });
+};
+
+export const listarCalificacionesRecibidasService = async (id_usuario) => {
+  return await listarCalificacionesDeUsuarioRepository(id_usuario);
+};
+
+export const obtenerReputacionService = async (id_freelancer) => {
+  return await obtenerReputacionFreelancerRepository(id_freelancer);
+};
+
+export const listarCalificacionesEmitidasService = async (id_usuario) => {
+  return await listarCalificacionesEmitidasPorUsuarioRepository(id_usuario);
+};
+</file>
+
+<file path="src/services/catalogo.service.js">
+import {
+  // Categoría
+  listarCategoriasRepository, obtenerCategoriaPorIdRepository, obtenerCategoriaPorNombreRepository,
+  crearCategoriaRepository, actualizarCategoriaRepository, contarProyectosPorCategoriaRepository,
+  eliminarCategoriaRepository,
+  // Profesión
+  listarProfesionesRepository, obtenerProfesionPorIdRepository, obtenerProfesionPorNombreRepository,
+  crearProfesionRepository, actualizarProfesionRepository, contarFreelancersPorProfesionRepository,
+  eliminarProfesionRepository,
+  // Método de pago
+  listarMetodosPagoRepository, obtenerMetodoPagoPorIdRepository, obtenerMetodoPagoPorNombreRepository,
+  crearMetodoPagoRepository, actualizarMetodoPagoRepository, contarPagosPorMetodoRepository,
+  eliminarMetodoPagoRepository
+} from '../repositories/catalogo.repository.js';
+
+// ============ Categoría ============
+export const listarCategoriasService = async () => await listarCategoriasRepository();
+
+export const crearCategoriaService = async (nombre_categoria) => {
+  if (!nombre_categoria || !nombre_categoria.trim()) {
+    const error = new Error('nombre_categoria es obligatorio');
+    error.status = 400;
+    throw error;
+  }
+
+  const duplicada = await obtenerCategoriaPorNombreRepository(nombre_categoria.trim());
+  if (duplicada) {
+    const error = new Error('Ya existe una categoría con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await crearCategoriaRepository(nombre_categoria.trim());
+};
+
+export const actualizarCategoriaService = async (id_categoria, nombre_categoria) => {
+  if (!nombre_categoria || !nombre_categoria.trim()) {
+    const error = new Error('nombre_categoria es obligatorio');
+    error.status = 400;
+    throw error;
+  }
+
+  const existente = await obtenerCategoriaPorIdRepository(id_categoria);
+  if (!existente) {
+    const error = new Error('Categoría no encontrada');
+    error.status = 404;
+    throw error;
+  }
+
+  const duplicada = await obtenerCategoriaPorNombreRepository(nombre_categoria.trim());
+  if (duplicada && duplicada.id_categoria !== id_categoria) {
+    const error = new Error('Ya existe otra categoría con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await actualizarCategoriaRepository(id_categoria, nombre_categoria.trim());
+};
+
+export const eliminarCategoriaService = async (id_categoria) => {
+  const existente = await obtenerCategoriaPorIdRepository(id_categoria);
+  if (!existente) {
+    const error = new Error('Categoría no encontrada');
+    error.status = 404;
+    throw error;
+  }
+
+  const enUso = await contarProyectosPorCategoriaRepository(id_categoria);
+  if (enUso > 0) {
+    const error = new Error(`No se puede eliminar: ${enUso} proyecto(s) usan esta categoría`);
+    error.status = 409;
+    throw error;
+  }
+
+  return await eliminarCategoriaRepository(id_categoria);
+};
+
+// ============ Profesión ============
+export const listarProfesionesService = async () => await listarProfesionesRepository();
+
+export const crearProfesionService = async ({ nombre, descripcion }) => {
+  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
+    const error = new Error('nombre y descripcion son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  const duplicada = await obtenerProfesionPorNombreRepository(nombre.trim());
+  if (duplicada) {
+    const error = new Error('Ya existe una profesión con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await crearProfesionRepository({ nombre: nombre.trim(), descripcion: descripcion.trim() });
+};
+
+export const actualizarProfesionService = async (id_profesion, { nombre, descripcion }) => {
+  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
+    const error = new Error('nombre y descripcion son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  const existente = await obtenerProfesionPorIdRepository(id_profesion);
+  if (!existente) {
+    const error = new Error('Profesión no encontrada');
+    error.status = 404;
+    throw error;
+  }
+
+  const duplicada = await obtenerProfesionPorNombreRepository(nombre.trim());
+  if (duplicada && duplicada.id_profesion !== id_profesion) {
+    const error = new Error('Ya existe otra profesión con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await actualizarProfesionRepository(id_profesion, { nombre: nombre.trim(), descripcion: descripcion.trim() });
+};
+
+export const eliminarProfesionService = async (id_profesion) => {
+  const existente = await obtenerProfesionPorIdRepository(id_profesion);
+  if (!existente) {
+    const error = new Error('Profesión no encontrada');
+    error.status = 404;
+    throw error;
+  }
+
+  const enUso = await contarFreelancersPorProfesionRepository(id_profesion);
+  if (enUso > 0) {
+    const error = new Error(`No se puede eliminar: ${enUso} freelancer(s) tienen esta profesión`);
+    error.status = 409;
+    throw error;
+  }
+
+  return await eliminarProfesionRepository(id_profesion);
+};
+
+// ============ Método de pago ============
+export const listarMetodosPagoService = async () => await listarMetodosPagoRepository();
+
+export const crearMetodoPagoService = async ({ nombre, descripcion }) => {
+  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
+    const error = new Error('nombre y descripcion son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  const duplicado = await obtenerMetodoPagoPorNombreRepository(nombre.trim());
+  if (duplicado) {
+    const error = new Error('Ya existe un método de pago con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await crearMetodoPagoRepository({ nombre: nombre.trim(), descripcion: descripcion.trim() });
+};
+
+export const actualizarMetodoPagoService = async (id_metodo_pago, { nombre, descripcion }) => {
+  if (!nombre || !nombre.trim() || !descripcion || !descripcion.trim()) {
+    const error = new Error('nombre y descripcion son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  const existente = await obtenerMetodoPagoPorIdRepository(id_metodo_pago);
+  if (!existente) {
+    const error = new Error('Método de pago no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  const duplicado = await obtenerMetodoPagoPorNombreRepository(nombre.trim());
+  if (duplicado && duplicado.id_metodo_pago !== id_metodo_pago) {
+    const error = new Error('Ya existe otro método de pago con ese nombre');
+    error.status = 409;
+    throw error;
+  }
+
+  return await actualizarMetodoPagoRepository(id_metodo_pago, { nombre: nombre.trim(), descripcion: descripcion.trim() });
+};
+
+export const eliminarMetodoPagoService = async (id_metodo_pago) => {
+  const existente = await obtenerMetodoPagoPorIdRepository(id_metodo_pago);
+  if (!existente) {
+    const error = new Error('Método de pago no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  const enUso = await contarPagosPorMetodoRepository(id_metodo_pago);
+  if (enUso > 0) {
+    const error = new Error(`No se puede eliminar: ${enUso} pago(s) usan este método`);
+    error.status = 409;
+    throw error;
+  }
+
+  return await eliminarMetodoPagoRepository(id_metodo_pago);
+};
+</file>
+
+<file path="src/services/contrato.service.js">
+import {
+  obtenerPropuestaConProyectoRepository,
+  crearContratoRepository,
+  listarContratosPorUsuarioRepository,
+  actualizarEstadoContratoRepository,
+  obtenerContratoConFreelancerRepository
+} from '../repositories/contrato.repository.js';
+
+export const aceptarPropuestaYCrearContratoService = async (id_cliente, id_propuesta) => {
+  const propuesta = await obtenerPropuestaConProyectoRepository(id_propuesta);
+
+  if (!propuesta) {
+    const error = new Error('Propuesta no encontrada');
+    error.status = 404;
+    throw error;
+  }
+
+  if (propuesta.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del proyecto puede aceptar esta propuesta');
+    error.status = 403;
+    throw error;
+  }
+
+  if (propuesta.estado !== 'pendiente') {
+    const error = new Error('Solo se pueden aceptar propuestas en estado pendiente');
+    error.status = 400;
+    throw error;
+  }
+  // Valida si el freelancer es activo
+  if (propuesta.estado_freelancer !== 'activo') {
+    const error = new Error(`No es posible aceptar la propuesta porque el freelancer "${propuesta.nombre_freelancer}" se encuentra inactivo.`);
+    error.status = 409;
+    throw error;
+  }
+
+  // Al insertar, los triggers se encargan de:
+  // - validar que el proyecto esté abierto (trg_validar_estado_proyecto)
+  // - impedir auto-contratación (trg_validar_contrato_propio)
+  // - pasar el proyecto a 'ejecucion' (trg_proyecto_en_progreso)
+  // - marcar esta propuesta como 'aceptada' y rechazar las demás
+  //   (trg_aceptar_propuesta, trg_cerrar_propuestas)
+  const contrato = await crearContratoRepository({
+    id_proyecto: propuesta.id_proyecto,
+    id_freelancer: propuesta.id_freelancer,
+    fecha_inicio: new Date()
+  });
+
+  return contrato;
+};
+
+export const listarMisContratosService = async (id_usuario, rol) => {
+  return await listarContratosPorUsuarioRepository(id_usuario, rol);
+};
+
+export const completarContratoService = async (id_contrato) => {
+  const contrato = await obtenerContratoConFreelancerRepository(id_contrato);
+
+  if (!contrato) {
+    const error = new Error('Contrato no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (contrato.estado_freelancer !== 'activo') {
+    const error = new Error(`No es posible marcar el contrato como completado porque el freelancer "${contrato.nombre_freelancer}" se encuentra inactivo.`);
+    error.status = 409;
+    throw error;
+  }
+  // El trigger marca como finalizado
+  return await actualizarEstadoContratoRepository(id_contrato, 'completado', new Date());
+};
+
+export const cancelarContratoService = async (id_contrato) => {
+  // trg_validar_cancelacion_contrato impide cancelar uno ya completado
+  return await actualizarEstadoContratoRepository(id_contrato, 'cancelado', null);
+};
+</file>
+
+<file path="src/services/estadisticas.service.js">
+import {
+    contarUsuariosPorRolRepository,
+    contarProyectosRepository,
+    contarCategoriasRepository
+} from '../repositories/estadisticas.repository.js';
+
+export const obtenerEstadisticasPublicasService = async () => {
+    const [usuariosPorRol, proyectos, totalCategorias] = await Promise.all([
+        contarUsuariosPorRolRepository(),
+        contarProyectosRepository(),
+        contarCategoriasRepository()
+    ]);
+
+    const totalClientes = usuariosPorRol.find(u => u.rol === 'cliente')?.total ?? 0;
+    const totalFreelancers = usuariosPorRol.find(u => u.rol === 'freelancer')?.total ?? 0;
+
+    return {
+        total_clientes: totalClientes,
+        total_freelancers: totalFreelancers,
+        total_usuarios: totalClientes + totalFreelancers,
+        total_proyectos: proyectos.total,
+        total_proyectos_abiertos: proyectos.total_abiertos,
+        total_proyectos_finalizados: proyectos.total_finalizados,
+        total_categorias: totalCategorias
+    };
+};
+</file>
+
+<file path="src/services/mensaje.service.js">
+import {
+  crearMensajeRepository,
+  obtenerConversacionRepository,
+  marcarMensajeLeidoRepository,
+  contarMensajesNoLeidosRepository
+} from '../repositories/mensaje.repository.js';
+
+export const enviarMensajeService = async (remitente, datos) => {
+  const { destinatario, contenido } = datos;
+
+  if (!destinatario || !contenido) {
+    const error = new Error('destinatario y contenido son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (Number(destinatario) === Number(remitente)) {
+    const error = new Error('No puedes enviarte mensajes a ti mismo');
+    error.status = 400;
+    throw error;
+  }
+
+  // trg_validar_mensaje_contrato exige un contrato activo entre ambos usuarios
+  return await crearMensajeRepository({ remitente, destinatario, contenido });
+};
+
+export const obtenerConversacionService = async (usuarioActual, otroUsuario) => {
+  return await obtenerConversacionRepository(usuarioActual, otroUsuario);
+};
+
+export const marcarLeidoService = async (id_mensaje, destinatario) => {
+  const mensaje = await marcarMensajeLeidoRepository(id_mensaje, destinatario);
+
+  if (!mensaje) {
+    const error = new Error('Mensaje no encontrado o no eres el destinatario');
+    error.status = 404;
+    throw error;
+  }
+
+  return mensaje;
+};
+
+export const contarNoLeidosService = async (id_usuario) => {
+  return await contarMensajesNoLeidosRepository(id_usuario);
+};
+</file>
+
+<file path="src/services/pago.service.js">
+import {
+  obtenerContratoConClienteRepository,
+  crearPagoRepository,
+  obtenerPagoPorIdRepository,
+  obtenerPagoPorContratoRepository,
+  marcarPagoComoPagadoRepository
+} from '../repositories/pago.repository.js';
+
+export const registrarPagoService = async (id_cliente, datos) => {
+  const { id_contrato, id_metodo_pago, monto } = datos;
+
+  if (!id_contrato || !id_metodo_pago || !monto) {
+    const error = new Error('id_contrato, id_metodo_pago y monto son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (Number(monto) <= 0) {
+    const error = new Error('El monto debe ser mayor a 0');
+    error.status = 400;
+    throw error;
+  }
+
+  const contrato = await obtenerContratoConClienteRepository(id_contrato);
+
+  if (!contrato) {
+    const error = new Error('Contrato no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (contrato.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del contrato puede registrar el pago');
+    error.status = 403;
+    throw error;
+  }
+
+  // trg_validar_contrato_pago bloquea si el contrato está cancelado
+  // trg_validar_pago_contrato bloquea si el monto supera el presupuesto
+  // trg_calcular_comision llena la comisión automáticamente (10%)
+  return await crearPagoRepository({ id_contrato, id_metodo_pago, monto });
+};
+
+export const marcarPagoPagadoService = async (id_cliente, id_pago) => {
+  const pago = await obtenerPagoPorIdRepository(id_pago);
+
+  if (!pago) {
+    const error = new Error('Pago no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  const contrato = await obtenerContratoConClienteRepository(pago.id_contrato);
+
+  if (contrato.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del contrato puede confirmar este pago');
+    error.status = 403;
+    throw error;
+  }
+
+  if (pago.estado === 'pagado') {
+    const error = new Error('Este pago ya fue marcado como pagado');
+    error.status = 400;
+    throw error;
+  }
+
+  return await marcarPagoComoPagadoRepository(id_pago);
+};
+
+export const obtenerPagoDeContratoService = async (id_contrato) => {
+  return await obtenerPagoPorContratoRepository(id_contrato);
+};
+</file>
+
+<file path="src/services/propuesta.service.js">
+import {
+  listarPropuestasPorProyectoRepository,
+  crearPropuestaRepository,
+  eliminarPropuestaRepository,
+  listarPropuestasPorClienteRepository,
+  listarPropuestasPorFreelancerRepository,
+  rechazarPropuestaRepository
+} from '../repositories/propuesta.repository.js';
+
+import { obtenerProyectoPorIdRepository } from '../repositories/proyecto.repository.js';
+
+export const listarPropuestasService = async (id_proyecto) => {
+  return await listarPropuestasPorProyectoRepository(id_proyecto);
+};
+
+export const listarPropuestasDelClienteService = async (id_cliente) => {
+  return await listarPropuestasPorClienteRepository(id_cliente);
+};
+
+export const listarPropuestasDelFreelancerService = async (id_freelancer) => {
+  return await listarPropuestasPorFreelancerRepository(id_freelancer);
+};
+
+export const crearPropuestaService = async (id_freelancer, datos) => {
+  const { id_proyecto, mensaje, monto_propuesto } = datos;
+
+  if (!id_proyecto || !mensaje || !monto_propuesto) {
+    const error = new Error('id_proyecto, mensaje y monto_propuesto son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (Number(monto_propuesto) <= 0) {
+    const error = new Error('El monto propuesto debe ser mayor a 0');
+    error.status = 400;
+    throw error;
+  }
+  // Validacion de presupesto del proyecto
+  // --- VALIDACIÓN DE PRESUPUESTO DEL PROYECTO ---
+  const proyecto = await obtenerProyectoPorIdRepository(id_proyecto);
+
+  if (!proyecto) {
+    const error = new Error('El proyecto especificado no existe');
+    error.status = 404;
+    throw error;
+  }
+
+  if (Number(monto_propuesto) > Number(proyecto.presupuesto)) {
+    const error = new Error(`El monto propuesto ($${monto_propuesto}) no puede ser mayor al presupuesto del proyecto ($${proyecto.presupuesto})`);
+    error.status = 400;
+    throw error;
+  }
+
+  // Las reglas de "proyecto abierto", "no auto-postulación" y "sin propuesta activa duplicada"
+  // ya las validan los triggers trg_no_propuesta_proyecto_cerrado,
+  // trg_validar_propuesta_propio_proyecto y trg_validar_propuesta_activa.
+  return await crearPropuestaRepository({
+    id_proyecto,
+    id_freelancer,
+    mensaje,
+    monto_propuesto
+  });
+};
+
+export const retirarPropuestaService = async (id_freelancer, id_propuesta) => {
+  const propuesta = await eliminarPropuestaRepository(id_propuesta, id_freelancer);
+
+  if (!propuesta) {
+    const error = new Error('Propuesta no encontrada, no te pertenece, o ya no se puede retirar (estado aceptada)');
+    error.status = 404;
+    throw error;
+  }
+
+  return propuesta;
+};
+
+export const rechazarPropuestaService = async (id_cliente, id_propuesta) => {
+  const propuesta = await rechazarPropuestaRepository(id_propuesta, id_cliente);
+
+  if (!propuesta) {
+    const error = new Error('Propuesta no encontrada, no pertenece a uno de tus proyectos, o ya no está pendiente');
+    error.status = 404;
+    throw error;
+  }
+
+  return propuesta;
+};
+</file>
+
+<file path="src/services/proyecto.service.js">
+import {
+  listarProyectosRepository,
+  obtenerProyectoPorIdRepository,
+  crearProyectoRepository,
+  actualizarProyectoRepository,
+  obtenerDueñoProyectoRepository,
+  cancelarProyectoRepository,
+  listarProyectosPorClienteRepository,
+  eliminarProyectoRepository
+} from '../repositories/proyecto.repository.js';
+
+export const listarProyectosService = async (filtros) => {
+  return await listarProyectosRepository(filtros);
+};
+
+export const obtenerProyectoService = async (id) => {
+  return await obtenerProyectoPorIdRepository(id);
+};
+
+export const crearProyectoService = async (id_cliente, datos) => {
+  const { titulo, descripcion, presupuesto, id_categoria, fecha_entrega } = datos;
+
+  if (!titulo || !descripcion || !presupuesto || !id_categoria) {
+    const error = new Error('titulo, descripcion, presupuesto e id_categoria son obligatorios');
+    error.status = 400;
+    throw error;
+  }
+
+  if (Number(presupuesto) <= 0) {
+    const error = new Error('El presupuesto debe ser mayor a 0');
+    error.status = 400;
+    throw error;
+  }
+
+  return await crearProyectoRepository({
+    id_cliente,
+    id_categoria,
+    titulo,
+    descripcion,
+    presupuesto,
+    fecha_entrega
+  });
+};
+
+export const actualizarProyectoService = async (id_proyecto, id_cliente, datos) => {
+  const dueño = await obtenerDueñoProyectoRepository(id_proyecto);
+
+  if (!dueño) {
+    const error = new Error('Proyecto no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (dueño.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del proyecto puede modificarlo');
+    error.status = 403;
+    throw error;
+  }
+
+  // El trigger trg_validar_modificacion_proyecto ya impide editar si no está "abierto"
+  return await actualizarProyectoRepository(id_proyecto, datos);
+};
+
+//agregado el cancelar
+export const cancelarProyectoService = async (id_proyecto, id_cliente) => {
+  const dueño = await obtenerDueñoProyectoRepository(id_proyecto);
+
+  if (!dueño) {
+    const error = new Error('Proyecto no encontrado');
+    error.status = 404;
+    throw error;
+  }
+
+  if (dueño.id_cliente !== id_cliente) {
+    const error = new Error('Solo el cliente dueño del proyecto puede cancelarlo');
+    error.status = 403;
+    throw error;
+  }
+
+  const proyecto = await cancelarProyectoRepository(id_proyecto);
+
+  if (!proyecto) {
+    const error = new Error('El proyecto ya está finalizado o cancelado, no se puede cancelar');
+    error.status = 400;
+    throw error;
+  }
+
+  return proyecto;
+};
+
+export const listarMisProyectosService = async (id_cliente) => {
+  return await listarProyectosPorClienteRepository(id_cliente);
+};
+
+export const eliminarProyectoService = async (id_proyecto) => {
+  const proyecto = await eliminarProyectoRepository(id_proyecto);
+  if (!proyecto) {
+    const error = new Error('Proyecto no encontrado');
+    error.status = 404;
+    throw error;
+  }
+  return proyecto;
+};
+</file>
+
+<file path="src/services/usuario.service.js">
+import {
+    buscarUsuarioPorCorreoRepository,
+    buscarUsuarioPorIdRepository,
+    registrarUsuarioRepository,
+    obtenerIdsPerfilRepository,
+    obtenerDatosClienteRepository,
+    obtenerDatosFreelancerRepository,
+    actualizarPerfilUsuarioRepository,
+    actualizarClienteRepository,
+    actualizarFreelancerRepository,
+    obtenerPerfilPublicoFreelancerRepository,
+    obtenerPerfilFreelancerConContactoRepository,
+    existeContratoEntreClienteYFreelancerRepository
+} from '../repositories/usuario.repository.js';
+
+import { hashPassword, compararPassword } from '../utils/password.util.js';
+import crypto from 'crypto';
+import { generarToken } from '../utils/jwt.util.js';
+import { enviarCorreoBrevo } from '../utils/brevo.util.js';
+import { crearToken2FARepository, consumirToken2FARepository } from '../repositories/token2fa.repository.js';
+
+export const registrarUsuarioService = async(datos) => {
+    const { nombre, correo, contrasena, telefono, rol, perfil } = datos;
+
+    if (!nombre || !correo || !contrasena || !rol) {
+        const error = new Error('nombre, correo, contrasena y rol son obligatorios');
+        error.status = 400;
+        throw error;
+    }
+
+    if (contrasena.length < 8) {
+        const error = new Error('La contraseña debe tener al menos 8 caracteres');
+        error.status = 400;
+        throw error;
+    }
+
+    if (!['cliente', 'freelancer'].includes(rol)) {
+        const error = new Error('El rol de registro público solo puede ser cliente o freelancer');
+        error.status = 400;
+        throw error;
+    }
+
+    const existente = await buscarUsuarioPorCorreoRepository(correo);
+    if (existente) {
+        const error = new Error('Ya existe un usuario registrado con ese correo');
+        error.status = 409;
+        throw error;
+    }
+
+    const contrasenaHash = await hashPassword(contrasena);
+
+    const { usuario, perfil: perfilCreado } = await registrarUsuarioRepository({
+        nombre,
+        correo,
+        contrasenaHash,
+        telefono,
+        rol,
+        perfil
+    });
+
+    return { usuario, perfil: perfilCreado };
+};
+
+// Paso 1: credenciales + envío del magic link
+export const loginUsuarioService = async ({ correo, contrasena }) => {
+    const usuario = await buscarUsuarioPorCorreoRepository(correo);
+
+    if (!usuario) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    if (usuario.estado !== 'activo') {
+        const error = new Error('El usuario está inactivo');
+        error.status = 403;
+        throw error;
+    }
+
+    const coincide = await compararPassword(contrasena, usuario.contrasena);
+    if (!coincide) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    // Token aleatorio: al correo va el token, a la BD solo su hash
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const minutos = Number(process.env.MAGIC_LINK_EXPIRES_MIN) || 10;
+
+    await crearToken2FARepository({ id_usuario: usuario.id_usuario, token_hash: tokenHash, minutos });
+
+    // antes: /verificar-2fa?token=
+    const enlace = `${process.env.FRONTEND_URL}/login/verificar-correo?token=${token}`;
+
+    await enviarCorreoBrevo({
+        para: usuario.correo,
+        nombrePara: usuario.nombre,
+        asunto: 'Verifica tu inicio de sesión en TaskConnect',
+        html: `
+            <p>Hola ${usuario.nombre},</p>
+            <p>Haz clic en el botón para completar tu inicio de sesión. El enlace expira en ${minutos} minutos y solo puede usarse una vez.</p>
+            <p><a href="${enlace}" style="background:#0d6efd;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;">Verificar inicio de sesión</a></p>
+            <p>Si no fuiste tú, ignora este mensaje.</p>`
+    });
+
+    return { requiere2fa: true, correo: usuario.correo };
+};
+
+// Paso 2: consume el magic link y emite el JWT real
+export const confirmarLogin2FAService = async ({ token }) => {
+    if (!token) {
+        const error = new Error('El token de verificación es obligatorio');
+        error.status = 400;
+        throw error;
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const registro = await consumirToken2FARepository(tokenHash);
+
+    if (!registro) {
+        const error = new Error('El enlace es inválido, expiró o ya fue utilizado');
+        error.status = 401;
+        throw error;
+    }
+
+    const usuario = await buscarUsuarioPorIdRepository(registro.id_usuario);
+    if (!usuario || usuario.estado !== 'activo') {
+        const error = new Error('Usuario no válido');
+        error.status = 401;
+        throw error;
+    }
+
+    const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
+    const payload = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, rol: usuario.rol, ...(idsPerfil ?? {}) };
+    const tokenJwt = generarToken(payload);
+
+    return { token: tokenJwt, usuario: payload };
+};
+
+// Actualizado para que muestre por rol y no solo el usuario
+export const obtenerPerfilService = async (id_usuario) => {
+    const usuario = await buscarUsuarioPorIdRepository(id_usuario);
+    if (!usuario) return null;
+
+    let perfil = null;
+    if (usuario.rol === 'cliente') perfil = await obtenerDatosClienteRepository(id_usuario);
+    if (usuario.rol === 'freelancer') perfil = await obtenerDatosFreelancerRepository(id_usuario);
+
+    return { usuario, perfil };
+};
+
+// Servicio para actualizar el perfil del usuario
+export const actualizarPerfilService = async (usuarioActual, datos) => {
+    const { nombre, telefono, empresa, direccion, id_profesion, descripcion, experiencia } = datos;
+
+    if (!nombre || !nombre.trim()) {
+        const error = new Error('El nombre es obligatorio');
+        error.status = 400;
+        throw error;
+    }
+
+    if (usuarioActual.rol === 'freelancer' && (!id_profesion || !descripcion || !descripcion.trim())) {
+        const error = new Error('La profesión y la descripción son obligatorias');
+        error.status = 400;
+        throw error;
+    }
+
+    const usuario = await actualizarPerfilUsuarioRepository(usuarioActual.id_usuario, { nombre, telefono: telefono ?? null });
+
+    let perfil = null;
+    if (usuarioActual.rol === 'cliente') {
+        perfil = await actualizarClienteRepository(usuarioActual.id_usuario, { empresa: empresa ?? null, direccion: direccion ?? null });
+    }
+    if (usuarioActual.rol === 'freelancer') {
+        perfil = await actualizarFreelancerRepository(usuarioActual.id_usuario, { id_profesion, descripcion, experiencia: experiencia ?? 0 });
+    }
+
+    return { usuario, perfil };
+};
+
+// SOLO PARA DESARROLLO/TESTING — evita el paso de Firebase 2FA
+export const loginPruebaService = async ({ correo, contrasena }) => {
+    if (process.env.PERMITIR_LOGIN_PRUEBA !== 'true') {
+        const error = new Error('Ruta no disponible');
+        error.status = 404;
+        throw error;
+    }
+
+    const usuario = await buscarUsuarioPorCorreoRepository(correo);
+    if (!usuario) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    if (usuario.estado !== 'activo') {
+        const error = new Error('El usuario está inactivo');
+        error.status = 403;
+        throw error;
+    }
+
+    const coincide = await compararPassword(contrasena, usuario.contrasena);
+    if (!coincide) {
+        const error = new Error('Credenciales inválidas');
+        error.status = 401;
+        throw error;
+    }
+
+    const idsPerfil = await obtenerIdsPerfilRepository(usuario.id_usuario, usuario.rol);
+    const payload = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, rol: usuario.rol, ...(idsPerfil ?? {}) };
+    const token = generarToken(payload);
+
+    return { token, usuario: payload };
+};
+// para observar el perfil
+export const obtenerPerfilPublicoFreelancerService = async (id_freelancer) => {
+    const perfil = await obtenerPerfilPublicoFreelancerRepository(id_freelancer);
+
+    if (!perfil) {
+        const error = new Error('Freelancer no encontrado');
+        error.status = 404;
+        throw error;
+    }
+
+    return perfil;
+};
+
+// Para obtener el perfil de un freelancer con información de contacto si hay un contrato con el cliente
+export const obtenerPerfilConContactoFreelancerService = async (usuarioActual, id_freelancer) => {
+    if (usuarioActual.rol !== 'cliente') {
+        const error = new Error('Solo un cliente puede ver el contacto de un freelancer');
+        error.status = 403;
+        throw error;
+    }
+
+    const tieneContrato = await existeContratoEntreClienteYFreelancerRepository(usuarioActual.id_cliente, id_freelancer);
+    if (!tieneContrato) {
+        const error = new Error('Solo puedes ver el contacto de freelancers con los que ya tienes un contrato');
+        error.status = 403;
+        throw error;
+    }
+
+    const perfil = await obtenerPerfilFreelancerConContactoRepository(id_freelancer);
+    if (!perfil) {
+        const error = new Error('Freelancer no encontrado');
+        error.status = 404;
+        throw error;
+    }
+
+    return perfil;
+};
+</file>
+
+<file path="src/utils/brevo.util.js">
+// Envío de correo por la API REST de Brevo (HTTPS, no usa puertos SMTP)
+export const enviarCorreoBrevo = async ({ para, nombrePara, asunto, html }) => {
+    const respuesta = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'api-key': process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+            sender: { name: process.env.BREVO_SENDER_NAME, email: process.env.BREVO_SENDER_EMAIL },
+            to: [{ email: para, name: nombrePara }],
+            subject: asunto,
+            htmlContent: html
+        })
+    });
+
+    if (!respuesta.ok) {
+        const detalle = await respuesta.text();
+        console.error('Error Brevo:', respuesta.status, detalle);
+        const error = new Error('No se pudo enviar el correo de verificación');
+        error.status = 502;
+        throw error;
+    }
+};
+</file>
+
+<file path="src/utils/firebaseAdmin.util.js">
+import { createRequire } from 'module';
+import { readFileSync } from 'fs';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+
+const require = createRequire(import.meta.url);
+
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+    ? JSON.parse(readFileSync(process.env.FIREBASE_SERVICE_ACCOUNT_PATH, 'utf-8'))
+    : require('../../serviceAccountKey.json');
+
+if (!getApps().length) {
+    initializeApp({ credential: cert(serviceAccount) });
+}
+
+export const verificarIdTokenFirebase = async (idToken) => {
+    return await getAuth().verifyIdToken(idToken);
+};
+</file>
+
+<file path="src/utils/jwt.util.js">
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const generarToken = (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN
+    });
+};
+
+export const verificarToken = (token) => {
+    return jwt.verify(token, process.env.JWT_SECRET);
+};
+
+// 2FA Token generado y verificado con un tiempo de expiración más corto (5 minutos)
+export const generarPreAuthToken = (payload) => {
+    return jwt.sign({ ...payload, tipo: 'pre_auth' }, process.env.JWT_SECRET, {
+        expiresIn: '5m'
+    });
+};
+
+export const verificarPreAuthToken = (token) => {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.tipo !== 'pre_auth') {
+        const error = new Error('Token de preautenticación inválido');
+        error.status = 401;
+        throw error;
+    }
+    return payload;
+};
+</file>
+
+<file path="src/utils/password.util.js">
+import bcrypt from 'bcryptjs';
+
+export const hashPassword = async(plano) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(plano, salt);
+};
+
+export const compararPassword = async(plano, hash) => {
+    return await bcrypt.compare(plano, hash);
+};
+</file>
+
+<file path="src/app.js">
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { verificarConexion } from './database/connection.js';
+import { manejarErrores } from './middlewares/error.middleware.js';
+
+
+import usuarioRoutes from './routes/usuario.routes.js';
+import proyectoRoutes from './routes/proyecto.routes.js';
+import propuestaRoutes from './routes/propuesta.routes.js';
+import contratoRoutes from './routes/contrato.routes.js';
+
+import pagoRoutes from './routes/pago.routes.js';
+import mensajeRoutes from './routes/mensaje.routes.js';
+import calificacionRoutes from './routes/calificacion.routes.js';
+import catalogoRoutes from './routes/catalogo.routes.js';
+
+import adminRoutes from './routes/admin.routes.js';
+import estadisticasRoutes from './routes/estadisticas.routes.js';
+
+dotenv.config();
+
+const app = express();
+
+const origenesPermitidos = [
+  'http://localhost:4200',
+  process.env.FRONTEND_URL // ej: https://taskconnect-web.vercel.app
+].filter(Boolean);
+
+app.use(cors({ origin: origenesPermitidos, credentials: true }));
+app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.json({ mensaje: 'API de TaskConnect funcionando correctamente' });
+});
+
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/proyectos', proyectoRoutes);
+app.use('/api/propuestas', propuestaRoutes);
+app.use('/api/contratos', contratoRoutes);
+
+app.use('/api/pagos', pagoRoutes);
+app.use('/api/mensajes', mensajeRoutes);
+app.use('/api/calificaciones', calificacionRoutes);
+app.use('/api', catalogoRoutes); // ya define /categorias, /profesiones, /metodos-pago
+
+app.use('/api/admin', adminRoutes);
+app.use('/api/estadisticas', estadisticasRoutes);
+
+app.use(manejarErrores);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, async () => {
+  console.log(`Servidor TaskConnect escuchando en el puerto ${PORT}`);
+  await verificarConexion();
+});
+</file>
+
+<file path=".gitignore">
+# Dependencias de Node
+node_modules/
+
+# Archivos de Entorno
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivo de firebase para autenticación de 2FA
+serviceAccountKey.json
+</file>
+
+<file path="package.json">
+{
+    "name": "taskconnect-api",
+    "version": "1.0.0",
+    "description": "API REST de TaskConnect (Express + PostgreSQL)",
+    "main": "src/app.js",
+    "type": "module",
+    "scripts": {
+        "dev": "nodemon src/app.js",
+        "start": "node src/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "cors": "^2.8.6",
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "firebase-admin": "^14.2.0",
+        "jsonwebtoken": "^9.0.3",
+        "pg": "^8.22.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
+}
+</file>
+
+</files>
