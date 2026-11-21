@@ -1,12 +1,12 @@
 {
     "name": "taskconnect-api",
-    "version": "1.0.0",
+    "version": "1.0.9",
     "description": "API REST de TaskConnect (Express + PostgreSQL)",
     "main": "src/app.js",
     "type": "module",
-    "scripts": {
-        "dev": "nodemon src/app.js",
-        "start": "node src/app.js"
+            "scripts": {
+        "dev": "nodemon src/server.js",
+        "start": "node src/server.js"
     },
     "keywords": [],
     "author": "",
